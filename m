@@ -1,49 +1,49 @@
-Return-Path: <live-patching+bounces-2662-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2671-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id +DTxHQEq9GlA+wEAu9opvQ
-	(envelope-from <live-patching+bounces-2662-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:20:17 +0200
+	id OPsbAW8p9GkH+wEAu9opvQ
+	(envelope-from <live-patching+bounces-2671-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:17:51 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
-	by mail.lfdr.de (Postfix) with ESMTPS id AD8364AA3FA
-	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:20:16 +0200 (CEST)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
+	by mail.lfdr.de (Postfix) with ESMTPS id A3A604AA331
+	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:17:45 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sin.lore.kernel.org (Postfix) with ESMTP id 04C17305DB7A
-	for <lists+live-patching@lfdr.de>; Fri,  1 May 2026 04:12:06 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id B756C305E8DE
+	for <lists+live-patching@lfdr.de>; Fri,  1 May 2026 04:12:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5E9CF37472F;
-	Fri,  1 May 2026 04:09:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9A99E37F739;
+	Fri,  1 May 2026 04:09:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BED08QUJ"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Hf4JCWZ+"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39960374192;
-	Fri,  1 May 2026 04:09:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EAFA37EFF1;
+	Fri,  1 May 2026 04:09:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777608552; cv=none; b=EDQJkmwIEg/VMrhDW3zg9p/sJCfVvldV7O48dXLMuB94v7NA1guC7x4YIA9c5lWyvyYYXrerpA9lhLqe9aOu6DgDR7JX++WuZBkOUR47RkrFlRte7nytBFW54KnA+Q9B2LwTvBhNw9b3Mnw8nURCMaQQ2UdDA/00eeEx0jR/Th0=
+	t=1777608556; cv=none; b=nYwYM+LN2rvjIczeq1Wt91ZCqrWpqbygdhsu0NmcV6Kx/Lb30YOJWlNkSkEKBvFaerxR+ibasNq0RoMJkBT+Kew/YHA1CB8NuWUHEvavMoDFqjFn+JK/oWr00MuCKVauD9wZnoE3mTYj9nCQQ/2vVAoeuM1PukXV3qQ92RpcQ8E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777608552; c=relaxed/simple;
-	bh=ZOp4lg30bCe82KO2EegcVeytW9zoOZI2TN07/1MGzQY=;
+	s=arc-20240116; t=1777608556; c=relaxed/simple;
+	bh=IElXgJmc6dJDI5FQQsbAZ9PJdfM+WYcWwhnrQjlOoRM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=uRGOvdf1dvljUaDqnVrmGkYfRkBtUGyjoU+hpENTkS+7s9nL76hT/Xbq14TwOyGE+YGTya9rMueybAmpS8GujgPYqx26F93ujs5YSCtLpk1z+l06Yds/d3VPj7y+8hPLrQYdCrdeGI5DJ152Lt8nAW8V71xpSvna6n18U7QBRwg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BED08QUJ; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1043C2BCB8;
-	Fri,  1 May 2026 04:09:10 +0000 (UTC)
+	 MIME-Version; b=jTMCmMQWAopLhrAqWR1rG+ajsCdtHUA/zMoFNblKv4l8Y2JyqWK/1eZX3p+o5432B585ScNHX8jgEf8IT82r+aascji7OMNkYYAy7ABJTcTArtbcoatxdIC0Nz8unVvROxvvpoRfAGq5LjJOIjfTBB148u+ZptvE9/DFumeBO6U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Hf4JCWZ+; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74424C2BCB7;
+	Fri,  1 May 2026 04:09:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777608551;
-	bh=ZOp4lg30bCe82KO2EegcVeytW9zoOZI2TN07/1MGzQY=;
+	s=k20201202; t=1777608552;
+	bh=IElXgJmc6dJDI5FQQsbAZ9PJdfM+WYcWwhnrQjlOoRM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=BED08QUJMr/JoUNZ9HkaIengOy0/vx2H2zX7ar9L3DO2z4gcvHXWsOIhPBE544Jr3
-	 LbyBtJGWZnleJI4ruFSXGOqk4TlKqZQIiFU3xcyZmsxUR6s4f5fIkBtnib0WsGPsSX
-	 nIKF3aKrKe6P335GxSTSU214sl39aDCEXsp6aI7xL7eytmelw/djuiG1iSXum/Asvs
-	 1Eikh10j1BM5DEQ0oG1LGTJECvZsEKXL7SrU2kbkGhWtM1pjODnlL440pV3xpv8r/u
-	 DjjDFzgyE77mHdM5+LFXbSgsueGEd0lWP00I6SMNOmj0NnabZknq6Y/bPNZCj3DYtn
-	 Nrf8BL7LAcAnw==
+	b=Hf4JCWZ+M4swIr8ONTmavLUEGJk6fqVLsMPoE0uarZWXuBXDu3WeQ902+GNhwU2no
+	 tgze/wUXqUkypF+byF1GJjLI3wXsJ7ttdwBrKbd660cMRGTdGOv0u5ckp+jASJU/NZ
+	 pi+7fzmWWnpGgbpCJpe0ixDLSTVRDqKwKO8lB3kTV2GwBsPLo0Y4x7FgQXLNV6J6R7
+	 UamCB2jySOgFOOGR+mXMpz7/IxOoZLPV7zMdiYijRPrLZur6tezhsH96eV4cLdaq8n
+	 was3VQZ6i2zQCvlhoh+1wq57yHKUXdBFYaTfx1eBTxnfqUc/FDR5Wy5tGwvaahJ3NR
+	 W+kk6Ne2rIFZA==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -53,9 +53,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Song Liu <song@kernel.org>,
 	Miroslav Benes <mbenes@suse.cz>,
 	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH v2 45/53] objtool/klp: Calculate object checksums
-Date: Thu, 30 Apr 2026 21:08:33 -0700
-Message-ID: <88ebcc903a3c534f2c7d35b95f62d845105d40af.1777575752.git.jpoimboe@kernel.org>
+Subject: [PATCH v2 46/53] objtool/klp: Rewrite symbol correlation algorithm
+Date: Thu, 30 Apr 2026 21:08:34 -0700
+Message-ID: <27fcb5a17cc7b6821d8b1c4b9812ebb5b4ee6a5c.1777575752.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <cover.1777575752.git.jpoimboe@kernel.org>
 References: <cover.1777575752.git.jpoimboe@kernel.org>
@@ -66,7 +66,7 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: AD8364AA3FA
+X-Rspamd-Queue-Id: A3A604AA331
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-0.66 / 15.00];
@@ -74,13 +74,14 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	MID_CONTAINS_FROM(1.00)[];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
 	R_MISSING_CHARSET(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip4:104.64.211.4:c];
+	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2662-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2671-lists,live-patching=lfdr.de];
+	RBL_SEM_FAIL(0.00)[172.234.253.10:query timed out];
 	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	FROM_HAS_DN(0.00)[];
@@ -94,310 +95,644 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	TAGGED_RCPT(0.00)[live-patching];
 	TO_DN_SOME(0.00)[];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:104.64.192.0/19, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
+	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
 
-Start checksumming data objects in preparation for revamping the
-correlation algorithm.
+Rewrite the symbol correlation code, using a tiered list of
+deterministic strategies in a loop.  For duplicately named symbols, each
+tier applies a filter with the goal of finding a 1:1 deterministic
+correlation between the original and patched version of the symbol.
+
+The three matching strategies are:
+
+  find_twin(): A funnel of progressively tighter filters.  Candidates
+  with the same demangled name are counted at four levels: name, scope
+  (local-vs-global), file (strict file association), and checksum
+  (unchanged functions).  The widest level that yields a 1:1 match wins,
+  narrower levels are only tried when the wider level is ambiguous.
+
+  find_twin_suffixed(): Uses already-correlated LLVM symbol pairs to map
+  .llvm.<hash> suffixes from orig to patched.  Because all promoted
+  symbols from the same TU share the same hash, one correlated pair
+  seeds the mapping for the entire TU.
+
+  find_twin_positional(): Last resort, matches symbols by position among
+  same-named candidates, similar to livepatch sympos.  Used for data
+  objects like __quirk variables where no deterministic filter can
+  distinguish the candidates.
+
+Overall this works much better than the existing algorithm, particularly
+with LTO kernels.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/include/objtool/checksum.h | 44 ++++++++----
- tools/objtool/include/objtool/warn.h     | 29 ++++----
- tools/objtool/klp-checksum.c             | 89 +++++++++++++++++++-----
- tools/objtool/klp-diff.c                 |  2 +-
- 4 files changed, 117 insertions(+), 47 deletions(-)
+ tools/objtool/klp-diff.c | 521 +++++++++++++++++++++++++++++----------
+ 1 file changed, 385 insertions(+), 136 deletions(-)
 
-diff --git a/tools/objtool/include/objtool/checksum.h b/tools/objtool/include/objtool/checksum.h
-index be4eb7dfe6f2..d46293f54716 100644
---- a/tools/objtool/include/objtool/checksum.h
-+++ b/tools/objtool/include/objtool/checksum.h
-@@ -6,28 +6,44 @@
- 
- #ifdef BUILD_KLP
- 
--static inline void checksum_init(struct symbol *func)
-+static inline void checksum_init(struct symbol *sym)
- {
--	if (func && !func->csum.state) {
--		func->csum.state = XXH3_createState();
--		XXH3_64bits_reset(func->csum.state);
-+	if (sym && !sym->csum.state) {
-+		sym->csum.state = XXH3_createState();
-+		XXH3_64bits_reset(sym->csum.state);
- 	}
+diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
+index 5f13d759e02f..a9c993298b82 100644
+--- a/tools/objtool/klp-diff.c
++++ b/tools/objtool/klp-diff.c
+@@ -408,78 +408,358 @@ static bool dont_correlate(struct symbol *sym)
+ 	       is_special_section_aux(sym->sec);
  }
  
--static inline void checksum_update(struct symbol *func,
--				   struct instruction *insn,
--				   const void *data, size_t size)
-+static inline void __checksum_update(struct symbol *sym, const void *data,
-+				     size_t size)
+-/*
+- * When there is no full name match, try match demangled_name. This would
+- * match original foo.llvm.123 to patched foo.llvm.456.
+- *
+- * Note that, in very rare cases, it is possible to have multiple
+- * foo.llvm.<hash> in the same kernel. When this happens, report error and
+- * fail the diff.
+- */
+-static int find_global_symbol_by_demangled_name(struct elf *elf, struct symbol *sym,
+-						struct symbol **out_sym)
++static const char *llvm_suffix(const char *name)
  {
--	XXH3_64bits_update(func->csum.state, data, size);
--	dbg_checksum(func, insn, XXH3_64bits_digest(func->csum.state));
-+	XXH3_64bits_update(sym->csum.state, data, size);
- }
+-	struct symbol *sym2, *result = NULL;
+-	int count = 0;
++	return strstr(name, ".llvm.");
++}
  
--static inline void checksum_finish(struct symbol *func)
-+static inline void __checksum_update_insn(struct symbol *sym,
-+					  struct instruction *insn,
-+					  const void *data, size_t size)
- {
--	if (func && func->csum.state) {
--		func->csum.checksum = XXH3_64bits_digest(func->csum.state);
--		XXH3_freeState(func->csum.state);
--		func->csum.state = NULL;
-+	__checksum_update(sym, data, size);
-+	dbg_checksum_insn(sym, insn, XXH3_64bits_digest(sym->csum.state));
+-	for_each_sym_by_demangled_name(elf, sym->demangled_name, sym2) {
+-		if (is_local_sym(sym2) || sym2->twin)
++static bool is_llvm_sym(struct symbol *sym)
++{
++	return llvm_suffix(sym->name);
 +}
 +
-+static inline void __checksum_update_object(struct symbol *sym,
-+					    unsigned long offset,
-+					    const char *what, const void *data,
-+					    size_t size)
++/*
++ * Determine if two symbols have compatible source file origins:
++ *
++ *   - If both symbols are local, only return true if they belong to the same
++ *     ELF file symbol.
++ *
++ *   - If both symbols are global, always return true, as globals don't have
++ *     file associations.
++ *
++ *   - If they have different scopes, also return true, as the patch might have
++ *     changed the symbol's scope.
++ *
++ * Works for both same-ELF (direct pointer compare) and cross-ELF
++ * (compare via file->twin) cases.
++ */
++static bool maybe_same_file(struct symbol *sym1, struct symbol *sym2)
 +{
-+	__checksum_update(sym, &offset, sizeof(offset));
-+	__checksum_update(sym, data, size);
-+	dbg_checksum_object(sym, offset, what, XXH3_64bits_digest(sym->csum.state));
++	if (!sym1->file || !sym2->file)
++		return true;
++	if (sym1->file == sym2->file)
++		return true;
++	return sym1->file->twin == sym2->file;
 +}
 +
-+static inline void checksum_finish(struct symbol *sym)
++/*
++ * Similar to maybe_same_file(), but strict: no scope changes allowed.
++ *
++ * Works for both same-ELF (direct pointer compare) and cross-ELF
++ * (compare via file->twin) cases.
++ */
++static bool same_file(struct symbol *sym1, struct symbol *sym2)
 +{
-+	if (sym && sym->csum.state) {
-+		sym->csum.checksum = XXH3_64bits_digest(sym->csum.state);
-+		XXH3_freeState(sym->csum.state);
-+		sym->csum.state = NULL;
- 	}
- }
- 
-diff --git a/tools/objtool/include/objtool/warn.h b/tools/objtool/include/objtool/warn.h
-index fa8b7d292e83..595ee8009667 100644
---- a/tools/objtool/include/objtool/warn.h
-+++ b/tools/objtool/include/objtool/warn.h
-@@ -130,10 +130,22 @@ static inline void unindent(int *unused) { indent--; }
- 		objname ? ": " : "",					\
- 		##__VA_ARGS__)
- 
--#define dbg(args...)							\
-+#define dbg_checksum_insn(func, insn, checksum)				\
- ({									\
--	if (unlikely(debug))						\
--		__dbg(args);						\
-+	if (unlikely(func->debug_checksum)) {				\
-+		char *insn_off = offstr(insn->sec, insn->offset);	\
-+		__dbg("checksum: %s(): %s %016llx",			\
-+		      func->name, insn_off, (unsigned long long)checksum);\
-+		free(insn_off);						\
-+	}								\
-+})
-+
-+#define dbg_checksum_object(sym, offset, what, checksum)		\
-+({									\
-+	if (unlikely(sym->debug_checksum))				\
-+		__dbg("checksum: %s+0x%lx: %s %016llx",			\
-+		      sym->name, offset, what,				\
-+		      (unsigned long long)checksum);			\
- })
- 
- #define __dbg_indent(format, ...)					\
-@@ -147,15 +159,4 @@ static inline void unindent(int *unused) { indent--; }
- 	__dbg_indent(args);						\
- 	indent++
- 
--#define dbg_checksum(func, insn, checksum)				\
--({									\
--	if (unlikely(insn->sym && insn->sym->pfunc &&			\
--		     insn->sym->pfunc->debug_checksum)) {		\
--		char *insn_off = offstr(insn->sec, insn->offset);	\
--		__dbg("checksum: %s %s %016llx",			\
--		      func->name, insn_off, (unsigned long long)checksum);\
--		free(insn_off);						\
--	}								\
--})
--
- #endif /* _WARN_H */
-diff --git a/tools/objtool/klp-checksum.c b/tools/objtool/klp-checksum.c
-index e4a910f3211c..19653dbe109d 100644
---- a/tools/objtool/klp-checksum.c
-+++ b/tools/objtool/klp-checksum.c
-@@ -35,7 +35,7 @@ static int checksum_debug_init(struct objtool_file *file)
- 			*comma = '\0';
- 
- 		for_each_sym_by_name(file->elf, s, sym) {
--			if (!is_func_sym(sym))
-+			if (!is_func_sym(sym) && !is_object_sym(sym))
- 				continue;
- 			sym->debug_checksum = 1;
- 			found = true;
-@@ -66,14 +66,14 @@ static void checksum_update_insn(struct objtool_file *file, struct symbol *func,
- 	if (insn->fake)
- 		return;
- 
--	checksum_update(func, insn, insn->sec->data->d_buf + insn->offset, insn->len);
-+	__checksum_update_insn(func, insn, insn->sec->data->d_buf + insn->offset, insn->len);
- 
- 	if (!reloc) {
- 		struct symbol *call_dest = insn_call_dest(insn);
- 
- 		if (call_dest)
--			checksum_update(func, insn, call_dest->demangled_name,
--					strlen(call_dest->demangled_name));
-+			__checksum_update_insn(func, insn, call_dest->demangled_name,
-+					       strlen(call_dest->demangled_name));
- 		goto alts;
- 	}
- 
-@@ -84,7 +84,7 @@ static void checksum_update_insn(struct objtool_file *file, struct symbol *func,
- 		char *str;
- 
- 		str = sym->sec->data->d_buf + sym->offset + offset;
--		checksum_update(func, insn, str, strlen(str));
-+		__checksum_update_insn(func, insn, str, strlen(str));
- 		goto alts;
- 	}
- 
-@@ -96,8 +96,9 @@ static void checksum_update_insn(struct objtool_file *file, struct symbol *func,
- 		offset -= sym->offset;
- 	}
- 
--	checksum_update(func, insn, sym->demangled_name, strlen(sym->demangled_name));
--	checksum_update(func, insn, &offset, sizeof(offset));
-+	__checksum_update_insn(func, insn, sym->demangled_name,
-+			       strlen(sym->demangled_name));
-+	__checksum_update_insn(func, insn, &offset, sizeof(offset));
- 
- alts:
- 	for (alt = insn->alts; alt; alt = alt->next) {
-@@ -108,12 +109,13 @@ static void checksum_update_insn(struct objtool_file *file, struct symbol *func,
- 			break;
- 		in_alt = true;
- 
--		checksum_update(func, insn, &alt->type, sizeof(alt->type));
-+		__checksum_update_insn(func, insn, &alt->type,
-+				       sizeof(alt->type));
- 
- 		if (alt_group && alt_group->orig_group) {
- 			struct instruction *alt_insn;
- 
--			checksum_update(func, insn, &alt_group->feature, sizeof(alt_group->feature));
-+			__checksum_update_insn(func, insn, &alt_group->feature,sizeof(alt_group->feature));
- 
- 			for (alt_insn = alt->insn; alt_insn; alt_insn = next_insn_same_sec(file, alt_insn)) {
- 				checksum_update_insn(file, func, alt_insn);
-@@ -128,31 +130,82 @@ static void checksum_update_insn(struct objtool_file *file, struct symbol *func,
- 	}
- }
- 
-+static void checksum_update_object(struct objtool_file *file, struct symbol *sym)
-+{
-+	struct reloc *reloc;
-+
-+	__checksum_update_object(sym, 0, "len", &sym->len, sizeof(sym->len));
-+
-+	if (sym->sec->data->d_buf)
-+		__checksum_update_object(sym, 0, "data",
-+					 sym->sec->data->d_buf + sym->offset,
-+					 sym->len);
-+
-+	sym_for_each_reloc(file->elf, sym, reloc) {
-+		unsigned long sym_offset = reloc_offset(reloc) - sym->offset;
-+		struct symbol *target = reloc->sym;
-+		s64 offset;
-+
-+		offset = reloc_addend(reloc);
-+
-+		if (is_string_sec(target->sec)) {
-+			char *str;
-+
-+			str = target->sec->data->d_buf + target->offset + offset;
-+			__checksum_update_object(sym, sym_offset,
-+						 "reloc string", str, strlen(str));
-+			continue;
-+		}
-+
-+		if (is_sec_sym(target)) {
-+			target = find_symbol_containing(reloc->sym->sec, offset);
-+			if (!target)
-+				continue;
-+
-+			offset -= target->offset;
-+		}
-+
-+		__checksum_update_object(sym, sym_offset, "reloc name",
-+					 target->demangled_name,
-+					 strlen(target->demangled_name));
-+		__checksum_update_object(sym, sym_offset, "reloc addend",
-+					 &offset, sizeof(offset));
-+	}
++	if (llvm_suffix(sym1->name) && llvm_suffix(sym2->name))
++		return true;
++	if (!sym1->file && !sym2->file)
++		return true;
++	if (!sym1->file || !sym2->file)
++		return false;
++	if (sym1->file == sym2->file)
++		return true;
++	return sym1->file->twin == sym2->file;
 +}
 +
- int calculate_checksums(struct objtool_file *file)
- {
- 	struct instruction *insn;
--	struct symbol *func;
-+	struct symbol *sym;
- 
- 	if (checksum_debug_init(file))
- 		return -1;
- 
--	for_each_sym(file->elf, func) {
-+	for_each_sym(file->elf, sym) {
++/*
++ * Is it a local symbol, or at least was it local in the translation unit
++ * before LLVM promoted it?
++ */
++static bool is_tu_local_sym(struct symbol *sym)
++{
++	return is_local_sym(sym) || is_llvm_sym(sym);
++}
 +
- 		/*
- 		 * Skip cold subfunctions and aliases: they share the
- 		 * parent's checksum via func_for_each_insn() which
- 		 * follows func->cfunc into the cold subfunction.
- 		 */
--		if (!is_func_sym(func) || is_cold_func(func) ||
--		    is_alias_sym(func) || !func->len)
-+		if (is_cold_func(sym) || is_alias_sym(sym) || !sym->len ||
-+		    !sym->sec || !sym->sec->data)
++/*
++ * Try to find sym1's twin in patched using deterministic matching.
++ *
++ * Multiple symbols can share a demangled name (e.g., static functions in
++ * different TUs).  This function counts same-named candidates through a
++ * funnel of progressively tighter filters.  Each level is a strict subset
++ * of the previous one.
++ *
++ * The widest level that yields a 1:1 match wins.  Narrower levels are only
++ * needed when the wider level is ambiguous (count > 1).
++ *
++ * Candidates are pre-filtered by maybe_same_file(), which narrows most
++ * local symbols to their own TU.  For example, 19 different static
++ * type_show() functions across vmlinux.o each see only one candidate after
++ * pre-filtering, so they match immediately at Level 1.
++ *
++ * Level 1 (name): Works when the demangled name is unique after
++ * pre-filtering.  Handles most symbols: unique globals like copy_signal(),
++ * or per-TU locals like pcspkr_probe().
++ *
++ * Level 2 (scope): Filters by local-vs-global (TU-local-vs-not).  Example:
++ * parse_header() exists as both a static and a global function.  Level 1
++ * sees both (same demangled name), but Level 2 separates them by scope.
++ *
++ * Level 3 (file): Strict file matching via same_file(), which rejects scope
++ * changes.  Example: LLVM-promoted foo.llvm.12345 (global, no FILE symbol)
++ * vs genuine local foo (has FILE symbol).  Both are TU-local so Level 2
++ * can't distinguish them, but same_file() rejects the pair because one has
++ * a file association and the other doesn't.
++ *
++ * Level 4 (checksum): Distinguishes by function checksum.  Example:
++ * usb_devnode.llvm.AAA and usb_devnode.llvm.BBB are two LLVM-promoted
++ * functions from different TUs with the same demangled name.  After a TU
++ * change, the .llvm. hashes change but the functions themselves may be
++ * unchanged.  Level 4 matches each to the patched candidate with the
++ * same checksum.
++ */
++static struct symbol *find_twin(struct elfs *e, struct symbol *sym1)
++{
++	struct symbol *name_last = NULL, *scope_last = NULL,
++		      *file_last = NULL, *csum_last = NULL;
++	unsigned int name_orig = 0, name_patched = 0;
++	unsigned int scope_orig = 0, scope_patched = 0;
++	unsigned int file_orig = 0, file_patched = 0;
++	unsigned int csum_orig = 0, csum_patched = 0;
++	struct symbol *sym2, *match = NULL;
++
++	/* Count orig candidates */
++	for_each_sym_by_demangled_name(e->orig, sym1->demangled_name, sym2) {
++		if (sym2->twin || sym1->type != sym2->type || dont_correlate(sym2) ||
++		    (!maybe_same_file(sym1, sym2)))
  			continue;
  
--		checksum_init(func);
-+		if (is_func_sym(sym)) {
-+			checksum_init(sym);
-+			func_for_each_insn(file, sym, insn)
-+				checksum_update_insn(file, sym, insn);
-+			checksum_finish(sym);
- 
--		func_for_each_insn(file, func, insn)
--			checksum_update_insn(file, func, insn);
-+		} else if (is_object_sym(sym)) {
-+			checksum_init(sym);
-+			checksum_update_object(file, sym);
-+			checksum_finish(sym);
-+		}
- 
--		checksum_finish(func);
- 	}
+-		count++;
+-		result = sym2;
++		/* Level 1: name match (widest filter)  */
++		name_orig++;
 +
++		/* Level 2: scope (scope changes allowed) */
++		if (is_tu_local_sym(sym1) != is_tu_local_sym(sym2))
++			continue;
++		scope_orig++;
++
++		/* Level 3: file (scope changes disallowed) */
++		if (!same_file(sym1, sym2))
++			continue;
++		file_orig++;
++
++		/* Level 4: checksum (unchanged symbols) */
++		if (sym1->len != sym2->len || !sym1->csum.checksum ||
++		    sym1->csum.checksum != sym2->csum.checksum)
++			continue;
++		csum_orig++;
+ 	}
+ 
+-	if (count > 1) {
+-		ERROR("Multiple (%d) correlation candidates for %s", count, sym->name);
+-		return -1;
++	/* Count patched candidates */
++	for_each_sym_by_demangled_name(e->patched, sym1->demangled_name, sym2) {
++		if (sym2->twin || sym1->type != sym2->type || dont_correlate(sym2) ||
++		    !maybe_same_file(sym1, sym2))
++			continue;
++
++		/* Level 1 */
++		name_patched++;
++		name_last = sym2;
++
++		/* Level 2 */
++		if (is_tu_local_sym(sym1) != is_tu_local_sym(sym2))
++			continue;
++		scope_patched++;
++		scope_last = sym2;
++
++		/* Level 3 */
++		if (!same_file(sym1, sym2))
++			continue;
++		file_patched++;
++		file_last = sym2;
++
++		/* Level 4 */
++		if (sym1->len != sym2->len || !sym1->csum.checksum ||
++		    sym1->csum.checksum != sym2->csum.checksum)
++			continue;
++		csum_patched++;
++		csum_last = sym2;
++	}
++
++	/* Return the widest level that yields a unique (1:1) match */
++	if (name_orig == 1 && name_patched == 1)
++		match = name_last;
++	else if (scope_orig == 1 && scope_patched == 1)
++		match = scope_last;
++	else if (file_orig == 1 && file_patched == 1)
++		match = file_last;
++	else if (csum_orig == 1 && csum_patched == 1)
++		match = csum_last;
++
++	return match;
++}
++
++struct llvm_suffix_pair {
++	struct hlist_node hash;
++	const char *orig;
++	const char *patched;
++};
++
++static DECLARE_HASHTABLE(suffix_map, 7);
++
++/*
++ * Build a mapping of known orig-to-patched LLVM suffixes based on
++ * already-correlated symbol pairs.  All promoted symbols from the same TU
++ * share the same .llvm.<hash> suffix, so one correlated pair seeds the map
++ * for the entire TU.
++ */
++static int update_suffix_map(struct elf *elf)
++{
++	struct llvm_suffix_pair *entry;
++	struct symbol *sym;
++
++	for_each_sym(elf, sym) {
++		const char *s1, *s2;
++		bool found;
++
++		if (!sym->twin)
++			continue;
++
++		s1 = llvm_suffix(sym->name);
++		s2 = llvm_suffix(sym->twin->name);
++
++		if (!s1 || !s2)
++			continue;
++
++		found = false;
++		hash_for_each_possible(suffix_map, entry, hash, str_hash(s1)) {
++			if (!strcmp(entry->orig, s1)) {
++				found = true;
++				break;
++			}
++		}
++		if (found)
++			continue;
++
++		entry = calloc(1, sizeof(*entry));
++		if (!entry) {
++			ERROR_GLIBC("calloc");
++			return -1;
++		}
++
++		entry->orig = s1;
++		entry->patched = s2;
++		hash_add(suffix_map, &entry->hash, str_hash(s1));
+ 	}
+ 
+-	*out_sym = result;
  	return 0;
  }
  
-@@ -213,7 +266,7 @@ int cmd_klp_checksum(int argc, const char **argv)
- 	int ret;
+ /*
+- * For each symbol in the original kernel, find its corresponding "twin" in the
+- * patched kernel.
++ * Match by translating the symbol's .llvm.<hash> suffix through the suffix
++ * map to find the corresponding hash suffix for the patched object.
++ *
++ * Example: In the original kernel, TU drivers/base/core.c contains
++ * foo.llvm.12345 and bar.llvm.12345 (same TU, same hash).  After patching,
++ * they become foo.llvm.67890 and bar.llvm.67890.  If foo was already
++ * correlated by find_twin() (e.g., unique by name), the suffix map records
++ * .llvm.12345 -> .llvm.67890.  When processing bar.llvm.12345, this
++ * function looks up .llvm.12345, gets .llvm.67890, constructs the name
++ * bar.llvm.67890, and finds the match.
++ */
++static struct symbol *find_twin_suffixed(struct elf *elf, struct symbol *sym1)
++{
++	const char *suffix, *patched_suffix = NULL;
++	struct symbol *sym2, *match = NULL;
++	char name[SYM_NAME_LEN];
++	struct llvm_suffix_pair *entry;
++	int count = 0;
++
++	suffix = llvm_suffix(sym1->name);
++	if (!suffix)
++		return NULL;
++
++	hash_for_each_possible(suffix_map, entry, hash, str_hash(suffix)) {
++		if (!strcmp(entry->orig, suffix)) {
++			patched_suffix = entry->patched;
++			break;
++		}
++	}
++	if (!patched_suffix)
++		return NULL;
++
++	if (snprintf_check(name, SYM_NAME_LEN, "%s%s",
++			   sym1->demangled_name, patched_suffix))
++		return NULL;
++
++	for_each_sym_by_name(elf, name, sym2) {
++		if (sym2->twin || sym1->type != sym2->type || dont_correlate(sym2))
++			continue;
++		count++;
++		match = sym2;
++	}
++
++	if (count == 1)
++		return match;
++
++	return NULL;
++}
++
++/*
++ * Last-resort positional matching.
++ *
++ * Finds a symbol with the same position in the symbol table among
++ * same-demangled-name candidates, similar to livepatch sympos.  Note that
++ * LLVM-promoted symbols are globals, which come after locals in the symbol
++ * table, so we have to be careful not to compare different scopes.
++ *
++ * Example: arch/x86/events/intel/core.c defines many __quirk variables via
++ * X86_MATCH_*() macros.  In the symbol table they appear as __quirk.90,
++ * __quirk.97, __quirk.101, etc., all with demangled name __quirk, same
++ * scope, and same FILE symbol.  No deterministic filter can distinguish
++ * them, so they're matched by position: the 1st __quirk in orig matches the
++ * 1st in patched, the 2nd matches the 2nd, etc.
++ *
++ * This is less deterministic than the other strategies, so it's done last.
++ */
++static struct symbol *find_twin_positional(struct elfs *e, struct symbol *sym1)
++{
++	unsigned int idx_orig = 0, idx_patched = 0;
++	unsigned int sym1_pos = 0;
++	struct symbol *sym2, *match = NULL;
++
++	for_each_sym_by_demangled_name(e->orig, sym1->demangled_name, sym2) {
++		if (sym2->twin || sym1->type != sym2->type || dont_correlate(sym2) ||
++		    !maybe_same_file(sym1, sym2))
++			continue;
++		if (is_tu_local_sym(sym1) != is_tu_local_sym(sym2) ||
++		    is_llvm_sym(sym1) != is_llvm_sym(sym2))
++			continue;
++		if (sym1 == sym2)
++			sym1_pos = idx_orig;
++		idx_orig++;
++	}
++
++	for_each_sym_by_demangled_name(e->patched, sym1->demangled_name, sym2) {
++		if (sym2->twin || sym1->type != sym2->type || dont_correlate(sym2) ||
++		    !maybe_same_file(sym1, sym2))
++			continue;
++		if (is_tu_local_sym(sym1) != is_tu_local_sym(sym2) ||
++		    is_llvm_sym(sym1) != is_llvm_sym(sym2))
++			continue;
++		if (idx_patched == sym1_pos)
++			match = sym2;
++		idx_patched++;
++	}
++
++	if (idx_orig != idx_patched)
++		return NULL;
++
++	return match;
++}
++
++/*
++ * Correlate symbols between the orig and patched objects.  This is a
++ * prerequisite for detecting changed functions, as well as for properly
++ * translating relocations so they point to the correct symbol.
+  */
+ static int correlate_symbols(struct elfs *e)
+ {
+ 	struct symbol *file1_sym, *file2_sym;
+ 	struct symbol *sym1, *sym2;
++	bool progress;
  
- 	const struct option options[] = {
--		OPT_STRING(0,	"debug-checksum", &opts.debug_checksum,	"funcs", "enable checksum debug output"),
-+		OPT_STRING(0,	"debug-checksum", &opts.debug_checksum,	"syms", "enable checksum debug output"),
- 		OPT_BOOLEAN(0,	"dry-run", &opts.dryrun, "don't write modifications"),
- 		OPT_END(),
- 	};
-diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
-index 95359ad336bb..5f13d759e02f 100644
---- a/tools/objtool/klp-diff.c
-+++ b/tools/objtool/klp-diff.c
-@@ -201,7 +201,7 @@ static int read_sym_checksums(struct elf *elf)
- 			return -1;
- 		}
++	/* Correlate FILE symbols */
+ 	file1_sym = first_file_symbol(e->orig);
+ 	file2_sym = first_file_symbol(e->patched);
  
--		if (is_func_sym(sym))
-+		if (is_func_sym(sym) || is_object_sym(sym))
- 			sym->csum.checksum = sym_checksum->checksum;
+-	/*
+-	 * Correlate any locals before the first FILE symbol.  This has been
+-	 * seen when LTO inexplicably strips the initramfs_data.o FILE symbol
+-	 * due to the file only containing data and no code.
+-	 */
+-	for_each_sym(e->orig, sym1) {
+-		if (sym1 == file1_sym || !is_local_sym(sym1))
+-			break;
+-
+-		if (dont_correlate(sym1))
+-			continue;
+-
+-		for_each_sym(e->patched, sym2) {
+-			if (sym2 == file2_sym || !is_local_sym(sym2))
+-				break;
+-
+-			if (sym2->twin || dont_correlate(sym2))
+-				continue;
+-
+-			if (strcmp(sym1->demangled_name, sym2->demangled_name))
+-				continue;
+-
+-			sym1->twin = sym2;
+-			sym2->twin = sym1;
+-			break;
+-		}
+-	}
+-
+-	/* Correlate locals after the first FILE symbol */
+ 	for (; ; file1_sym = next_file_symbol(e->orig, file1_sym),
+ 		 file2_sym = next_file_symbol(e->patched, file2_sym)) {
+ 
+@@ -503,92 +783,52 @@ static int correlate_symbols(struct elfs *e)
+ 
+ 		file1_sym->twin = file2_sym;
+ 		file2_sym->twin = file1_sym;
+-
+-		sym1 = file1_sym;
+-
+-		for_each_sym_continue(e->orig, sym1) {
+-			if (is_file_sym(sym1) || !is_local_sym(sym1))
+-				break;
+-
+-			if (dont_correlate(sym1))
+-				continue;
+-
+-			sym2 = file2_sym;
+-			for_each_sym_continue(e->patched, sym2) {
+-				if (is_file_sym(sym2) || !is_local_sym(sym2))
+-					break;
+-
+-				if (sym2->twin || dont_correlate(sym2))
+-					continue;
+-
+-				if (strcmp(sym1->demangled_name, sym2->demangled_name))
+-					continue;
+-
+-				sym1->twin = sym2;
+-				sym2->twin = sym1;
+-				break;
+-			}
+-		}
  	}
  
+-	/* Correlate globals */
+-	for_each_sym(e->orig, sym1) {
+-		if (sym1->bind == STB_LOCAL)
+-			continue;
+-
+-		sym2 = find_global_symbol_by_name(e->patched, sym1->name);
+-		if (sym2 && !sym2->twin) {
+-			sym1->twin = sym2;
+-			sym2->twin = sym1;
+-		}
+-	}
+ 
+ 	/*
+-	 * Correlate globals with demangled_name.
+-	 * A separate loop is needed because we want to finish all the
+-	 * full name correlations first.
++	 * Correlate in two phases: loop deterministic levels until no more
++	 * progress, then use positional fallback for the rest.  This prevents
++	 * the nondeterministic positional matching from stealing symbols that
++	 * have deterministic matches.
+ 	 */
++	hash_init(suffix_map);
++	do {
++		progress = false;
++		for_each_sym(e->orig, sym1) {
++			if (sym1->twin || dont_correlate(sym1))
++				continue;
++			sym2 = find_twin(e, sym1);
++			if (!sym2)
++				continue;
++			sym1->twin = sym2;
++			sym2->twin = sym1;
++			progress = true;
++		}
++
++		if (update_suffix_map(e->orig))
++			return -1;
++
++		for_each_sym(e->orig, sym1) {
++			if (sym1->twin || dont_correlate(sym1))
++				continue;
++			sym2 = find_twin_suffixed(e->patched, sym1);
++			if (!sym2)
++				continue;
++			sym1->twin = sym2;
++			sym2->twin = sym1;
++			progress = true;
++		}
++	} while (progress);
++
+ 	for_each_sym(e->orig, sym1) {
+-		if (sym1->bind == STB_LOCAL || sym1->twin)
++		if (sym1->twin || dont_correlate(sym1))
+ 			continue;
+-
+-		if (find_global_symbol_by_demangled_name(e->patched, sym1, &sym2))
+-			return -1;
+-
+-		if (sym2 && !sym2->twin) {
+-			sym1->twin = sym2;
+-			sym2->twin = sym1;
+-		}
+-	}
+-
+-	/* Correlate original locals with patched globals */
+-	for_each_sym(e->orig, sym1) {
+-		if (sym1->twin || dont_correlate(sym1) || !is_local_sym(sym1))
++		sym2 = find_twin_positional(e, sym1);
++		if (!sym2)
+ 			continue;
+-
+-		sym2 = find_global_symbol_by_name(e->patched, sym1->name);
+-		if (!sym2 && find_global_symbol_by_demangled_name(e->patched, sym1, &sym2))
+-			return -1;
+-
+-		if (sym2 && !sym2->twin) {
+-			sym1->twin = sym2;
+-			sym2->twin = sym1;
+-		}
+-	}
+-
+-	/* Correlate original globals with patched locals */
+-	for_each_sym(e->patched, sym2) {
+-		if (sym2->twin || dont_correlate(sym2) || !is_local_sym(sym2))
+-			continue;
+-
+-		sym1 = find_global_symbol_by_name(e->orig, sym2->name);
+-		if (!sym1 && find_global_symbol_by_demangled_name(e->orig, sym2, &sym1))
+-			return -1;
+-
+-		if (sym1 && !sym1->twin) {
+-			sym2->twin = sym1;
+-			sym1->twin = sym2;
+-		}
++		sym1->twin = sym2;
++		sym2->twin = sym1;
+ 	}
+ 
+ 	for_each_sym(e->orig, sym1) {
+@@ -800,19 +1040,24 @@ static void mark_included_function(struct symbol *func)
+  */
+ static int mark_changed_functions(struct elfs *e)
+ {
+-	struct symbol *sym_orig, *patched_sym;
++	struct symbol *orig_sym, *patched_sym;
+ 	bool changed = false;
+ 
+ 	/* Find changed functions */
+-	for_each_sym(e->orig, sym_orig) {
+-		if (!is_func_sym(sym_orig) || dont_correlate(sym_orig))
++	for_each_sym(e->orig, orig_sym) {
++		if (dont_correlate(orig_sym))
+ 			continue;
+ 
+-		patched_sym = sym_orig->twin;
++		patched_sym = orig_sym->twin;
+ 		if (!patched_sym)
+ 			continue;
+ 
+-		if (sym_orig->csum.checksum != patched_sym->csum.checksum) {
++		if (orig_sym->csum.checksum != patched_sym->csum.checksum) {
++			if (!is_func_sym(orig_sym)) {
++				ERROR("changed data: %s", orig_sym->name);
++				return -1;
++			}
++
+ 			patched_sym->changed = 1;
+ 			mark_included_function(patched_sym);
+ 			changed = true;
+@@ -837,7 +1082,7 @@ static int mark_changed_functions(struct elfs *e)
+ 			printf("%s: changed function: %s\n", objname, patched_sym->name);
+ 	}
+ 
+-	return !changed ? -1 : 0;
++	return !changed ? 1 : 0;
+ }
+ 
+ static int clone_included_functions(struct elfs *e)
+@@ -1870,6 +2115,7 @@ static int copy_import_ns(struct elfs *e)
+ int cmd_klp_diff(int argc, const char **argv)
+ {
+ 	struct elfs e = {0};
++	int ret;
+ 
+ 	argc = parse_options(argc, argv, klp_diff_options, klp_diff_usage, 0);
+ 	if (argc != 3)
+@@ -1896,7 +2142,10 @@ int cmd_klp_diff(int argc, const char **argv)
+ 	if (correlate_symbols(&e))
+ 		return -1;
+ 
+-	if (mark_changed_functions(&e))
++	ret = mark_changed_functions(&e);
++	if (ret < 0)
++		return -1;
++	if (ret > 0)
+ 		return 0;
+ 
+ 	e.out = elf_create_file(&e.orig->ehdr, argv[2]);
 -- 
 2.53.0
 
