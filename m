@@ -1,85 +1,85 @@
-Return-Path: <live-patching+bounces-2685-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2686-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id UEBMMn+X9GnqCgIAu9opvQ
-	(envelope-from <live-patching+bounces-2685-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 14:07:27 +0200
+	id uMtDLo6Y9GnTCgIAu9opvQ
+	(envelope-from <live-patching+bounces-2686-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 14:11:58 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
-	by mail.lfdr.de (Postfix) with ESMTPS id E22024AC348
-	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 14:07:26 +0200 (CEST)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id F32184AC450
+	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 14:11:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id F0AD2300C936
-	for <lists+live-patching@lfdr.de>; Fri,  1 May 2026 12:07:22 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 9FB42300DE1B
+	for <lists+live-patching@lfdr.de>; Fri,  1 May 2026 12:11:56 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 967BE39FCC8;
-	Fri,  1 May 2026 12:07:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B1B4F3A1686;
+	Fri,  1 May 2026 12:11:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aLPRA+Hx"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WIJL+2lP"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73BCE33CE92
-	for <live-patching@vger.kernel.org>; Fri,  1 May 2026 12:07:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F30D350D7D
+	for <live-patching@vger.kernel.org>; Fri,  1 May 2026 12:11:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777637242; cv=none; b=pzt2m36nCahjLAFzxCRLaC9+U6bqbKQN1IR1mGzAc84I0ohwuzBAhCj9jFdZM8OSye9KuJMF9jnjc515/oK3+F5EuSRG6ELCRmUl+ol6Gc3/RlVP4pXIP+A/da+HHG4WR7JsqdrLlqBPh0N2PZsKCm06U8yVIpHurg6CK5EPtHg=
+	t=1777637515; cv=none; b=vFwGQVEr71VqxOEeVtrdWC/7i86PBRCmGjL4ChuD1ZZnqopbO4ddFG20vurSs32K5WQsCrIwwKY67OYkTQBUSK/Vlqm0XOn2W+FX1ZBYS6vgVNPEk5KXDNpO0eyKvo1nCF60f4P6pOyNPXiL3GBeCEiaKcCz+gjpeiXi/nvwYpI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777637242; c=relaxed/simple;
-	bh=vLzg6K724O3WBnQdU3VJjcbFlkyG86EKEkMglLS3WPY=;
+	s=arc-20240116; t=1777637515; c=relaxed/simple;
+	bh=SVvP/ecKODF0zZgyRYxvPHtPshFhLojxvOWyaReHGr4=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=uIj6MhqNXGxmwXD8urCKwm8GEXerSeL017F8fpbR7TxXAV9vAt90Voj4/DXv4hxLVSMXfzUYi4G9IjCZnz/zY/s+i9q1STGBB8NffLPgndefe4jSTA2fMYtfnmucnVe9WScXAkTlH0dmho/fpHfwAt1oyPG6ALbnk/gO0MpEFII=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aLPRA+Hx; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54CBEC2BCB4
-	for <live-patching@vger.kernel.org>; Fri,  1 May 2026 12:07:22 +0000 (UTC)
+	 To:Cc:Content-Type; b=SX5TuzzcMmDPePOCeuiWaHW4nGSvknUNpsb9ycfd+pzRcg9bPt2eV4mw+0jGQ2UKYkY6b6nIzR8A8tWHQGNKn4o+39+IeKhG/4b6UaSBxjuOT3wAnPmeE9kXKheElSHx4wTmejPD80QvZ7JYt51o4ZhCIJqITx1YMbMX1ZRa5Uo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WIJL+2lP; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F650C2BCC7
+	for <live-patching@vger.kernel.org>; Fri,  1 May 2026 12:11:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777637242;
-	bh=vLzg6K724O3WBnQdU3VJjcbFlkyG86EKEkMglLS3WPY=;
+	s=k20201202; t=1777637515;
+	bh=SVvP/ecKODF0zZgyRYxvPHtPshFhLojxvOWyaReHGr4=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=aLPRA+Hx/P3NWxvejHS3sr6O0ra71kDXKJy7ZC5noufR8yQoBOZKdii8ltI1zEHQ1
-	 2nlwzSzL3J8oNHL/yUYSR/eUgCXgPSTBgzPhwmPUJHQ0SMBppE4etpwD7PjEo5cYn/
-	 Ei8gdUd2UFdP61/UUOc4pcMfcV01DNarkkRfROL2uJ4kFuFkjh1r0N1koLAwbL3dE8
-	 6IOLvr3ROUu4U4Y9Jt1RjSpqanyD90ogeOoXAuW27LFY4I//2Y/FDxPrSBYQognI1g
-	 SvDXfntmf8WbuBQLDNvkRNl4hKDQm0Rigm/5AvDlwTLNfp+rVzQdRzYQv/zszhzbwh
-	 vTz1tYXTPW2OQ==
-Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-8c70b5594f4so190260785a.1
-        for <live-patching@vger.kernel.org>; Fri, 01 May 2026 05:07:22 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ8e6OXQO0E2hmp/kuNRjCMXdQIdGBtUhsRjNQMpC3Zrt/YUSeASloIGcSKTBtO5CEuF0z5AC5YrE94n31KA@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx+26HjtsDaGbjG0gNPHHMm6xCryYI1YdTr0BwbTMiatovhFCyo
-	ImWCv/L9FEflk59iFwXDb+dr1qd4aF+P3WFPnY1pYa5VORh6KoZYXrbj1vx6iSdmVqPOdHKZagB
-	asG7ljC351TbsLLng/e65yAabkTr1PuU=
-X-Received: by 2002:a05:620a:460a:b0:8d6:6db0:88de with SMTP id
- af79cd13be357-8fabbda6a40mr845838185a.44.1777637241556; Fri, 01 May 2026
- 05:07:21 -0700 (PDT)
+	b=WIJL+2lPYw6u06Y/y3xOuE8P5fEE+5yrPZEuN1nFGF3JEKjLwJGVQpdtvwUd1kNAg
+	 GVDNO8amNC00Zg+7jh5IFmhLttvC9O5UELdtKV6hw79E9L6XImK5zFzCrvLsZpJXx6
+	 Q8RC3iroYXGLOxxlYnzOvRhr2NZRJxY1z+Sz9tgmZWfpNRLwyPUvXAtboAlHXX7ONC
+	 m96rGuRmnPUzVK1iF3AWs17J+nNwSy95YkGFlu+VVeqB8h9f9hi9FBtfEkHwjtPVDF
+	 yzL81te2R9qRrHVMQQmGn8xzfa808IwS4/wRlJgWivTfu9yZ9QtIrErV6AOLSyMQ4w
+	 zOkxMqoAdEl9Q==
+Received: by mail-qv1-f52.google.com with SMTP id 6a1803df08f44-899d6b7b073so18911956d6.2
+        for <live-patching@vger.kernel.org>; Fri, 01 May 2026 05:11:55 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ9PAPLgHsKeBaxdExgaznqsGL3MOfVdbYd1VHaLIw1FUxiZp2c95S4mgucaQdRkMvYv4JS0INmRu7gTtGoN@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy3pEmuwoJVevXQbU29GKZFIFQQtSrNuAQPVmXsR8eXiN/r5+JX
+	ojY/yLp3z17AavV7dzDaikZplZ/0mqYMKBuenyiG4aeMU5iElxnA288jP47HB/6vkO/ThCJjs/j
+	1YsWbJ6UnoeJF8n6/5HJaZ3z98JjknIk=
+X-Received: by 2002:ad4:5ec8:0:b0:8ac:a6f7:8a70 with SMTP id
+ 6a1803df08f44-8b3fe732800mr110545006d6.22.1777637514510; Fri, 01 May 2026
+ 05:11:54 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1777575752.git.jpoimboe@kernel.org> <27fcb5a17cc7b6821d8b1c4b9812ebb5b4ee6a5c.1777575752.git.jpoimboe@kernel.org>
-In-Reply-To: <27fcb5a17cc7b6821d8b1c4b9812ebb5b4ee6a5c.1777575752.git.jpoimboe@kernel.org>
+References: <cover.1777575752.git.jpoimboe@kernel.org> <52633c62366f87d9b78ebd77873a08b9ac6d31c8.1777575752.git.jpoimboe@kernel.org>
+In-Reply-To: <52633c62366f87d9b78ebd77873a08b9ac6d31c8.1777575752.git.jpoimboe@kernel.org>
 From: Song Liu <song@kernel.org>
-Date: Fri, 1 May 2026 13:07:08 +0100
-X-Gmail-Original-Message-ID: <CAPhsuW7Pmxt5MbNtmUWcpWxHBLhVK6TLocOmuEkJtHUBkmxueA@mail.gmail.com>
-X-Gm-Features: AVHnY4LbNxT6noq7tHhfhXv5hfXEee0PL65aXaUTk3Jd60I3H8-J-6RnnE6SW5o
-Message-ID: <CAPhsuW7Pmxt5MbNtmUWcpWxHBLhVK6TLocOmuEkJtHUBkmxueA@mail.gmail.com>
-Subject: Re: [PATCH v2 46/53] objtool/klp: Rewrite symbol correlation algorithm
+Date: Fri, 1 May 2026 13:11:40 +0100
+X-Gmail-Original-Message-ID: <CAPhsuW55WdF+S4ykt+EiyHzpsOaD_evq61c33qTBensGmiqMow@mail.gmail.com>
+X-Gm-Features: AVHnY4Ijci4n67xPrGimN-2Vs0uY8cJ72WINHlxdoY60I0d7M3dscyPyySpyXTg
+Message-ID: <CAPhsuW55WdF+S4ykt+EiyHzpsOaD_evq61c33qTBensGmiqMow@mail.gmail.com>
+Subject: Re: [PATCH v2 48/53] objtool: Add insn_sym() helper
 To: Josh Poimboeuf <jpoimboe@kernel.org>
 Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
 	live-patching@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, 
 	Joe Lawrence <joe.lawrence@redhat.com>, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Rspamd-Queue-Id: E22024AC348
+X-Rspamd-Queue-Id: F32184AC450
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-2.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
-	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
@@ -88,7 +88,7 @@ X-Spamd-Result: default: False [-2.16 / 15.00];
 	DKIM_TRACE(0.00)[kernel.org:+];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2685-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2686-lists,live-patching=lfdr.de];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
 	MISSING_XM_UA(0.00)[];
 	FROM_HAS_DN(0.00)[];
@@ -96,46 +96,31 @@ X-Spamd-Result: default: False [-2.16 / 15.00];
 	RCVD_COUNT_FIVE(0.00)[5];
 	PRECEDENCE_BULK(0.00)[];
 	FROM_NEQ_ENVFROM(0.00)[song@kernel.org,live-patching@vger.kernel.org];
-	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
+	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
 	NEURAL_HAM(-0.00)[-1.000];
 	TAGGED_RCPT(0.00)[live-patching];
 	RCPT_COUNT_SEVEN(0.00)[8];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[mail.gmail.com:mid,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,mail.gmail.com:mid]
 
 On Fri, May 1, 2026 at 5:09=E2=80=AFAM Josh Poimboeuf <jpoimboe@kernel.org>=
  wrote:
 >
-> Rewrite the symbol correlation code, using a tiered list of
-> deterministic strategies in a loop.  For duplicately named symbols, each
-> tier applies a filter with the goal of finding a 1:1 deterministic
-> correlation between the original and patched version of the symbol.
+> Alternative replacement instructions awkwardly have insn->sym set to the
+> function they get patched to rather than the symbol (or rather lack
+> thereof) they belong to in the file.
 >
-> The three matching strategies are:
+> This makes it difficult to know where a given instruction actually
+> lives.
 >
->   find_twin(): A funnel of progressively tighter filters.  Candidates
->   with the same demangled name are counted at four levels: name, scope
->   (local-vs-global), file (strict file association), and checksum
->   (unchanged functions).  The widest level that yields a 1:1 match wins,
->   narrower levels are only tried when the wider level is ambiguous.
+> Add a new insn_sym() helper which preserves the existing semantic of
+> insn->sym.  Rename insn->sym to insn->_sym, which contains the actual
+> ELF binary symbol (or NULL, for alternative replacements) an instruction
+> lives in.
 >
->   find_twin_suffixed(): Uses already-correlated LLVM symbol pairs to map
->   .llvm.<hash> suffixes from orig to patched.  Because all promoted
->   symbols from the same TU share the same hash, one correlated pair
->   seeds the mapping for the entire TU.
->
->   find_twin_positional(): Last resort, matches symbols by position among
->   same-named candidates, similar to livepatch sympos.  Used for data
->   objects like __quirk variables where no deterministic filter can
->   distinguish the candidates.
->
-> Overall this works much better than the existing algorithm, particularly
-> with LTO kernels.
+> The private insn->_sym value will be needed for a subsequent patch.
 >
 > Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 
 Acked-by: Song Liu <song@kernel.org>
-
-Thanks for improving the correlation algorithm and adding detailed
-comments about all these scenarios!
 
