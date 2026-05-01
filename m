@@ -1,49 +1,49 @@
-Return-Path: <live-patching+bounces-2653-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2654-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id 4CZlIC8p9GkH+wEAu9opvQ
-	(envelope-from <live-patching+bounces-2653-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:16:47 +0200
+	id eCpIFdQp9GlA+wEAu9opvQ
+	(envelope-from <live-patching+bounces-2654-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:19:32 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sin.lore.kernel.org (sin.lore.kernel.org [IPv6:2600:3c15:e001:75::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 835A94AA2F4
-	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:16:46 +0200 (CEST)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id AB2E54AA3A8
+	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:19:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sin.lore.kernel.org (Postfix) with ESMTP id 9756230445DA
-	for <lists+live-patching@lfdr.de>; Fri,  1 May 2026 04:10:56 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id A7551309E2CC
+	for <lists+live-patching@lfdr.de>; Fri,  1 May 2026 04:11:02 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6E573361DA2;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D85CB363C53;
 	Fri,  1 May 2026 04:09:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QB5oC6EX"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mPGiSoAV"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A6DA3612E2;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B590D31283E;
 	Fri,  1 May 2026 04:09:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777608547; cv=none; b=HXgSJsqpvRPOh1lt74/nL850YxyAlusmR+doBdLG3zamwmMvYO/GUEcN0FID+5AjApPxxs2zvx65kZFB1e3bxibaP/DQ6v9gXrMb+a9dZzSnqliQwJorHMxu7Sc1GPljeJBDJzk5mCsNG26ZH4BSNP3mIULxe3cBunIakQ7zOk0=
+	t=1777608547; cv=none; b=MFcD0Lc45miTKylysw/FTF9Fj0/0fqFjDsYLApjQDt4NSxd6RbHErXn90W5TE8jlGNCTWH1nDeqdIa8KUmVPrmjVe5gdIhuJshY9l7M8oAABCEUlLKPznLsGgOuaF4saAhdm4mPcvyVkGSpxsIVLwJc/ml2Hos+o42k6mwv92oo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1777608547; c=relaxed/simple;
-	bh=A20AvTEi6L7BTg1dmFVmmAv0wnARcCkDo3eAoHGEx18=;
+	bh=U1/zXTGHmGDeZk5zmEiLTowFn8oD8+hWbudhQLdzfVA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=BAjtPUjx/Aw3vhtBngDIOPLRCd1tqVamb7WsO7HzmH7j7A3Sf+5vABkV0mksGkQy5aiMNE3uqDkt5G9BMg0ro4RqGaDaf+hTyFjqPEwUubxGsEvFz9KVCQ1OVnBfZzxbjrmGli4iQugsFTR3Xg0faO2zvZa0fUqAr6VpWy79f3c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QB5oC6EX; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA183C2BCB7;
-	Fri,  1 May 2026 04:09:06 +0000 (UTC)
+	 MIME-Version; b=oOQQT3MCqyWXPFV3IUkb4Qyre1KltTAi/r8gR0vGS6U2XbhXAg5gHehhPA0Ku4FVJY90cFaP+VsiJpJpHSoj3J5bh7yav6Jtp9aJdUuJ97uKW5z55zGM7V/QtWdPYFUFXz886j/BC/yeW6Douem+nIwry6wbMUGTilrOmiNo98o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mPGiSoAV; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5526EC2BCB9;
+	Fri,  1 May 2026 04:09:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1777608547;
-	bh=A20AvTEi6L7BTg1dmFVmmAv0wnARcCkDo3eAoHGEx18=;
+	bh=U1/zXTGHmGDeZk5zmEiLTowFn8oD8+hWbudhQLdzfVA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=QB5oC6EXQuZuIm1Lm526qA7zPBS/EdBCRZasdGQirjZkD187LtH4hegD3QrY4Uuzx
-	 WzCcAx2hkcR4WD4BalX17dCnMQSllG2/1xu/SSo1aOF2ovxPP9uWykEKz6hiebv1ut
-	 RIu9XTRi0tybY9uggfR0AN+ZyzMuHEvSmiVAJmJCAfKX1j35/8v/qhyn7cn83ORRbr
-	 vRHSWqRY3uk/RbCYFaegcmGTQHKwcl4X+DSdrOe0RH9zU70Ytp8+9unQXduyTnTKsA
-	 l7F4a3w9TE/n6Bi18MNCGzjO2qH8iIcNZKvkVN+uyyBGr7ch7KQW7RMkVkZ1rNm4vw
-	 Pu1kE8716wpKw==
+	b=mPGiSoAVujosCaTs7qHYIAu7SdocyUdJIJp0ZbHB52+AinDT8Gknd14LlPrsoZoa7
+	 hKq5Ffeync370AxGSPmVbC3As+T/96vu68N69edcCrA6u3DzDHKDGfgL/RfgKBWaK7
+	 rvD3XXXh0nvIARIGTX2SPrwRH71yD6YlW1Iu09AdQFXM+Yw3joqI/z4yVOtRQIzfeP
+	 55lp9OE8r6Oedzsm1rzWRXEsmfi4gTcnRoDRfTMBPIcZxTZ68SIBOxjGeId+ug8v2k
+	 3TX6jmmJJ09ilmMx5IC2IxChGuF5Bm5Ba6wFHvdxCMm7FmsbGbngX4yVO++23p77Of
+	 XgMEpDggOpd/A==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -53,9 +53,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Song Liu <song@kernel.org>,
 	Miroslav Benes <mbenes@suse.cz>,
 	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH v2 36/53] objtool/klp: Handle Clang .data..Lanon anonymous data sections
-Date: Thu, 30 Apr 2026 21:08:24 -0700
-Message-ID: <a51923df411316860fd18a0db85fdf465d36ddb0.1777575752.git.jpoimboe@kernel.org>
+Subject: [PATCH v2 37/53] objtool: Add is_alias_sym() helper
+Date: Thu, 30 Apr 2026 21:08:25 -0700
+Message-ID: <87cfee570bfffb35961d9b6e5abfbfeae6d903dc.1777575752.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <cover.1777575752.git.jpoimboe@kernel.org>
 References: <cover.1777575752.git.jpoimboe@kernel.org>
@@ -66,7 +66,7 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 835A94AA2F4
+X-Rspamd-Queue-Id: AB2E54AA3A8
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-0.66 / 15.00];
@@ -74,13 +74,13 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	MID_CONTAINS_FROM(1.00)[];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
 	R_MISSING_CHARSET(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c15:e001:75::/64:c];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2653-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2654-lists,live-patching=lfdr.de];
 	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	FROM_HAS_DN(0.00)[];
@@ -94,44 +94,68 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	TAGGED_RCPT(0.00)[live-patching];
 	TO_DN_SOME(0.00)[];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:2600:3c15::/32, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
+	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,infradead.org:email]
 
-Clang generates anonymous data sections named .data..Lanon.<hash>.
-These need section-symbol references in the same way as .data..Lubsan
-(GCC) and .data..L__unnamed_ (Clang UBSAN) sections.  Without this,
-convert_reloc_sym() fails when processing relocations that reference
-these sections.
+Improve readability with a new is_alias_sym() helper.
 
+No functional changes intended.
+
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Acked-by: Song Liu <song@kernel.org>
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/klp-diff.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ tools/objtool/check.c               | 6 +++---
+ tools/objtool/include/objtool/elf.h | 5 +++++
+ 2 files changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
-index 463b6daa5234..7e58ef36f805 100644
---- a/tools/objtool/klp-diff.c
-+++ b/tools/objtool/klp-diff.c
-@@ -1030,14 +1030,15 @@ static int convert_reloc_secsym_to_sym(struct elf *elf, struct reloc *reloc)
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index f020f21f94a7..6c94eb32c090 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -491,7 +491,7 @@ static int decode_instructions(struct objtool_file *file)
+ 				return -1;
+ 			}
+ 
+-			if (func->embedded_insn || func->alias != func)
++			if (func->embedded_insn || is_alias_sym(func))
+ 				continue;
+ 
+ 			if (!find_insn(file, sec, func->offset)) {
+@@ -2229,7 +2229,7 @@ static int add_jump_table_alts(struct objtool_file *file)
+ 		return 0;
+ 
+ 	for_each_sym(file->elf, func) {
+-		if (!is_func_sym(func) || func->alias != func)
++		if (!is_func_sym(func) || is_alias_sym(func))
+ 			continue;
+ 
+ 		mark_func_jump_tables(file, func);
+@@ -4523,7 +4523,7 @@ static int validate_symbol(struct objtool_file *file, struct section *sec,
+ 		return 1;
+ 	}
+ 
+-	if (sym->pfunc != sym || sym->alias != sym)
++	if (sym->pfunc != sym || is_alias_sym(sym))
+ 		return 0;
+ 
+ 	insn = find_insn(file, sec, sym->offset);
+diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
+index 8a543cea43b9..ccc72a692d9a 100644
+--- a/tools/objtool/include/objtool/elf.h
++++ b/tools/objtool/include/objtool/elf.h
+@@ -298,6 +298,11 @@ static inline bool is_local_sym(struct symbol *sym)
+ 	return sym->bind == STB_LOCAL;
  }
  
- /*
-- * Sections with anonymous or uncorrelated data (strings, UBSAN data)
-- * need section symbol references.
-+ * Sections with anonymous or uncorrelated data (strings, UBSAN data, Clang
-+ * anonymous constants) need section symbol references.
-  */
- static bool is_uncorrelated_section(struct section *sec)
++static inline bool is_alias_sym(struct symbol *sym)
++{
++	return sym->alias != sym;
++}
++
+ static inline bool is_prefix_func(struct symbol *sym)
  {
- 	return is_string_sec(sec) ||
- 	       strstarts(sec->name, ".data..Lubsan") ||		/* GCC */
--	       strstarts(sec->name, ".data..L__unnamed_");	/* Clang */
-+	       strstarts(sec->name, ".data..L__unnamed_") ||	/* Clang */
-+	       strstarts(sec->name, ".data..Lanon.");		/* Clang */
- }
- 
- /*
+ 	return sym->prefix;
 -- 
 2.53.0
 
