@@ -1,49 +1,49 @@
-Return-Path: <live-patching+bounces-2642-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2644-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id 4IDmCEco9GkH+wEAu9opvQ
-	(envelope-from <live-patching+bounces-2642-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:12:55 +0200
+	id EF0mDX4o9GkH+wEAu9opvQ
+	(envelope-from <live-patching+bounces-2644-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:13:50 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
-	by mail.lfdr.de (Postfix) with ESMTPS id A67294AA1DC
-	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:12:54 +0200 (CEST)
+Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
+	by mail.lfdr.de (Postfix) with ESMTPS id 31E094AA249
+	for <lists+live-patching@lfdr.de>; Fri, 01 May 2026 06:13:49 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id D45C030792EB
-	for <lists+live-patching@lfdr.de>; Fri,  1 May 2026 04:09:56 +0000 (UTC)
+	by sin.lore.kernel.org (Postfix) with ESMTP id E5801302DB52
+	for <lists+live-patching@lfdr.de>; Fri,  1 May 2026 04:10:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D5E0734107D;
-	Fri,  1 May 2026 04:09:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CD079346A10;
+	Fri,  1 May 2026 04:09:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gr0NV+ou"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gCksWzq5"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B28D1340283;
-	Fri,  1 May 2026 04:09:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4BCE345741;
+	Fri,  1 May 2026 04:09:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777608541; cv=none; b=V2JDKBsTQqczex8mJbV2mTBIMsHBP1FjYb3+cEkwIjHLXpP9ggKLU21WIBwOvUmWKe3UcEPDvigwYXzz5061+Vf9XWaLp/f8wee03K41LGGKuj2Q0A3EHFpT4LhGoiOv5mDauadOhTR3w2SgMVDaSuZTgwUO4OLIaIgs9juDehM=
+	t=1777608542; cv=none; b=FVnuEVIoF1MYlCqTVnnQUdr56i9eFEgUO59qr8GhxgxEhSG5XcLKnd5ZxlUcyVZbOBLd58v5RfCV5wS4e0po8Y+dT4nnU5XXdijCv6r/pyzIHm9wxmjaO6IhxhlxVmIneSuy3LY0LQ/LPUZeej+FUFdjpD7RI3WdlqgTJpldGjw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777608541; c=relaxed/simple;
-	bh=LeLdvkaGeI52MJHHJIpetvWxTUeyqHasZJ3P0shfBW0=;
+	s=arc-20240116; t=1777608542; c=relaxed/simple;
+	bh=D8tuLnt0jX5cK8j/CyuHFHRPT9Nz4vaerNpKXeVU5Go=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=LJxfjlC+OLZLtWu26RyjJIowLrFF1c/gl3WXJok6ohcuRRH8KoJdNbDWafWVsClLIsdQ/yp1fMzTrBh4fuOBrxOj2v3JAbiMUTV+nMScIXP7YwsRLkhxq7MjWF99V3F/zQeNL8rb2Xh6xRLvRmSMzHtcLIAty+dskPj0zseUkpg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gr0NV+ou; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44782C2BCB8;
+	 MIME-Version; b=pA32JptPIGyD4oz6ikvRw9ZOOw1HlF6HH1Z0xlepF9q16Owm0mA8H8tO+et13WN7nHBK++0CaLzdmGmg4L6wQpr6nIqyOEXuTvpuYPfnNEOO3v6qrc1grZd2wy3njdIoblW0+Y2aSGWtN9OY9YmjHGHNqwQJmK3v1RF00XsDxo0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gCksWzq5; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B492EC2BCB7;
 	Fri,  1 May 2026 04:09:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777608541;
-	bh=LeLdvkaGeI52MJHHJIpetvWxTUeyqHasZJ3P0shfBW0=;
+	s=k20201202; t=1777608542;
+	bh=D8tuLnt0jX5cK8j/CyuHFHRPT9Nz4vaerNpKXeVU5Go=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=gr0NV+oueqyr35nIEvXkHWv507vcgMgN/O0z8qg7U46qhn+uWqlkFy/U+hTAtGiYL
-	 Gx/qnhMmTyoJsCFJZnGrl+t2cb6KcMRXjF+hBBWC3M+RFQ2SJK1N5EBuBNnoipaC/o
-	 up/JJMPzpLO2VRrhns/GXOTpTMieW/Uw6rhioyXvhU/+mZQhv4b6xzIR9zVVPAFBBw
-	 eYaBUcblOC+/8TNp58W4YYXzK3sYAJFiiFJmESd+qIDY8ZTgk3IS/99K6I4+11OLEA
-	 s401gVXx5SS4R5vcEdDSxz+Soqpxu1mdtwHy6ezwZfbOQp3YdHM6RGwq4ivvyDe/Eu
-	 9SKkm1CxvORLw==
+	b=gCksWzq5hEn3kWdUUsiugJrXa5dCZJu+k/RH5emEoVH5fef/AwP/P0sEQrX2QZXiN
+	 q4RDu5wsS9GBLmckWvD1lOwwAJmR7EwoCEYbRfthm2zoilgtnxrqkiNwIcdvWAjHCU
+	 lAdWLrwhd5oKNPjgxwxz9D69eq1P8ulpOe7mBaax/FsEcZoQeap+yVYNsFcsN5AHCo
+	 Iobyv2pr93q42L4MGOztQeP9Ju8pRfmaXmqzMJMt1OfDtljinLUrHEmZ5GpGf4clQg
+	 8j6lkEAcsUxGPoJCWDdYFJfe6TZCGF4zm6YPG7npIOQ7iW5PFpz7T1fYe5rWZcv27q
+	 eDsFKsgveiRZA==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -53,9 +53,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Song Liu <song@kernel.org>,
 	Miroslav Benes <mbenes@suse.cz>,
 	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH v2 24/53] klp-build: Fix checksum comparison for changed offsets
-Date: Thu, 30 Apr 2026 21:08:12 -0700
-Message-ID: <6392d4f0c8837ccc0498a1c79a2d9534dacfce82.1777575752.git.jpoimboe@kernel.org>
+Subject: [PATCH v2 25/53] klp-build: Don't use errexit
+Date: Thu, 30 Apr 2026 21:08:13 -0700
+Message-ID: <8f13b66e0fedccde18f9f740f09c3b0705c29deb.1777575752.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <cover.1777575752.git.jpoimboe@kernel.org>
 References: <cover.1777575752.git.jpoimboe@kernel.org>
@@ -66,7 +66,7 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: A67294AA1DC
+X-Rspamd-Queue-Id: 31E094AA249
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-0.66 / 15.00];
@@ -74,13 +74,13 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	MID_CONTAINS_FROM(1.00)[];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
 	R_MISSING_CHARSET(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
+	R_SPF_ALLOW(-0.20)[+ip4:104.64.211.4:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2642-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2644-lists,live-patching=lfdr.de];
 	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	FROM_HAS_DN(0.00)[];
@@ -94,67 +94,48 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	TAGGED_RCPT(0.00)[live-patching];
 	TO_DN_SOME(0.00)[];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
+	ASN(0.00)[asn:63949, ipnet:104.64.192.0/19, country:SG];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:email,sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
 
-The klp-build -f/--show-first-changed feature uses diff to compare
-checksum log lines between original and patched objects.  However, diff
-compares entire lines, including the offset field.  When a function is
-at a different section offset, the offset field differs even though the
-instruction checksum is identical, causing the wrong instruction to be
-printed.
+The errtrace option (combined with the ERR trap) already serves the same
+function (and more) as errexit, so errexit is redundant.  And it has
+more pitfalls.  Remove it.
 
-Only compare the checksum field when looking for the first changed
-instruction.  Also print both the original and patched offsets when they
-differ.
-
-Fixes: 78be9facfb5e ("livepatch/klp-build: Add --show-first-changed option to show function divergence")
+Acked-by: Song Liu <song@kernel.org>
+Reviewed-by: Miroslav Benes <mbenes@suse.cz>
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- scripts/livepatch/klp-build | 30 +++++++++++++++++++++++-------
- 1 file changed, 23 insertions(+), 7 deletions(-)
+ scripts/livepatch/klp-build | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/scripts/livepatch/klp-build b/scripts/livepatch/klp-build
-index e19d93b78fcb..8f0ea56f2640 100755
+index 8f0ea56f2640..68d61b72f39a 100755
 --- a/scripts/livepatch/klp-build
 +++ b/scripts/livepatch/klp-build
-@@ -727,13 +727,29 @@ diff_checksums() {
- 		)
+@@ -3,7 +3,7 @@
+ #
+ # Build a livepatch module
  
- 		for func in ${funcs[$file]}; do
--			diff <( grep0 -E "^DEBUG: .*checksum: $func " "$orig_log"    | sed "s|$ORIG_DIR/||")	\
--			     <( grep0 -E "^DEBUG: .*checksum: $func " "$patched_log" | sed "s|$PATCHED_DIR/||")	\
--				| gawk '/^< DEBUG: / {
--					gsub(/:/, "")
--					printf "%s: %s: %s\n", $3, $5, $6
--					exit
--			}' || true
-+			local -a orig patched
-+			paste <(grep0 -E "^DEBUG: .*checksum: $func " "$orig_log") \
-+			      <(grep0 -E "^DEBUG: .*checksum: $func " "$patched_log") |
-+			while IFS= read -r line; do
-+				read -ra orig <<< "${line%%$'\t'*}"
-+				read -ra patched <<< "${line#*$'\t'}"
-+
-+				if [[ ${#patched[@]} -eq 0 ]]; then
-+					printf "%s: %s: %s (removed)\n" "${orig[1]%:}" "${orig[3]}" "${orig[-2]}"
-+					break
-+				elif [[ ${#orig[@]} -eq 0 ]]; then
-+					printf "%s: %s: %s (added)\n" "${patched[1]%:}" "${patched[3]}" "${patched[-2]}"
-+					break
-+				fi
-+
-+				[[ "${orig[-1]}" == "${patched[-1]}" ]] && continue
-+
-+				printf "%s: %s: %s" "${orig[1]%:}" "${orig[3]}" "${orig[-2]}"
-+				[[ "${orig[-2]}" != "${patched[-2]}" ]] && \
-+					printf " (patched: %s)" "${patched[-2]}"
-+				printf "\n"
-+				break
-+			done || true
- 		done
- 	done
- }
+-# shellcheck disable=SC1090,SC2155
++# shellcheck disable=SC1090,SC2155,SC2164
+ 
+ if (( BASH_VERSINFO[0]  < 4 || \
+      (BASH_VERSINFO[0] == 4 && BASH_VERSINFO[1] < 4) )); then
+@@ -11,13 +11,12 @@ if (( BASH_VERSINFO[0]  < 4 || \
+ 	exit 1
+ fi
+ 
+-set -o errexit
+ set -o errtrace
+ set -o pipefail
+ set -o nounset
+ 
+ # Allow doing 'cmd | mapfile -t array' instead of 'mapfile -t array < <(cmd)'.
+-# This helps keep execution in pipes so pipefail+errexit can catch errors.
++# This helps keep execution in pipes so pipefail+ERR trap can catch errors.
+ shopt -s lastpipe
+ 
+ unset DEBUG_CLONE DIFF_CHECKSUM SKIP_CLEANUP XTRACE
 -- 
 2.53.0
 
