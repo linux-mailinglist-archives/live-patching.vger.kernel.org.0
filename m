@@ -1,84 +1,84 @@
-Return-Path: <live-patching+bounces-2722-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2724-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id 0KWqAhLZ+WnNEgMAu9opvQ
-	(envelope-from <live-patching+bounces-2722-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Tue, 05 May 2026 13:48:34 +0200
+	id EOPHJuTZ+WkIEwMAu9opvQ
+	(envelope-from <live-patching+bounces-2724-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Tue, 05 May 2026 13:52:04 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from tor.lore.kernel.org (tor.lore.kernel.org [IPv6:2600:3c04:e001:36c::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7BC224CCF52
-	for <lists+live-patching@lfdr.de>; Tue, 05 May 2026 13:48:33 +0200 (CEST)
+Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
+	by mail.lfdr.de (Postfix) with ESMTPS id 91A624CD064
+	for <lists+live-patching@lfdr.de>; Tue, 05 May 2026 13:52:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id AAD893092E34
-	for <lists+live-patching@lfdr.de>; Tue,  5 May 2026 11:43:46 +0000 (UTC)
+	by sin.lore.kernel.org (Postfix) with ESMTP id BDD4F303B162
+	for <lists+live-patching@lfdr.de>; Tue,  5 May 2026 11:43:59 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8FABE39022E;
-	Tue,  5 May 2026 11:43:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F3A093859C7;
+	Tue,  5 May 2026 11:43:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="FIcSv933";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="rQBzMBqr";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="FIcSv933";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="rQBzMBqr"
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="IbZIn2+Y";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="ONjGYGzX";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="IbZIn2+Y";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="ONjGYGzX"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C12838F957
-	for <live-patching@vger.kernel.org>; Tue,  5 May 2026 11:43:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73B29391512
+	for <live-patching@vger.kernel.org>; Tue,  5 May 2026 11:43:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777981423; cv=none; b=TRTISULhhVaJGTPIsOzBSZNJbMO/CmrDdjUuMFQQNsvi31/4v5rmHd6qRvbuxnU2XJNbF7cy+1+POmXoRfSXHuQQfCiaOQKVl3WSaihDIMv/MI5aW/nZUaFvgfKbzKp7Wq0GO2hUyckIrNe3Rr2R2kBA3HNovrC01Tf/kLKJZDU=
+	t=1777981436; cv=none; b=KU/IFn/sXb8APlVkSaMH7Knn5L51vO2dUZRXjw/PxQk9jhyev5OIaK4uWVuBg/gaFkIbYTZI1SLXt3F5lOwZjISKKO+PLjvDjuEZ5U9tze1W3cSaHbX05AuQxGFpZgzpJJ+hFkmRz8eJwCRf2eaCN39Fm2UOUh/TKjSBqiRrAbA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777981423; c=relaxed/simple;
-	bh=Jmrc9QDVTQ6TCg2+yMkomIWdO4u+SFaOfX+RU0IQWIM=;
+	s=arc-20240116; t=1777981436; c=relaxed/simple;
+	bh=Q/sF0WZxt5TQZ1Yv1QCNTQi37Acj3AfvATNrtAwmpgo=;
 	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
-	 References:Date:Message-Id; b=nYAfZH8hqMmh90hkGcygzCbbnN2bbf09vYKdJF23Hycl/Br7rr+icKL3D0vLN+kc/TqN1mcECXwu1QY3a87lKscEiiy7z+N6ubTTpOPzMKHBXiEixecn+pEz/qNLq1A63xY1059wnkOUZGWOenopB/zPxNPvG6jgP10d/OaRvdo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=FIcSv933; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=rQBzMBqr; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=FIcSv933; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=rQBzMBqr; arc=none smtp.client-ip=195.135.223.131
+	 References:Date:Message-Id; b=nTeX0GVl7/4kUgSXxY4d+sVMaYjBNeZk0WqOLAWLgJ9BR0qBwoaYEfiQOyCfEuxUmnbXZgQNji50Oje5jbjq6TlLfuKOqhFwUxgyVCLIEcQpUc+mcwR4vT75oE2lIEERdr02tvwVsP9ZaEyPoqq0w5Vm4Mck6i3IEKQ1YHaM4oE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=IbZIn2+Y; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=ONjGYGzX; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=IbZIn2+Y; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=ONjGYGzX; arc=none smtp.client-ip=195.135.223.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Received: from localhost.localdomain (unknown [IPv6:2a07:de40:b2bf:1b::12ef])
-	by smtp-out2.suse.de (Postfix) with ESMTP id 5CC945C164;
+	by smtp-out2.suse.de (Postfix) with ESMTP id D6CCE5C3ED;
 	Tue,  5 May 2026 11:43:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
 	t=1777981420; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=g1F1IMX1vrVQQWv2vSE34FclQt6nEO6RqJePI4CxmdI=;
-	b=FIcSv933kIqZ9/lhh6OUc89XYYsK/tlid/KwZn9TzQL1xKQKYSS6Hn9LHLIes3bqUnm8F2
-	oc0qkU0tjCsDmSPCiYoKIh8j8e+oXezskGzvNMoOVmzQU786jDGe9xtPBxZ+TTxjddXm07
-	SP6typfr7+yeQF3gDcPzM528nTYupnM=
+	bh=YZ1szlbpOQadkRcx/o+CVi+mS+JG1pIFeQQrWov5+o4=;
+	b=IbZIn2+YTdFSyMfhoxFxQpB8yx6UoTdXX/4mbaBiCDRS8o9Jp7XmlgrVZ7U8guiud2Mi5y
+	IYA6Rm2iaw6gYqn/8FLvPvQ/EVgvI8Gs51AOHBlCcNzkdothM5RkTMbnZkiFmKk9ARVuWi
+	DHzbSXhVQaSzsrR7pf/LqPew8Ay7Ays=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
 	s=susede2_ed25519; t=1777981420;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=g1F1IMX1vrVQQWv2vSE34FclQt6nEO6RqJePI4CxmdI=;
-	b=rQBzMBqryorAWCEl50LdDdnGEMc8JnFojCZZzH4UpKdS58SfLP+5oIPNqp4STz5u+Kwug9
-	Bt7wDnQauAw0EjCQ==
+	bh=YZ1szlbpOQadkRcx/o+CVi+mS+JG1pIFeQQrWov5+o4=;
+	b=ONjGYGzXv1XMd18XpWyy8l2fMnG0ZUQcL/H3YrYyrDvGD5kUp9NLW2XCjt38KA3AJbgb9N
+	geqrvBRC/k1055AQ==
 Authentication-Results: smtp-out2.suse.de;
-	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=FIcSv933;
-	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=rQBzMBqr
+	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=IbZIn2+Y;
+	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=ONjGYGzX
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
 	t=1777981420; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=g1F1IMX1vrVQQWv2vSE34FclQt6nEO6RqJePI4CxmdI=;
-	b=FIcSv933kIqZ9/lhh6OUc89XYYsK/tlid/KwZn9TzQL1xKQKYSS6Hn9LHLIes3bqUnm8F2
-	oc0qkU0tjCsDmSPCiYoKIh8j8e+oXezskGzvNMoOVmzQU786jDGe9xtPBxZ+TTxjddXm07
-	SP6typfr7+yeQF3gDcPzM528nTYupnM=
+	bh=YZ1szlbpOQadkRcx/o+CVi+mS+JG1pIFeQQrWov5+o4=;
+	b=IbZIn2+YTdFSyMfhoxFxQpB8yx6UoTdXX/4mbaBiCDRS8o9Jp7XmlgrVZ7U8guiud2Mi5y
+	IYA6Rm2iaw6gYqn/8FLvPvQ/EVgvI8Gs51AOHBlCcNzkdothM5RkTMbnZkiFmKk9ARVuWi
+	DHzbSXhVQaSzsrR7pf/LqPew8Ay7Ays=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
 	s=susede2_ed25519; t=1777981420;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=g1F1IMX1vrVQQWv2vSE34FclQt6nEO6RqJePI4CxmdI=;
-	b=rQBzMBqryorAWCEl50LdDdnGEMc8JnFojCZZzH4UpKdS58SfLP+5oIPNqp4STz5u+Kwug9
-	Bt7wDnQauAw0EjCQ==
+	bh=YZ1szlbpOQadkRcx/o+CVi+mS+JG1pIFeQQrWov5+o4=;
+	b=ONjGYGzXv1XMd18XpWyy8l2fMnG0ZUQcL/H3YrYyrDvGD5kUp9NLW2XCjt38KA3AJbgb9N
+	geqrvBRC/k1055AQ==
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -87,44 +87,44 @@ List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v2 39/53] objtool/klp: Extricate checksum calculation
- from validate_branch()
+Subject: Re: [PATCH v2 41/53] objtool/klp: Add "objtool klp checksum"
+ subcommand
 From: Miroslav Benes <mbenes@suse.cz>
 To: Josh Poimboeuf <jpoimboe@kernel.org>
 Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
  live-patching@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, 
  Joe Lawrence <joe.lawrence@redhat.com>, Song Liu <song@kernel.org>, 
  Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
-In-Reply-To: <a455b47ef57dcc3506cd97e3c2027ac744941cf1.1777575752.git.jpoimboe@kernel.org>
+In-Reply-To: <ce954af546c49aab9a02de2fa85fb6565ebd3aef.1777575752.git.jpoimboe@kernel.org>
 References: <cover.1777575752.git.jpoimboe@kernel.org>
- <a455b47ef57dcc3506cd97e3c2027ac744941cf1.1777575752.git.jpoimboe@kernel.org>
+ <ce954af546c49aab9a02de2fa85fb6565ebd3aef.1777575752.git.jpoimboe@kernel.org>
 Date: Tue, 05 May 2026 13:43:37 +0200
-Message-Id: <177798141795.9921.5118223797275878948.b4-review@b4>
+Message-Id: <177798141796.9921.12051369709257464112.b4-review@b4>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=486; i=mbenes@suse.cz;
- h=from:subject:message-id; bh=Jmrc9QDVTQ6TCg2+yMkomIWdO4u+SFaOfX+RU0IQWIM=;
- b=owEBiQF2/pANAwAIAYF9a9xEqxssAcsmYgBp+dfrshni3wmTdJacU5RYi+HAyqa23cwTwstmA
- oJFcsLpXlGJAU8EAAEIADkWIQTrvUMeMZRtMCl77t2BfWvcRKsbLAUCafnX6xsUgAAAAAAEAA5t
- YW51MiwyLjUrMS4xMiwyLDIACgkQgX1r3ESrGyzPsggAu9ai5GmtZB4AfdqTll8MYQVbrrHSUQL
- 4NUDeopxJmWXysYJLStlEKQNuO5DpMs5U9WqRvbk5Q0BfqyW9vzUyn2cd+VXza43L37Aqc8MNHs
- TqH+P4KUXsiGBpd/AEFWh0DCziS9kE1MOQxSsE870Hs6hStX9RgzBwzJvYD7TrpcYqMyRinVIMs
- Af0OrEfkSPF0I88I0ufyEjMz2n90Kgp2Ig1JTyDTVBt3HH0juE/2A2Brv8AqZEis9/rd/GAPF6e
- eX0ZlbGxtREZMQE39/GRpXGfjbNlsnLeAD+0LomT56xBHIv9pTn/pQSomNtvPczUCe7nu58gZmn
- pkVUlJ1pDTQ==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=570; i=mbenes@suse.cz;
+ h=from:subject:message-id; bh=Q/sF0WZxt5TQZ1Yv1QCNTQi37Acj3AfvATNrtAwmpgo=;
+ b=owEBiQF2/pANAwAIAYF9a9xEqxssAcsmYgBp+dfsFlpbNGTIeHePpjoPwjy52WY/Rq/qmHdp9
+ +LbH9gHuhyJAU8EAAEIADkWIQTrvUMeMZRtMCl77t2BfWvcRKsbLAUCafnX7BsUgAAAAAAEAA5t
+ YW51MiwyLjUrMS4xMiwyLDIACgkQgX1r3ESrGyzExggAidRrsYzo2Lf6JFb2i0YWQ8dqDo5ooUo
+ G7HJRnhY2Wajquc6htdDGBc5k8/8IUpjRCA0CMF6idld/m8/CB7uuYMaVtePip/PY6EHFTYjGkl
+ ibVcKmmJoF6dJbBvPjqryef0yi4/cdJ7AnYTFBNFRIjDjn4jGt1dWC9KbKcE/O2SEJWHZ3AjFtR
+ F62vOVvayWGfng0iqGrafV8JcTcs0OIhVXYVS5mizHfyae46u21N2J8TxWdOEfGtwHLsv2kSOxe
+ ISlnarR5D7iWuZtne4bROMulNFkLyZUPyuC65e4XU1HLSd8TNqn6l/NsufPHe4usKkAnu+OnikF
+ T/IPGWXnhJw==
 X-Developer-Key: i=mbenes@suse.cz; a=openpgp;
  fpr=91BB0699882EF39D46654BB3FF98A38DA80834DA
 X-Spamd-Bar: ++++++++++++++++++++
-X-Spam-Score: 20.39
+X-Spam-Score: 20.69
 X-Spam-Level: ********************
 X-Spam-Flag: YES
-X-Rspamd-Queue-Id: 7BC224CCF52
+X-Rspamd-Queue-Id: 91A624CD064
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [3.84 / 15.00];
 	SPAM_FLAG(5.00)[];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	MID_RHS_NOT_FQDN(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c04:e001:36c::/64:c];
+	R_SPF_ALLOW(-0.20)[+ip4:104.64.211.4:c];
 	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
@@ -135,25 +135,28 @@ X-Spamd-Result: default: False [3.84 / 15.00];
 	RCVD_COUNT_THREE(0.00)[4];
 	MIME_TRACE(0.00)[0:+];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2722-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2724-lists,live-patching=lfdr.de];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
 	TO_DN_SOME(0.00)[];
 	PRECEDENCE_BULK(0.00)[];
 	FROM_NEQ_ENVFROM(0.00)[mbenes@suse.cz,live-patching@vger.kernel.org];
 	DKIM_TRACE(0.00)[suse.cz:+];
-	NEURAL_HAM(-0.00)[-0.969];
+	NEURAL_HAM(-0.00)[-0.967];
 	TAGGED_RCPT(0.00)[live-patching];
 	RCPT_COUNT_SEVEN(0.00)[9];
-	ASN(0.00)[asn:63949, ipnet:2600:3c04::/32, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:dkim,suse.cz:email,tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
+	ASN(0.00)[asn:63949, ipnet:104.64.192.0/19, country:SG];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns,suse.cz:dkim,suse.cz:email]
 
-On Thu, 30 Apr 2026 21:08:27 -0700, Josh Poimboeuf <jpoimboe@kernel.org> wrote:
-> In preparation for porting the checksum code to other arches, make its
-> functionality independent from the CFG reverse engineering code.
+On Thu, 30 Apr 2026 21:08:29 -0700, Josh Poimboeuf <jpoimboe@kernel.org> wrote:
+> Move the checksum functionality out of the main objtool command into a
+> new "objtool klp checksum" subcommand.
 > 
-> Move it into a standalone calculate_checksums() function which iterates
-> all functions and instructions directly, rather than being called inline
-> from do_validate_branch().
+> This has the benefit of making the code (and the patch generation
+> process itself) more modular.
+> 
+> For bisectability, both "objtool --checksum" and "objtool klp checksum"
+> work for now.  The former will be removed after klp-build has been
+> converted to use the new subcommand.
 > 
 > [...]
 
