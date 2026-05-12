@@ -1,240 +1,308 @@
-Return-Path: <live-patching+bounces-2741-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2742-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id wF1LMtuXAmomuwEAu9opvQ
-	(envelope-from <live-patching+bounces-2741-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Tue, 12 May 2026 05:00:43 +0200
+	id EMSOH7HtAmryygEAu9opvQ
+	(envelope-from <live-patching+bounces-2742-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Tue, 12 May 2026 11:06:57 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sin.lore.kernel.org (sin.lore.kernel.org [IPv6:2600:3c15:e001:75::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id AC1415191E3
-	for <lists+live-patching@lfdr.de>; Tue, 12 May 2026 05:00:42 +0200 (CEST)
+Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
+	by mail.lfdr.de (Postfix) with ESMTPS id 87BF151D457
+	for <lists+live-patching@lfdr.de>; Tue, 12 May 2026 11:06:56 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sin.lore.kernel.org (Postfix) with ESMTP id C58B530086A0
-	for <lists+live-patching@lfdr.de>; Tue, 12 May 2026 03:00:38 +0000 (UTC)
+	by sin.lore.kernel.org (Postfix) with ESMTP id 4D553306434D
+	for <lists+live-patching@lfdr.de>; Tue, 12 May 2026 08:59:07 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AC60D3603D8;
-	Tue, 12 May 2026 03:00:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 336883A5E8F;
+	Tue, 12 May 2026 08:56:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NuLXGOJj"
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="Jn0XbJgJ"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com [209.85.222.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E87537F014
-	for <live-patching@vger.kernel.org>; Tue, 12 May 2026 03:00:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.222.46
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778554835; cv=pass; b=LLzqo4iJ8b3aX89S6EIkK6uV2ZjdXX+REA4kDeNz9R0MQ3adMFQegiXwLrdoVOPIHvjOCZcYZbhwORXQidt64FcB8htPpNvkzx9HWRb1YGl2jcUh20gFNDBKX+ZrcNf1uS7nStwAG4KqhX7r0DdM48qHr5oxHB9cccWbC0EkQ0k=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778554835; c=relaxed/simple;
-	bh=1FTY/dxK9AVZbEnCfou+I39CttYNwGA/jupYG+sqlos=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=rzpNgl8uK0+tkzBSnVMMJ8U6tU5LeZFjxurzYizVHno15GCIOnUJu/7NOk9o1j2ldCfkONDFLv/qcgL9bcuY4NHk6rmT3ircLLbVZRBfzAOv77m00Bkmj4mn1RC6FpoDYKdMiM6pN4x27UnFimhRBxmOhUuAOygNjkZn7Ppywh0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NuLXGOJj; arc=pass smtp.client-ip=209.85.222.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Received: by mail-ua1-f46.google.com with SMTP id a1e0cc1a2514c-95d0476492eso1537137241.3
-        for <live-patching@vger.kernel.org>; Mon, 11 May 2026 20:00:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778554833; cv=none;
-        d=google.com; s=arc-20240605;
-        b=azlCN6N0JuQwLFlABS/S/o9IZNxhFlNfOLjVjmxdNqA1OzOb62n6RU1ZELrhuhzWR/
-         JBQRSTVCNTYV8A5nagveWIuIoxMtWwL34Ncg1utut1nw3GDM2k/KIOtBMWyoS2p7/nwN
-         9NoFfz8qHyS1Y4USF2AIia9XmPu1UDFpempakdufFw9DNU9UYYeyOc//dLL3Wf1Pu553
-         Y1OstNXSj7qoKuPiEbf6SXfLRQY975OCwuvQICu89Rv6ID01bI3yMiSI/SZFgt1OLK6c
-         Dp1FSqIGKPyAtTA1xHgehNzoTQh6vKTNVy7cN+F2Htym/gu4/dFDOzofP0SWBG7SLAB9
-         e1XA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=YGBgDfJ4AfqTknCN9alQ+NTutahc0Gme/TPQUtzberI=;
-        fh=SacAn1r2o6oE0GZjkpclgqwzclgpdHby3aci8abqogQ=;
-        b=WQknFBH48SUtuo7L6/c/4W650irT1T414IWyxDwQ+/vKew7BkJU/0NnOI9pkPh/0Wc
-         OKirPSrESJMng8U8aIY86e8WaPNuZ1Y+teyBy+uU95eAthl4uCHoCQrhNAOKmNCZS3Vp
-         BuZn/AnVqIscM8uYBMR4zd7mO1/4h5JXmlTTyN9thQOGUDNPNvXCEuslI3xj9Xlyxwkq
-         4IMypJA9nkSraCI9TW5eeRP0srFJDFJhlKcr5QxTbSREgEW+/9qv6YW65qOd0xJbTklB
-         Y9m0shn1DKEpiN8K2e1dj5svd+VcPbVUwoO38IWi4jpvDwNefeFU8bB2layTxdyESyZN
-         j4Hg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1778554833; x=1779159633; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YGBgDfJ4AfqTknCN9alQ+NTutahc0Gme/TPQUtzberI=;
-        b=NuLXGOJjLOM5R00p4gUpFXn029OWdn2sTNKQwlPPgPXo1nH5Km3Fmwn85jxOJKanWZ
-         8JWua+F4SiAi0QG1iJ9a6ABdlbuPbnmdwAQnLqoo2PhgZ76iPjilzX57LLx2YRe3sz5z
-         q/LwMwWYk46gCdKLBlWWSpbVNsGtbLQJYYgkuQLgpEx/aZMltmNDov1zhLEGsqfsCh+Z
-         CVYp0wR0eG90xNr7PdbauLsqi3MCeK40avs8/rqN9Fd5rECtkpL/2Y9P7S2PgMCTYBp+
-         AHeJBF+L2KBx9lpRMBZYIRpoU7fncjTAgeXbkw7bYpDcAA7LtRjiPCFe5Jw9iY2jXkee
-         RnkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778554833; x=1779159633;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=YGBgDfJ4AfqTknCN9alQ+NTutahc0Gme/TPQUtzberI=;
-        b=I4+7m1XIVu4Heua5Lrnx5qTJbT0DJeEns+U63nEoikMEaFdfjh4zFrM8YHSDRATcAL
-         tg7QDWmXEbIb5Gu8GPzMwgKUt21P952a4KVhG/WdCxjR/BWVcDzjE+QlZy1RhTBl1Q67
-         VAGjycw8gYDNBuCI7JPbwRr+nlmXPLJ/CX0xtLo5g83VPiDSfc9lPT31uf5BQytMJowP
-         kSGKckxOtjjkUd1jF30tyIFNT6jjCsGueZMlqD2V8A+Bb5AQxd/YnKEPZmdNTIOHbg4c
-         y3MNILMqOMqeueQ6p9AizCsyZZLdPJRAMnKg9a4vgUake6YKziBtOJVbDOhuJZhDCN1S
-         0VfQ==
-X-Forwarded-Encrypted: i=1; AFNElJ+xlvZMYlGnE3R6egHRbTfcLdrzu1I6+3Xg0eLS3OfrMsquOgJpZi2ac1m9qktjHBg3qfuKaidvW4MLt7yb@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxs+GAxtuHQxqj96c2db0e3TMLR8X0SoQdz67ppZANaKlIbAVZz
-	6w5gmD3RaNZfIDQYMteORqVtQJ+xPdeLjELa2xz7obxC7PtyEYgnx4ahU4F9PQ7/76PiWM+VrwC
-	QzAlGQpsSkUToRx5bQtEBIkFbPCIuCAy+9afvbjv9
-X-Gm-Gg: Acq92OGSUXCo6hnWufnrzd4wnQmh60R/rb8QZynXcDmrPEwRTxBTjYR88K3I60QSjtj
-	hctBgmZdGQGhm72QjB+F315Tq3/660L9dDzJTggG7y3sZIYhatNGxPrOu0HMT6CTU9/ZTtm5TTB
-	YRPy4ZdtMsWi3VwNYr7kPSSq6a3mLtBJoDIyN8NXr0q5bwODkRLU8L7J1ZQ1Ir6uN/HdqGUG/5t
-	PdYtSEOX9z62TkHgUVvLVe370OiNNnTNMRkmXtJFPkzbVTsBcqClMfgjHxJOKPY5NgNEnpOh+UK
-	V0wIH/0ctSH3mqDknQ==
-X-Received: by 2002:a05:6102:4499:b0:632:3bb5:95f1 with SMTP id
- ada2fe7eead31-6323bb5cd8cmr4171542137.27.1778554832592; Mon, 11 May 2026
- 20:00:32 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9259939E6EB;
+	Tue, 12 May 2026 08:56:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778576203; cv=none; b=q889chqTi/wo96d6dR30KHYbAPW7zV6uz+UNov6pdjthYNDDcoiCaGtI+BXX1u4ROOehM39iEMvlhe6r9fxndoo6fSHdnjavGcjp6x5nAX9QaYUncT52DKX3+Ss/cEtj/mGN+X1/BxY3S7OQH4qHrbBb7RIGaDAlGtZ3yucdICE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778576203; c=relaxed/simple;
+	bh=TMkJDM+gyKHYfpQ800Ppm76L+LrNH/drSmY0lb/WXjY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=XuJXAlHivJ6eJ3m/ZdqEPKYRIcuC2UqYiCR5go/sjl0NKGProSvxhVxHbxpI6ZFvyxcM06/Wmc1vSmr1RNEojOS+A2w+JuGcogHk6mAQGSvKNGJ+5bnc4ZLhy4AOj8Dupmv667tweTKknzgYBgOh0gbxvPVc2915uKwKjPdlcN0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=Jn0XbJgJ; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64BK74IO3179453;
+	Tue, 12 May 2026 08:55:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=qG8oe8
+	z9sxMMUyor2T7pysVRE2qkXzHzDQe0MhODf5I=; b=Jn0XbJgJMXIbZier46PZCD
+	1Emzb7CkLbBHBzHez1MSnqwfcIcz959PdIhksNDc3cuXu9ukkA+sVrYyp9iAxQ9Y
+	mZvuXOqDklUbdqaF4bDqYwdT3nqyGnctRec1Apx8L52IfDBd5tzV1pV7dFGYugGT
+	OZSbrPXsN+tR7CJEEFOyPj5IPJlWK2Q5wIly6qPjATt60UM33PYstDXTmC4AIoyy
+	BMQLD+0K9jRs6eZFEG5x7Vz3I739JrrIlJKe5wN/08/1qc26nXZz2sMoyaNEHpau
+	iE9y1haORy6wrlaC5K5GbvhhoKv+yil3eq6esGFP24Xwg56Kw28Obo0N2UVsOO1w
+	==
+Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4e3nv6j3wc-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 12 May 2026 08:55:32 +0000 (GMT)
+Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma22.wdc07v.mail.ibm.com (8.18.1.7/8.18.1.7) with ESMTP id 64C8sV9a024634;
+	Tue, 12 May 2026 08:55:31 GMT
+Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
+	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4e3nfgtdap-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 12 May 2026 08:55:31 +0000 (GMT)
+Received: from smtpav06.fra02v.mail.ibm.com (smtpav06.fra02v.mail.ibm.com [10.20.54.105])
+	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 64C8tTpv25100836
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 12 May 2026 08:55:29 GMT
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id BA5972004B;
+	Tue, 12 May 2026 08:55:29 +0000 (GMT)
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 4F2FF20040;
+	Tue, 12 May 2026 08:55:29 +0000 (GMT)
+Received: from [9.52.200.195] (unknown [9.52.200.195])
+	by smtpav06.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Tue, 12 May 2026 08:55:29 +0000 (GMT)
+Message-ID: <0542f042-14fb-4588-bc3a-5031249d9834@linux.ibm.com>
+Date: Tue, 12 May 2026 10:55:28 +0200
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 8/8] unwind: arm64: Use sframe to unwind interrupt
+ frames
+To: Dylan Hatch <dylanbhatch@google.com>, Mark Rutland <mark.rutland@arm.com>
+Cc: Roman Gushchin <roman.gushchin@linux.dev>, Weinan Liu <wnliu@google.com>,
+        Will Deacon <will@kernel.org>, Josh Poimboeuf <jpoimboe@kernel.org>,
+        Indu Bhagat <ibhagatgnu@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Prasanna Kumar T S M <ptsm@linux.microsoft.com>,
+        Puranjay Mohan <puranjay@kernel.org>, Song Liu <song@kernel.org>,
+        joe.lawrence@redhat.com, linux-toolchains@vger.kernel.org,
+        linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Heiko Carstens <hca@linux.ibm.com>
 References: <20260428183643.3796063-1-dylanbhatch@google.com>
- <20260428183643.3796063-9-dylanbhatch@google.com> <afTYzAF_x41pyilu@J2N7QTR9R3>
-In-Reply-To: <afTYzAF_x41pyilu@J2N7QTR9R3>
-From: Dylan Hatch <dylanbhatch@google.com>
-Date: Mon, 11 May 2026 20:00:21 -0700
-X-Gm-Features: AVHnY4KILl4VsgMlK7qBJOos5aRlukhM-ZbxId7NyZjs6rIXnB83q0XCoxXRTm0
-Message-ID: <CADBMgpx9YxNUO6wLP7mYKxWW8L78Hk9gPwHrMjXUwPyUmGEu9w@mail.gmail.com>
-Subject: Re: [PATCH v5 8/8] unwind: arm64: Use sframe to unwind interrupt frames
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: Roman Gushchin <roman.gushchin@linux.dev>, Weinan Liu <wnliu@google.com>, 
-	Will Deacon <will@kernel.org>, Josh Poimboeuf <jpoimboe@kernel.org>, 
-	Indu Bhagat <ibhagatgnu@gmail.com>, Peter Zijlstra <peterz@infradead.org>, 
-	Steven Rostedt <rostedt@goodmis.org>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Jiri Kosina <jikos@kernel.org>, Jens Remus <jremus@linux.ibm.com>, 
-	Prasanna Kumar T S M <ptsm@linux.microsoft.com>, Puranjay Mohan <puranjay@kernel.org>, 
-	Song Liu <song@kernel.org>, joe.lawrence@redhat.com, linux-toolchains@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, live-patching@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, Randy Dunlap <rdunlap@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Rspamd-Queue-Id: AC1415191E3
+ <20260428183643.3796063-9-dylanbhatch@google.com>
+ <afTYzAF_x41pyilu@J2N7QTR9R3>
+ <CADBMgpx9YxNUO6wLP7mYKxWW8L78Hk9gPwHrMjXUwPyUmGEu9w@mail.gmail.com>
+Content-Language: en-US
+From: Jens Remus <jremus@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <CADBMgpx9YxNUO6wLP7mYKxWW8L78Hk9gPwHrMjXUwPyUmGEu9w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Reinject: loops=2 maxloops=12
+X-Authority-Analysis: v=2.4 cv=Us1T8ewB c=1 sm=1 tr=0 ts=6a02eb05 cx=c_pps
+ a=5BHTudwdYE3Te8bg5FgnPg==:117 a=5BHTudwdYE3Te8bg5FgnPg==:17
+ a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=RnoormkPH1_aCDwRdu11:22 a=Y2IxJ9c9Rs8Kov3niI8_:22 a=VnNF1IyMAAAA:8
+ a=7CQSdrXTAAAA:8 a=pbiPq8VqF0LfWx_iDpQA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=a-qgeE7W1pNrGK8U0ZQC:22
+X-Proofpoint-GUID: uaHr7nwzr83LXGrb9KDOQt7khmo6iJZR
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTEyMDA4NiBTYWx0ZWRfX6MHUaow91jQs
+ Y3MxrcX7t4Mr1vZvD8FzelZHzDowUFqS9L3BLeQtklVqqiyO54C9bZLgId8VHGENrTMf5ZxjxRu
+ iv6GmwcM3Hd9NSb87unpoNEzxJ1FHQ7NBBpTjRazCdj4Mjwu8vN4JYm+ilRnjyNJ+3WYsmdFBPJ
+ SQpla5QHjgCq6CES9w/SCaunqWa0Sffh78Fc+mgqnfIlxPWkfgBFpJhnPJNXRZSVrCWN5JdUDpn
+ wMEXPbHTRN8naneqSYgncazvqJRV/q6Sc937dTOXSgr69N64IKs4bDKMLvwHIXZ3ZvG1FISrOgA
+ LvF9/sGmqj4np6S2xhjRRFvPXbpHxw6vMsTsV3Sdbrlcsy/uNgqH2iuVIPFCZ8JrBg0hH14e+49
+ QT/hw1Hg7e9OAEAGLAAutNYGNeXD+lN1sKzoMlD2EauzEgFBiowsoU87aUyKlJJ/JizrkzF7J/3
+ Qijeiq81p5MwfRUX0Zg==
+X-Proofpoint-ORIG-GUID: HRl52iudk8zwHmSdjLV0b5-DZVW86Cil
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-05-11_05,2026-05-08_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 priorityscore=1501 impostorscore=0 lowpriorityscore=0
+ bulkscore=0 suspectscore=0 spamscore=0 malwarescore=0 clxscore=1015
+ adultscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2605050000
+ definitions=main-2605120086
+X-Rspamd-Queue-Id: 87BF151D457
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-2.16 / 15.00];
-	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=2];
-	DMARC_POLICY_ALLOW(-0.50)[google.com,reject];
-	R_DKIM_ALLOW(-0.20)[google.com:s=20251104];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c15:e001:75::/64:c];
+	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
+	DMARC_POLICY_ALLOW(-0.50)[ibm.com,none];
+	R_SPF_ALLOW(-0.20)[+ip4:104.64.211.4:c];
+	R_DKIM_ALLOW(-0.20)[ibm.com:s=pp1];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	TAGGED_FROM(0.00)[bounces-2741-lists,live-patching=lfdr.de];
-	RCVD_TLS_LAST(0.00)[];
-	RCVD_COUNT_THREE(0.00)[4];
-	FORGED_SENDER_MAILLIST(0.00)[];
-	FREEMAIL_CC(0.00)[linux.dev,google.com,kernel.org,gmail.com,infradead.org,goodmis.org,arm.com,linux.ibm.com,linux.microsoft.com,redhat.com,vger.kernel.org,lists.infradead.org];
-	RCPT_COUNT_TWELVE(0.00)[20];
 	MIME_TRACE(0.00)[0:+];
-	FROM_HAS_DN(0.00)[];
+	RCPT_COUNT_TWELVE(0.00)[21];
+	FREEMAIL_CC(0.00)[linux.dev,google.com,kernel.org,gmail.com,infradead.org,goodmis.org,arm.com,linux.microsoft.com,redhat.com,vger.kernel.org,lists.infradead.org,linux.ibm.com];
+	TAGGED_FROM(0.00)[bounces-2742-lists,live-patching=lfdr.de];
+	RCVD_TLS_LAST(0.00)[];
+	HAS_ORG_HEADER(0.00)[];
+	DKIM_TRACE(0.00)[ibm.com:+];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns,arm.com:email,linux.ibm.com:mid];
 	TO_DN_SOME(0.00)[];
 	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[dylanbhatch@google.com,live-patching@vger.kernel.org];
-	DKIM_TRACE(0.00)[google.com:+];
+	FROM_NEQ_ENVFROM(0.00)[jremus@linux.ibm.com,live-patching@vger.kernel.org];
+	FROM_HAS_DN(0.00)[];
+	ASN(0.00)[asn:63949, ipnet:104.64.192.0/19, country:SG];
+	FORGED_SENDER_MAILLIST(0.00)[];
+	MID_RHS_MATCH_FROM(0.00)[];
 	NEURAL_HAM(-0.00)[-1.000];
-	ASN(0.00)[asn:63949, ipnet:2600:3c15::/32, country:SG];
 	TAGGED_RCPT(0.00)[live-patching];
-	MISSING_XM_UA(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
+	RCVD_COUNT_SEVEN(0.00)[11]
 X-Rspamd-Action: no action
 
-Hi Mark,
+Hello Dylan and Mark!
 
-Thanks for all the feedback and help on this. I'm planning on getting
-your comments addressed in the coming days, but I have some initial
-clarifying questions.
+On 5/12/2026 5:00 AM, Dylan Hatch wrote:
+> On Fri, May 1, 2026 at 9:46 AM Mark Rutland <mark.rutland@arm.com>
+> wrote:
 
-On Fri, May 1, 2026 at 9:46=E2=80=AFAM Mark Rutland <mark.rutland@arm.com> =
-wrote:
->
-> Hi Dylan,
->
-> Thanks for putting this together. I think this is looking pretty good.
-> However, there are some things that aren't quite right and need some
-> work, which I've commented on below.
->
-> More generally, there are a few things that aren't addressed by this
-> series that we will also need to address. Importantly:
->
-> (1) For correctness, we'll need to address a latent issue with unwinding
->     across an fgraph return trampoline, where the return address is
->     transiently unrecoverable.
->
->     Before this series, that doesn't matter for livepatching because the
->     livepatching code isn't called synchronously within the fgraph
->     handler, and unwinds which cross an exception boundary are marked as
->     unreliable.
->
->     After this series, that does matter as we can unwind across an
->     exception boundary, and might happen to interrupt that transient
->     window.
->
->     I think we can solve that with some restructuring of that code,
->     restoring the original address *before* removing that from the
->     fgraph return stack, and ensuring that the unwinder can find it.
+>> More generally, there are a few things that aren't addressed by
+>> this series that we will also need to address. Importantly:
+>> 
+>> (1) For correctness, we'll need to address a latent issue with
+>> unwinding across an fgraph return trampoline, where the return
+>> address is transiently unrecoverable.
+>> 
+>> Before this series, that doesn't matter for livepatching because
+>> the livepatching code isn't called synchronously within the fgraph 
+>> handler, and unwinds which cross an exception boundary are marked
+>> as unreliable.
+>> 
+>> After this series, that does matter as we can unwind across an 
+>> exception boundary, and might happen to interrupt that transient 
+>> window.
+>> 
+>> I think we can solve that with some restructuring of that code, 
+>> restoring the original address *before* removing that from the 
+>> fgraph return stack, and ensuring that the unwinder can find it.
+> 
+> If my understanding is correct, the issue arrises in
+> return_to_handler as the return address is recovered:
+> 
+> mov x0, sp bl ftrace_return_to_handler // addr =
+> ftrace_return_to_hander(fregs); mov x30, x0 // restore the original
+> return address
+> 
+> Because ftrace_return_to_handler pops the return address from the 
+> return stack before it can be restored into the LR, it cannot be 
+> recovered.
 
-If my understanding is correct, the issue arrises in return_to_handler
-as the return address is recovered:
+Based on reliable-stacktrace.rst section "4.4 Rewriting of return
+addresses" I wonder whether the following might work:
 
-mov x0, sp
-bl ftrace_return_to_handler // addr =3D ftrace_return_to_hander(fregs);
-mov x30, x0 // restore the original return address
+- If an unwound RA points at return_to_handler the actual RA needs to
+  be obtained using ftrace_graph_ret_addr().  This might already be
+  taken into account if ftrace_graph_ret_addr() is used unconditionally.
 
-Because ftrace_return_to_handler pops the return address from the
-return stack before it can be restored into the LR, it cannot be
-recovered.
+- If an unwound RA points into return_to_handler() mark the stack trace
+  as unreliable.  This could be accomplished by marking LR in
+  return_to_handler() as undefined (i.e. .cfi_undefined 30) to use
+  SFrame's outermost frame indication to stop and mark the stack trace
+  as unreliable:
 
-Based on this, I believe you are suggesting to restructure this code
-path such that the return address is removed from the return stack
-only after it has been restored to LR. But since kernel/trace/fgraph.c
-is core kernel code, will this end up requiring either (1) a similar
-restructuring of other arches supporting ftrace, or (2) an
-arm64-specific implementation of this recovery logic?
+diff --git a/arch/arm64/kernel/entry-ftrace.S b/arch/arm64/kernel/entry-ftrace.S
+@@ -329,8 +329,12 @@ SYM_FUNC_END(ftrace_stub_graph)
+  * @fp is checked against the value passed by ftrace_graph_caller().
+  */
+ SYM_CODE_START(return_to_handler)
++       .cfi_startproc
++       /* Mark unwinding of LR as unreliable */
++       .cfi_undefined 30
+        /* Make room for ftrace_regs */
+        sub     sp, sp, #FREGS_SIZE
++       .cfi_adjust_cfa_offset -FREGS_SIZE
 
-It looks to me like there is essentially the same recovery pattern on
-other arches; is there a reason this transient unrecoverability isn't
-an issue for reliable unwind on other platforms?
+        /* Save return value regs */
+        stp     x0, x1, [sp, #FREGS_X0]
+@@ -344,6 +348,8 @@ SYM_CODE_START(return_to_handler)
+        mov     x0, sp
+        bl      ftrace_return_to_handler        // addr = ftrace_return_to_hander(fregs);
+        mov     x30, x0                         // restore the original return address
++       /* Mark unwinding of LR as reliable */
++       .cfi_restore 30
 
->
->     I'm not immediately sure whether kretprobes has a similar issue.
->
-> (2) To make unwinding generally possible, we'll need to annotate some
->     assembly functions as unwindable. We'll need to do that for string
->     routines under lib/, and probably some crypto code, but we don't
->     need to do that for most code in head.S, entry.S, etc.
->
->     The vast majority of relevant assembly functions are leaf functions
->     (where the return address is never moved out of the LR), so we can
->     probably get away with a simple annotation for those that avoids the
->     need for open-coded CFI directives everywhere.
+        /* Restore return value regs */
+        ldp     x0, x1, [sp, #FREGS_X0]
+@@ -351,7 +357,9 @@ SYM_CODE_START(return_to_handler)
+        ldp     x4, x5, [sp, #FREGS_X4]
+        ldp     x6, x7, [sp, #FREGS_X6]
+        add     sp, sp, #FREGS_SIZE
++       .cfi_adjust_cfa_offset FREGS_SIZE
 
-Are you suggesting something like a SYM_LEAF_FUNC_(START|END), that
-wraps CFI directives for leaf functions?
+        ret
++       .cfi_endproc
+ SYM_CODE_END(return_to_handler)
+ #endif /* CONFIG_FUNCTION_GRAPH_TRACER */
 
->
-> I've pushed some reliable stacktrace tests to:
->
->   git://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git stacktrace=
-/tests
->
-> That finds the fgraph issue (regardless of this series). When merged
-> with this series triggers a warning in kunwind_next_frame_record_meta(),
-> where unwind_next_frame_sframe() calls that erroneously as a fallback.
+Notes regarding above:
+- return_to_handler() saves the caller's FP in ftrace_regs but never
+  restores it.  I suppose this is because ftrace_regs is an input to
+  ftrace_return_to_handler().  The DWARF CFI above assumes SP and FP
+  can be restored at all times as SP=CFA and FP=FP.
+- One might be tempted to add a .cfi_register 30, 0 after the call to
+  ftrace_return_to_handler.  This would be wrong, because if unwinding
+  comes from ftrace_return_to_handler() the unwound RA will point there
+  and the unwinding logic would erroneously assume x0 to contain the RA.
+- The DWARF CFI could be simplified as follows to just convey that
+  unwinding through return_to_handler is impossible at all times:
 
-Thanks for the pointer on these tests, they're super useful! I've been
-able to reproduce the fgraph failure you mentioned.
+diff --git a/arch/arm64/kernel/entry-ftrace.S b/arch/arm64/kernel/entry-ftrace.S
+@@ -329,6 +329,9 @@ SYM_FUNC_END(ftrace_stub_graph)
+  * @fp is checked against the value passed by ftrace_graph_caller().
+  */
+ SYM_CODE_START(return_to_handler)
++       .cfi_startproc simple
++       /* Mark unwinding of LR as unreliable */
++       .cfi_undefined 30
+        /* Make room for ftrace_regs */
+        sub     sp, sp, #FREGS_SIZE
 
-Thanks,
-Dylan
+@@ -353,5 +356,6 @@ SYM_CODE_START(return_to_handler)
+        add     sp, sp, #FREGS_SIZE
+
+        ret
++       .cfi_endproc
+ SYM_CODE_END(return_to_handler)
+ #endif /* CONFIG_FUNCTION_GRAPH_TRACER */
+
+> 
+> Based on this, I believe you are suggesting to restructure this code 
+> path such that the return address is removed from the return stack 
+> only after it has been restored to LR. But since kernel/trace/
+> fgraph.c is core kernel code, will this end up requiring either (1)
+> a similar restructuring of other arches supporting ftrace, or (2) an 
+> arm64-specific implementation of this recovery logic?
+> 
+> It looks to me like there is essentially the same recovery pattern
+> on other arches; is there a reason this transient unrecoverability
+> isn't an issue for reliable unwind on other platforms?
+> 
+>> 
+>> I'm not immediately sure whether kretprobes has a similar issue.
+
+Regards,
+Jens
+-- 
+Jens Remus
+Linux on Z Development (D3303)
+jremus@de.ibm.com / jremus@linux.ibm.com
+
+IBM Deutschland Research & Development GmbH; Vorsitzender des Aufsichtsrats: Wolfgang Wendt; Geschäftsführung: David Faller; Sitz der Gesellschaft: Ehningen; Registergericht: Amtsgericht Stuttgart, HRB 243294
+IBM Data Privacy Statement: https://www.ibm.com/privacy/
+
 
