@@ -1,171 +1,284 @@
-Return-Path: <live-patching+bounces-2744-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2745-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id 2Jx0EZUAA2rdzQEAu9opvQ
-	(envelope-from <live-patching+bounces-2744-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Tue, 12 May 2026 12:27:33 +0200
+	id aAE9CZilA2qP8gEAu9opvQ
+	(envelope-from <live-patching+bounces-2745-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 00:11:36 +0200
 X-Original-To: lists+live-patching@lfdr.de
 Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
-	by mail.lfdr.de (Postfix) with ESMTPS id B1A5D51E87C
-	for <lists+live-patching@lfdr.de>; Tue, 12 May 2026 12:27:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id CF95B52ABC2
+	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 00:11:35 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id 4CBB4300C817
-	for <lists+live-patching@lfdr.de>; Tue, 12 May 2026 10:18:57 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id 1FD513091A44
+	for <lists+live-patching@lfdr.de>; Tue, 12 May 2026 22:11:18 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 93732395AD2;
-	Tue, 12 May 2026 10:18:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0C465399350;
+	Tue, 12 May 2026 22:11:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="RmkRaQVb"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="VlT5Gtd5"
 X-Original-To: live-patching@vger.kernel.org
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 10D95395AC5;
-	Tue, 12 May 2026 10:18:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E7C539BFF5
+	for <live-patching@vger.kernel.org>; Tue, 12 May 2026 22:11:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778581134; cv=none; b=iZPo0gyX35I3YrOOmUcyh5AWg66qhdpLMaBS6dx5vOzf9+1VK6C1dMBGKz9vW68/yfG095rmEvjpn1hWG3WPJi7Bul4hktGdPiXqgNpt+eMHBQF4ia7drVIC9offzY01muYpfRH/LXfvxOiNtYKbpQtEsw9iLZ2gt5lBzp4Kz9I=
+	t=1778623873; cv=none; b=H6I1KtGGKW3OXo3ismifInc4R8k7VfsTJgAmSYEnEjFzNtEckaFnewWElGpLDMmNrJSZqz3eQ3V+Fc2RwBr92C1XUl4yaQ8y0KGAioWxQ0LWunIkNP89J6Rr6nyeEozZd3BoH7dvsROmqWZsU1yDST2torJWIBeOYfZHNCnLkM0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778581134; c=relaxed/simple;
-	bh=U2RKyZFvAJWxf0WCPY/QD6ZBjPhpAW6Y7NJlEYh5m/A=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=scMegkAMpDlsBMbdg7YqXwt8aCAUhgxVpHz3PHAn+e6T7ZO2ON4fP0hF8Wj71+OPdnlegetDigwrElHlRulHmzZgmKngWI6jRnw53FD4sebeyajHnUvM/02vtwJtizV9O+xnUa7l7hV4eEa8hyHw36LyykG3OnzI3CwYVj8Xzmc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=RmkRaQVb; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DEDAA1691;
-	Tue, 12 May 2026 03:18:46 -0700 (PDT)
-Received: from J2N7QTR9R3 (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 801993F7B4;
-	Tue, 12 May 2026 03:18:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1778581132; bh=U2RKyZFvAJWxf0WCPY/QD6ZBjPhpAW6Y7NJlEYh5m/A=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=RmkRaQVb1rWl0nZAhjmin3dPinyheV0A8H6NPKwNRAZSkz2kDu9erVlPzr8cWejjx
-	 RDLHH9k5kuVsFreX56A1KXFJv2KL5a9CTuEm5c+q8PYmn3rHwQsDEq+6LZG6BLvC19
-	 AYqYCePgiYB+a6VmXItxNpzJIusKvB7sDCbP+mKY=
-Date: Tue, 12 May 2026 11:18:45 +0100
-From: Mark Rutland <mark.rutland@arm.com>
-To: Jens Remus <jremus@linux.ibm.com>
-Cc: Dylan Hatch <dylanbhatch@google.com>,
-	Roman Gushchin <roman.gushchin@linux.dev>,
-	Weinan Liu <wnliu@google.com>, Will Deacon <will@kernel.org>,
-	Josh Poimboeuf <jpoimboe@kernel.org>,
-	Indu Bhagat <ibhagatgnu@gmail.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jiri Kosina <jikos@kernel.org>,
-	Prasanna Kumar T S M <ptsm@linux.microsoft.com>,
-	Puranjay Mohan <puranjay@kernel.org>, Song Liu <song@kernel.org>,
-	joe.lawrence@redhat.com, linux-toolchains@vger.kernel.org,
-	linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Heiko Carstens <hca@linux.ibm.com>
-Subject: Re: [PATCH v5 8/8] unwind: arm64: Use sframe to unwind interrupt
- frames
-Message-ID: <agL-hacT_xeh1kmz@J2N7QTR9R3>
-References: <20260428183643.3796063-1-dylanbhatch@google.com>
- <20260428183643.3796063-9-dylanbhatch@google.com>
- <afTYzAF_x41pyilu@J2N7QTR9R3>
- <CADBMgpx9YxNUO6wLP7mYKxWW8L78Hk9gPwHrMjXUwPyUmGEu9w@mail.gmail.com>
- <0542f042-14fb-4588-bc3a-5031249d9834@linux.ibm.com>
+	s=arc-20240116; t=1778623873; c=relaxed/simple;
+	bh=ByIivCKj5RFdTIzl0dZ0C7UdwyuY2DvQgnANDqKle9Q=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-type; b=U2JeHweXg3CqrZMGlSt5lIUnFe9ouJD3NRU8+t02eW2gnOkwnLET5nIxVMRV2hv++xLUMbim9y2Jiz02XX3OihkkBNsb1XXt3GA1Qpitw0ThZVmxT7XsbBMKJ4G8lBotsTsgDfXNFOoQdMoyRK82Ar6AMeXXG4bfG9HmZcN3WsM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=VlT5Gtd5; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1778623871;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=jMl1LQNh1VTb0T7JDXf2aD50ZWT7xETbSuE8HY6IfBY=;
+	b=VlT5Gtd5bL7Udjn24t8IxbmKbRpf3mwbYROTP4z1ESdu9s7FlPzKMmLQmJZDQpZxYjixc0
+	MYilUw29qdOyu5hqY7i2A6aq5DD2q/6+XswMIR8rTjUIACCNv1Kw2x8RUqfbGbqYlZGSCv
+	Qr2o+rtU+MQ8/RBLzXDXtMpHoVZWKR8=
+Received: from mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-601-Td1OYS2ZP6Ssd63EYRYTCA-1; Tue,
+ 12 May 2026 18:11:09 -0400
+X-MC-Unique: Td1OYS2ZP6Ssd63EYRYTCA-1
+X-Mimecast-MFC-AGG-ID: Td1OYS2ZP6Ssd63EYRYTCA_1778623868
+Received: from mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.93])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 1C2F719560B2;
+	Tue, 12 May 2026 22:11:08 +0000 (UTC)
+Received: from jolawren-thinkpadp1gen7.ibmlowe.csb (unknown [10.22.89.145])
+	by mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id 1806918004A3;
+	Tue, 12 May 2026 22:11:06 +0000 (UTC)
+From: Joe Lawrence <joe.lawrence@redhat.com>
+To: live-patching@vger.kernel.org
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>,
+	Song Liu <song@kernel.org>,
+	Miroslav Benes <mbenes@suse.cz>,
+	Petr Mladek <pmladek@suse.com>
+Subject: [RFC 0/4] klp-build: simple OOT module support
+Date: Tue, 12 May 2026 18:10:58 -0400
+Message-ID: <20260512221102.2720763-1-joe.lawrence@redhat.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-type: text/plain
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <0542f042-14fb-4588-bc3a-5031249d9834@linux.ibm.com>
-X-Rspamd-Queue-Id: B1A5D51E87C
+X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.93
+X-Rspamd-Queue-Id: CF95B52ABC2
 X-Rspamd-Server: lfdr
-X-Spamd-Result: default: False [-1.66 / 15.00];
+X-Spamd-Result: default: False [-0.66 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	MID_RHS_NOT_FQDN(0.50)[];
-	DMARC_POLICY_ALLOW(-0.50)[arm.com,none];
-	R_DKIM_ALLOW(-0.20)[arm.com:s=foss];
+	MID_CONTAINS_FROM(1.00)[];
+	R_MISSING_CHARSET(0.50)[];
+	DMARC_POLICY_ALLOW(-0.50)[redhat.com,quarantine];
+	R_DKIM_ALLOW(-0.20)[redhat.com:s=mimecast20190719];
 	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	TAGGED_FROM(0.00)[bounces-2744-lists,live-patching=lfdr.de];
-	FREEMAIL_CC(0.00)[google.com,linux.dev,kernel.org,gmail.com,infradead.org,goodmis.org,arm.com,linux.microsoft.com,redhat.com,vger.kernel.org,lists.infradead.org,linux.ibm.com];
-	RCVD_TLS_LAST(0.00)[];
-	FROM_HAS_DN(0.00)[];
 	MIME_TRACE(0.00)[0:+];
-	FORGED_SENDER_MAILLIST(0.00)[];
-	RCPT_COUNT_TWELVE(0.00)[21];
-	DKIM_TRACE(0.00)[arm.com:+];
-	MISSING_XM_UA(0.00)[];
 	TO_DN_SOME(0.00)[];
-	RCVD_COUNT_FIVE(0.00)[5];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[mark.rutland@arm.com,live-patching@vger.kernel.org];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	NEURAL_HAM(-0.00)[-1.000];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	TAGGED_RCPT(0.00)[live-patching];
+	FORGED_SENDER_MAILLIST(0.00)[];
+	RCVD_TLS_LAST(0.00)[];
+	TAGGED_FROM(0.00)[bounces-2745-lists,live-patching=lfdr.de];
+	DKIM_TRACE(0.00)[redhat.com:+];
 	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[arm.com:email,arm.com:dkim,tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
+	MISSING_XM_UA(0.00)[];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[joe.lawrence@redhat.com,live-patching@vger.kernel.org];
+	FROM_HAS_DN(0.00)[];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	RCVD_COUNT_FIVE(0.00)[6];
+	TAGGED_RCPT(0.00)[live-patching];
+	NEURAL_HAM(-0.00)[-1.000];
+	RCPT_COUNT_FIVE(0.00)[5];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
 X-Rspamd-Action: no action
 
-On Tue, May 12, 2026 at 10:55:28AM +0200, Jens Remus wrote:
-> On 5/12/2026 5:00 AM, Dylan Hatch wrote:
-> > On Fri, May 1, 2026 at 9:46 AM Mark Rutland <mark.rutland@arm.com>
-> > wrote:
-> 
-> >> (1) For correctness, we'll need to address a latent issue with
-> >> unwinding across an fgraph return trampoline, where the return
-> >> address is transiently unrecoverable.
+This patchset introduces support for patching basic out-of-tree (OOT)
+modules.  The primary motivation is to streamline testing for objtool klp
+diff by providing a flexible and stable environment.
 
-> >> I think we can solve that with some restructuring of that code, 
-> >> restoring the original address *before* removing that from the 
-> >> fgraph return stack, and ensuring that the unwinder can find it.
-> > 
-> > If my understanding is correct, the issue arrises in
-> > return_to_handler as the return address is recovered:
-> > 
-> > mov x0, sp bl ftrace_return_to_handler // addr =
-> > ftrace_return_to_hander(fregs); mov x30, x0 // restore the original
-> > return address
-> > 
-> > Because ftrace_return_to_handler pops the return address from the 
-> > return stack before it can be restored into the LR, it cannot be 
-> > recovered.
-> 
-> Based on reliable-stacktrace.rst section "4.4 Rewriting of return
-> addresses" I wonder whether the following might work:
-> 
-> - If an unwound RA points at return_to_handler the actual RA needs to
->   be obtained using ftrace_graph_ret_addr().  This might already be
->   taken into account if ftrace_graph_ret_addr() is used unconditionally.
-> 
-> - If an unwound RA points into return_to_handler() mark the stack trace
->   as unreliable.  This could be accomplished by marking LR in
->   return_to_handler() as undefined (i.e. .cfi_undefined 30) to use
->   SFrame's outermost frame indication to stop and mark the stack trace
->   as unreliable:
+While much of the objtool klp diff logic can be validated using standard
+in-tree modules (avoiding the overhead of full kernel rebuilds), OOT
+support provides significant value for reproducing and fixing specific
+kernel code patterns.  Standard in-tree drivers are subject to frequent
+refactoring and API updates, making them unreliable for producing the
+consistent binary patterns required for stable testing.  While dedicated
+test modules could be introduced into the kernel tree to ensure
+stability, starting with OOT modules allows for faster iteration before
+committing to a permanent in-tree landing spot.
 
-We don't currently have any CFI annotations for return_to_handler(), so
-if we interrupt that, any unwind will naturally be marked as unreliable.
+For an example, I have inlined a module below used to verify Josh's
+latest commit ("objtool/klp: Rewrite symbol correlation algorithm")
+[1].  This specific test case confirms that his patch resolves the
+thinLTO ambiguity issue originally reported by Song Liu in February [2].
 
-The problem is that we can try an unwind from an interrupted *callee* of
-return_to_handler(). In that case, we'll unwind through
-return_to_handler() using the frame pointer, without consulting SFrame.
-In that case, the PC will be part-way through return_to_handler(), but
-we only call ftrace_graph_ret_addr() when the PC is the start of
-return_to_handler, and so we don't even try to recover the return
-address.
+  [1] https://lore.kernel.org/live-patching/cq5uytz6edj75w53f2eubypvqm66hgh4eag7ec2vgqjefzzqts@lcnvt7fcrtmd/T/#mbfaf71b314b6600424f9c5504c415a2e3a87ade3
+  [2] https://lore.kernel.org/live-patching/20260226005436.379303-9-song@kernel.org
 
-We can handle that better by checking whether the PC is *within*
-return_to_handler(), and aborting when the original return address
-cannot be recoverted. I'm happy to go put that together, nad longer term
-I would like to do the better reovery I described above such that we can
-*always* recover the return address.
+To make full use of the example OOT module, I have additional test-
+harness code that automates fetching pre-built object files, integrating
+with kselftests, etc.  I chose to spin out this basic OOT support
+first since it mostly stands alone and may have other helpful contexts.
 
-Mark.
+-->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8--
+
+==> Kbuild <==
+obj-m := klp_test_ambig.o
+klp_test_ambig-y := klp_test_ambig_a.o klp_test_ambig_b.o klp_test_ambig_c.o
+
+==> klp_test_ambig_a.c <==
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include "klp_test_ambig.h"
+
+static noinline int __helper(int x, int len)
+{
+	int i, sum = x;
+
+	for (i = 0; i < len; i++)
+		sum += i + 5;
+	if (sum > 1000)
+		sum = 0;
+	return sum;
+}
+
+static int value_a;
+
+int klp_test_ambig_func_a(int x)
+{
+	value_a = __helper(value_a, x);
+	return value_a;
+}
+EXPORT_SYMBOL_GPL(klp_test_ambig_func_a);
+
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("ThinLTO demangled ambiguity test module");
+
+==> klp_test_ambig_b.c <==
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include "klp_test_ambig.h"
+
+static noinline int __helper(int x, int len)
+{
+	int i, sum = x;
+
+	for (i = 0; i < len; i++)
+		sum += i + 10;
+	if (sum > 1000)
+		sum = 0;
+	return sum;
+}
+
+static int value_b;
+
+int klp_test_ambig_func_b(int x)
+{
+	value_b = __helper(value_b, x);
+	return value_b;
+}
+EXPORT_SYMBOL_GPL(klp_test_ambig_func_b);
+
+==> klp_test_ambig_c.c <==
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include "klp_test_ambig.h"
+
+static int value_c;
+
+int klp_test_ambig_func_c(int x)
+{
+	value_c = klp_test_ambig_func_a(x) + klp_test_ambig_func_b(x);
+	return value_c;
+}
+EXPORT_SYMBOL_GPL(klp_test_ambig_func_c);
+
+==> klp_test_ambig.h <==
+#ifndef _KLP_TEST_AMBIG_H
+#define _KLP_TEST_AMBIG_H
+
+int klp_test_ambig_func_a(int x);
+int klp_test_ambig_func_b(int x);
+int klp_test_ambig_func_c(int x);
+
+#endif
+
+
+==> 0001-thin-lto-demangled-ambiguity.patch <==
+From 2d208e686739b1ccccfe385e837b5a4a04a9526f Mon Sep 17 00:00:00 2001
+From: klp-build-test <test@example.com>
+Date: Sat, 28 Mar 2026 13:55:56 +0000
+Subject: [PATCH] thin-lto-demangled-ambiguity
+
+ThinLTO two __helper.llvm.* symbols with disjoint hashes; objtool correlates
+
+---
+ klp_test_ambig_a.c | 2 +-
+ klp_test_ambig_b.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/klp_test_ambig_a.c b/klp_test_ambig_a.c
+index cc4db70..4ee26a5 100644
+--- a/klp_test_ambig_a.c
++++ b/klp_test_ambig_a.c
+@@ -7,7 +7,7 @@ static noinline int __helper(int x, int len)
+ 	int i, sum = x;
+ 
+ 	for (i = 0; i < len; i++)
+-		sum += i + 5;
++		sum += i * 2 + 5;
+ 	if (sum > 1000)
+ 		sum = 0;
+ 	return sum;
+diff --git a/klp_test_ambig_b.c b/klp_test_ambig_b.c
+index ca114b0..1b7ce1a 100644
+--- a/klp_test_ambig_b.c
++++ b/klp_test_ambig_b.c
+@@ -7,7 +7,7 @@ static noinline int __helper(int x, int len)
+ 	int i, sum = x;
+ 
+ 	for (i = 0; i < len; i++)
+-		sum += i + 10;
++		sum += i * 2 + 10;
+ 	if (sum > 1000)
+ 		sum = 0;
+ 	return sum;
+-- 
+2.53.0
+
+-->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8-- -->8--
+
+Applies on top of:
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git
+branch: klp-build-arm64
+commit: fffce0ac08e0 ("klp-build: Add arm64 syscall patching macro")
+
+Joe Lawrence (4):
+  objtool/klp: add --symvers option to klp diff
+  objtool/klp: allow special section entry size overrides
+  objtool/klp: add --arch option to display target architecture
+  livepatch/klp-build: add basic out-of-tree module patching support
+
+ scripts/livepatch/klp-build | 90 ++++++++++++++++++++++++++++---------
+ tools/objtool/Makefile      |  3 +-
+ tools/objtool/klp-diff.c    | 49 +++++++++++++++++---
+ 3 files changed, 115 insertions(+), 27 deletions(-)
+
+-- 
+2.53.0
+
 
