@@ -1,49 +1,49 @@
-Return-Path: <live-patching+bounces-2785-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2786-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id wHFmJt3yA2qrBAIAu9opvQ
-	(envelope-from <live-patching+bounces-2785-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 05:41:17 +0200
+	id ELfEBSvzA2prBAIAu9opvQ
+	(envelope-from <live-patching+bounces-2786-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 05:42:35 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sin.lore.kernel.org (sin.lore.kernel.org [IPv6:2600:3c15:e001:75::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 997E252CDF9
-	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 05:41:16 +0200 (CEST)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [IPv6:2600:3c04:e001:36c::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 86B5752CE55
+	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 05:42:34 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sin.lore.kernel.org (Postfix) with ESMTP id E353A304B51B
-	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 03:36:38 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id 61DBC314ADEB
+	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 03:36:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 637613ADBB4;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C5FFC3AE1A0;
 	Wed, 13 May 2026 03:34:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KfvG7GRW"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PGYOhOsB"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B4AF3ADB92;
-	Wed, 13 May 2026 03:34:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A29973A4F33;
+	Wed, 13 May 2026 03:34:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778643293; cv=none; b=jmfx/StoPcFZbqB7d6H07SI6qw1iDhybfgxzpDRJYnskOSV1NVfa/b2fVu3caefmKgYyDGEqptHSnOfXPTSCx3hCt8TBNkW88esL/0fBzukPewVbeL1ZM0Gu4yqEkP/J3/5kbq/riC2NFaD7/SSPCHD6BdYEelfezaqFOM1NZkw=
+	t=1778643293; cv=none; b=Y0HsA4sAnz2UWUNpAM0tgeeD+xbVllfFOjerOX3Ti/rwxsNVd5IzsP3BiwDYTuxMJRMRBB98ADtNNRQgr4/1kt5knueQe5a+5wHpfrknEtwMwcIxIcSD3hhRcNBgJyIqn4Co/1eafeQp8d32ab0JvyKCZ16Zq46fCvIiHCrFJvU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1778643293; c=relaxed/simple;
-	bh=Ny02yZ3OX6brRIw4EOBZjdfKy5OscDww5EM574zM+io=;
+	bh=lYQ1yov6GYXVE+5pFJSvbDLFJ5lLXCdGtVTWLqgmeuM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Lj/g4Jh/7nLi/9jd28fieEfJUkm4CWd0NrXIQ/NOVh/jHzu/LJ1oQX6cNSVu53ytZtt8aXlO8G12CqXgn4NkCHNru1BoUp5Ltb0ZeXuAx6j8ESZB8Jxn/+C/fg5dNWVgmt/VvKrlfy6AVzZT7Vg7mfd7adIhhPuVeiY8cJYdTiA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KfvG7GRW; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E36EC4AF11;
+	 MIME-Version; b=jkBd+w7yjYWPT8zDnz9dK5+rJn8GAU+5/4Dm/bZxInxYb081DkZAQ0YiSiIhsw2XvSbZvxKJemHZ95Y65aeqp9s45Ty8Jh23yYhIcPnYdKJfoTHt1mhBGEgzv1kAw19XbcWwUwpBPZgRD1FWPk0sC8zc6jQFk3MAR2IOvyvPz8w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PGYOhOsB; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAAC3C2BCFD;
 	Wed, 13 May 2026 03:34:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778643292;
-	bh=Ny02yZ3OX6brRIw4EOBZjdfKy5OscDww5EM574zM+io=;
+	s=k20201202; t=1778643293;
+	bh=lYQ1yov6GYXVE+5pFJSvbDLFJ5lLXCdGtVTWLqgmeuM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=KfvG7GRW0rzfBjvlsV4CVsesK0XKMhPRDKL/c3WKAKJbs4n+BpSd2ktCjwZsMz4rm
-	 thGDPtFPu2w9MnWwug/qI5csNRFYEx5kj8OOGuh5UVXSqgnZyFPErEF7Q+CJM8nK1/
-	 PBiidRGdljae2B8kFUa/eCEC1E2bvSp2ywLTQKU71xHJ8q1Dpvcye2OHnvtydGqGNM
-	 L69o1+Ox1CW0VLYSyWXEy1pHzli6r4BW2rznYdreIz0C8RZmVJE/PmJw8Crb1fyB7H
-	 gYiGCZPKrCpCQ+BEvpn1vrl1hPG4EK26vdCcJr2k4EFKRD7PWL2fJY0OktUmqRDpH9
-	 TfiSrz6rdJVrA==
+	b=PGYOhOsB1l9PgfOcHexCpsxifLmrVATJQBGZNZHmdkwnC5oejNuu4vj5eWe0SMaG5
+	 lRAZJjthUe+ZNkcKO/ZoRrG8yKxtUxuW1FuUbHJU2ljX0GVApSJ66YmpgceIFV9snr
+	 nDShSgveH1aRcIPaZVgFzmwiI6yamzf3v+fX477Q+3u0Ez7SvLPCsND3nnrGBr8hZO
+	 Q3xUDrtkn/3spXcF8+4roPjMM/icQ2GV9D6DgSK3O6RYTtortpyX3VA9iQgbnJhmO7
+	 OkA4dxPzrkvFgAWYQCV5PfH4T30+EegvDKSY80d28fp7RlZVXYyFW5BeocLWS3xqyn
+	 PMWd6gm+hEJhw==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -57,9 +57,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Mark Rutland <mark.rutland@arm.com>,
 	Miroslav Benes <mbenes@suse.cz>,
 	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH v3 12/21] objtool: Refactor elf_add_data() to use a growable data buffer
-Date: Tue, 12 May 2026 20:34:08 -0700
-Message-ID: <a0fe2363d017a2833e98ae50de797fe55c2796a4.1778642120.git.jpoimboe@kernel.org>
+Subject: [PATCH v3 13/21] objtool: Reuse string references
+Date: Tue, 12 May 2026 20:34:09 -0700
+Message-ID: <8881010b54f07432929acb8e704cd6ffcc835318.1778642120.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <cover.1778642120.git.jpoimboe@kernel.org>
 References: <cover.1778642120.git.jpoimboe@kernel.org>
@@ -70,267 +70,136 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 997E252CDF9
+X-Rspamd-Queue-Id: 86B5752CE55
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-0.66 / 15.00];
 	MID_CONTAINS_FROM(1.00)[];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	R_MISSING_CHARSET(0.50)[];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c04:e001:36c::/64:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c15:e001:75::/64:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	TAGGED_FROM(0.00)[bounces-2785-lists,live-patching=lfdr.de];
 	FORGED_SENDER_MAILLIST(0.00)[];
+	TAGGED_FROM(0.00)[bounces-2786-lists,live-patching=lfdr.de];
 	MIME_TRACE(0.00)[0:+];
-	RCVD_TLS_LAST(0.00)[];
 	RCPT_COUNT_TWELVE(0.00)[12];
+	RCVD_TLS_LAST(0.00)[];
 	RCVD_COUNT_THREE(0.00)[4];
+	ASN(0.00)[asn:63949, ipnet:2600:3c04::/32, country:SG];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	TO_DN_SOME(0.00)[];
 	PRECEDENCE_BULK(0.00)[];
 	FROM_NEQ_ENVFROM(0.00)[jpoimboe@kernel.org,live-patching@vger.kernel.org];
+	FROM_HAS_DN(0.00)[];
 	DKIM_TRACE(0.00)[kernel.org:+];
 	NEURAL_HAM(-0.00)[-1.000];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
 	TAGGED_RCPT(0.00)[live-patching];
-	ASN(0.00)[asn:63949, ipnet:2600:3c15::/32, country:SG];
-	FROM_HAS_DN(0.00)[]
+	TO_DN_SOME(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
 X-Rspamd-Action: no action
 
-Instead of calling elf_newdata() for each new piece of data with its own
-separate buffer, keep it all in the same growable buffer so the
-section's entire data can be accessed if needed.
+For duplicate strings, elf_add_string() just blindly adds duplicates.
+
+That can be a problem for arm64 which often uses two consecutive
+instructions (and corresponding relocations) to put an address into a
+register, like:
+
+  d8:   90000001        adrp    x1, 0 <meminfo_proc_show>       d8: R_AARCH64_ADR_PREL_PG_HI21  .rodata.meminfo_proc_show.str1.8
+  dc:   91000021        add     x1, x1, #0x0    dc: R_AARCH64_ADD_ABS_LO12_NC   .rodata.meminfo_proc_show.str1.8
+
+Referencing two different addresses in the ADRP+ADD pair would corrupt
+the memory access.  Avoid that by detecting and reusing duplicates when
+cloning string relocs.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/elf.c                 | 123 ++++++++++++++--------------
- tools/objtool/include/objtool/elf.h |  13 ++-
- 2 files changed, 71 insertions(+), 65 deletions(-)
+ tools/objtool/elf.c                 | 29 +++++++++++++++++++++++------
+ tools/objtool/include/objtool/elf.h |  3 ++-
+ tools/objtool/klp-diff.c            |  4 +++-
+ 3 files changed, 28 insertions(+), 8 deletions(-)
 
 diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index 33c95a74a51bd..e09bb0a63be35 100644
+index e09bb0a63be35..065ccfeb98288 100644
 --- a/tools/objtool/elf.c
 +++ b/tools/objtool/elf.c
-@@ -1134,9 +1134,6 @@ static int read_relocs(struct elf *elf)
- 
- 		rsec->base->rsec = rsec;
- 
--		/* nr_alloc_relocs=0: libelf owns d_buf */
--		rsec->nr_alloc_relocs = 0;
--
- 		rsec->relocs = calloc(sec_num_entries(rsec), sizeof(*reloc));
- 		if (!rsec->relocs) {
- 			ERROR_GLIBC("calloc");
-@@ -1395,7 +1392,7 @@ unsigned int elf_add_string(struct elf *elf, struct section *strtab, const char
- 
- void *elf_add_data(struct elf *elf, struct section *sec, const void *data, size_t size)
- {
--	unsigned long offset;
-+	unsigned long offset, size_old, size_new, alloc_size_old, alloc_size_new;
- 	Elf_Scn *s;
- 
- 	if (!sec->sh.sh_addralign) {
-@@ -1409,30 +1406,55 @@ void *elf_add_data(struct elf *elf, struct section *sec, const void *data, size_
- 		return NULL;
- 	}
- 
--	sec->data = elf_newdata(s);
- 	if (!sec->data) {
--		ERROR_ELF("elf_newdata");
--		return NULL;
-+		sec->data = elf_newdata(s);
-+		if (!sec->data) {
-+			ERROR_ELF("elf_newdata");
-+			return NULL;
-+		}
-+
-+		sec->data->d_align = sec->sh.sh_addralign;
- 	}
- 
--	sec->data->d_buf = calloc(1, size);
--	if (!sec->data->d_buf) {
--		ERROR_GLIBC("calloc");
--		return NULL;
-+	size_old = sec->data->d_size;
-+	offset = ALIGN(size_old, sec->sh.sh_addralign);
-+	size_new = offset + size;
-+
-+	if (!sec->data_overallocated)
-+		alloc_size_old = size_old;
-+	else
-+		alloc_size_old = max(64UL, roundup_pow_of_two(size_old ? : 1));
-+
-+	alloc_size_new = max(64UL, roundup_pow_of_two(size_new ? : 1));
-+
-+	if (alloc_size_new > alloc_size_old) {
-+		void *orig_buf = sec->data->d_buf;
-+
-+		sec->data->d_buf = calloc(1, alloc_size_new);
-+		if (!sec->data->d_buf) {
-+			ERROR_GLIBC("calloc");
-+			return NULL;
-+		}
-+
-+		if (size_old)
-+			memcpy(sec->data->d_buf, orig_buf, size_old);
-+
-+		if (orig_buf && sec->data_owned)
-+			free(orig_buf);
-+
-+		sec->data_owned = 1;
-+		sec->data_overallocated = 1;
- 	}
- 
- 	if (data)
--		memcpy(sec->data->d_buf, data, size);
--
--	sec->data->d_size = size;
--	sec->data->d_align = sec->sh.sh_addralign;
--
--	offset = ALIGN(sec_size(sec), sec->sh.sh_addralign);
--	sec->sh.sh_size = offset + size;
-+		memcpy(sec->data->d_buf + offset, data, size);
-+	else
-+		memset(sec->data->d_buf + offset, 0, size);
- 
-+	sec->data->d_size = size_new;
-+	sec->sh.sh_size = size_new;
- 	mark_sec_changed(elf, sec, true);
--
--	return sec->data->d_buf;
-+	return sec->data->d_buf + offset;
+@@ -1366,9 +1366,27 @@ struct elf *elf_create_file(GElf_Ehdr *ehdr, const char *name)
+ 	return elf;
  }
  
- struct section *elf_create_section(struct elf *elf, const char *name,
-@@ -1483,6 +1505,8 @@ struct section *elf_create_section(struct elf *elf, const char *name,
- 			ERROR_GLIBC("calloc");
- 			return NULL;
- 		}
+-unsigned int elf_add_string(struct elf *elf, struct section *strtab, const char *str)
++int elf_find_string(struct elf *elf, struct section *strtab, const char *str)
+ {
+-	unsigned int offset;
++	char *d_buf;
++	int i;
 +
-+		sec->data_owned = 1;
- 	}
- 
- 	if (!gelf_getshdr(s, &sec->sh)) {
-@@ -1533,60 +1557,33 @@ static int elf_alloc_reloc(struct elf *elf, struct section *rsec)
- 	struct reloc *old_relocs, *old_relocs_end, *new_relocs;
- 	unsigned int nr_relocs_old = sec_num_entries(rsec);
- 	unsigned int nr_relocs_new = nr_relocs_old + 1;
--	unsigned long nr_alloc;
-+	unsigned long nr_alloc_old = 0, nr_alloc_new;
- 	struct symbol *sym;
- 
--	if (!rsec->data) {
--		rsec->data = elf_newdata(elf_getscn(elf->elf, rsec->idx));
--		if (!rsec->data) {
--			ERROR_ELF("elf_newdata");
--			return -1;
--		}
-+	if (!elf_add_data(elf, rsec, NULL, elf_rela_size(elf)))
++	if (!strtab->data)
 +		return -1;
- 
--		rsec->data->d_align = 1;
--		rsec->data->d_type = ELF_T_RELA;
--		rsec->data->d_buf = NULL;
--	}
-+	rsec->data->d_type = ELF_T_RELA;
- 
--	rsec->data->d_size = nr_relocs_new * elf_rela_size(elf);
--	rsec->sh.sh_size   = rsec->data->d_size;
-+	if (rsec->relocs_overallocated)
-+		nr_alloc_old = max(64UL, roundup_pow_of_two(nr_relocs_old ? : 1));
-+	else
-+		nr_alloc_old = nr_relocs_old;
- 
--	nr_alloc = max(64UL, roundup_pow_of_two(nr_relocs_new));
--	if (nr_alloc <= rsec->nr_alloc_relocs)
-+	nr_alloc_new = max(64UL, roundup_pow_of_two(nr_relocs_new ? : 1));
 +
-+	if (nr_alloc_old == nr_alloc_new)
- 		return 0;
++	d_buf = strtab->data->d_buf;
++
++	for (i = 0; i < strtab->data->d_size; i += strlen(d_buf + i) + 1) {
++		if (!strcmp(d_buf + i, str))
++			return i;
++	}
++
++	return -1;
++}
++
++int elf_add_string(struct elf *elf, struct section *strtab, const char *str)
++{
++	void *data;
  
--	if (rsec->data->d_buf && !rsec->nr_alloc_relocs) {
--		void *orig_buf = rsec->data->d_buf;
--
--		/*
--		 * The original d_buf is owned by libelf so it can't be
--		 * realloced.
--		 */
--		rsec->data->d_buf = malloc(nr_alloc * elf_rela_size(elf));
--		if (!rsec->data->d_buf) {
--			ERROR_GLIBC("malloc");
--			return -1;
--		}
--		memcpy(rsec->data->d_buf, orig_buf,
--		       nr_relocs_old * elf_rela_size(elf));
--	} else {
--		rsec->data->d_buf = realloc(rsec->data->d_buf,
--					    nr_alloc * elf_rela_size(elf));
--		if (!rsec->data->d_buf) {
--			ERROR_GLIBC("realloc");
--			return -1;
--		}
--	}
--
--	rsec->nr_alloc_relocs = nr_alloc;
--
--	old_relocs = rsec->relocs;
--	new_relocs = calloc(nr_alloc, sizeof(struct reloc));
-+	new_relocs = calloc(nr_alloc_new, sizeof(struct reloc));
- 	if (!new_relocs) {
- 		ERROR_GLIBC("calloc");
+ 	if (!strtab)
+ 		strtab = find_section_by_name(elf, ".strtab");
+@@ -1382,12 +1400,11 @@ unsigned int elf_add_string(struct elf *elf, struct section *strtab, const char
  		return -1;
  	}
  
-+	rsec->relocs_overallocated = 1;
-+
-+	old_relocs = rsec->relocs;
- 	if (!old_relocs)
- 		goto done;
+-	offset = ALIGN(sec_size(strtab), strtab->sh.sh_addralign);
+-
+-	if (!elf_add_data(elf, strtab, str, strlen(str) + 1))
++	data = elf_add_data(elf, strtab, str, strlen(str) + 1);
++	if (!data)
+ 		return -1;
  
-@@ -1631,6 +1628,7 @@ static int elf_alloc_reloc(struct elf *elf, struct section *rsec)
- 	}
+-	return offset;
++	return data - strtab->data->d_buf;
+ }
  
- 	free(old_relocs);
-+
- done:
- 	rsec->relocs = new_relocs;
- 	return 0;
-@@ -1660,7 +1658,6 @@ struct section *elf_create_rela_section(struct elf *elf, struct section *sec,
- 	if (nr_relocs) {
- 		rsec->data->d_type = ELF_T_RELA;
- 
--		rsec->nr_alloc_relocs = nr_relocs;
- 		rsec->relocs = calloc(nr_relocs, sizeof(struct reloc));
- 		if (!rsec->relocs) {
- 			ERROR_GLIBC("calloc");
+ void *elf_add_data(struct elf *elf, struct section *sec, const void *data, size_t size)
 diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
-index d9c44df9cc76a..0801fcad516bb 100644
+index 0801fcad516bb..d895023674673 100644
 --- a/tools/objtool/include/objtool/elf.h
 +++ b/tools/objtool/include/objtool/elf.h
-@@ -58,9 +58,18 @@ struct section {
- 	Elf_Data *data;
- 	const char *name;
- 	int idx;
--	bool _changed, text, rodata, noinstr, init, truncate;
-+	u32 _changed			: 1,
-+	    text			: 1,
-+	    rodata			: 1,
-+	    noinstr			: 1,
-+	    init			: 1,
-+	    truncate			: 1,
-+	    data_owned			: 1,
-+	    data_overallocated		: 1,
-+	    relocs_overallocated	: 1;
-+	    /* 23 bit hole */
-+
- 	struct reloc *relocs;
--	unsigned long nr_alloc_relocs;
- 	struct section *twin;
- };
+@@ -187,7 +187,8 @@ struct symbol *elf_create_section_symbol(struct elf *elf, struct section *sec);
+ void *elf_add_data(struct elf *elf, struct section *sec, const void *data,
+ 		   size_t size);
  
+-unsigned int elf_add_string(struct elf *elf, struct section *strtab, const char *str);
++int elf_find_string(struct elf *elf, struct section *strtab, const char *str);
++int elf_add_string(struct elf *elf, struct section *strtab, const char *str);
+ 
+ struct reloc *elf_create_reloc(struct elf *elf, struct section *sec,
+ 			       unsigned long offset, struct symbol *sym,
+diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
+index 6a1cec57dc6a3..6957292e455e4 100644
+--- a/tools/objtool/klp-diff.c
++++ b/tools/objtool/klp-diff.c
+@@ -1509,7 +1509,9 @@ static int clone_reloc(struct elfs *e, struct reloc *patched_reloc,
+ 
+ 		__dbg_clone("\"%s\"", escape_str(str));
+ 
+-		addend = elf_add_string(e->out, out_sym->sec, str);
++		addend = elf_find_string(e->out, out_sym->sec, str);
++		if (addend == -1)
++			addend = elf_add_string(e->out, out_sym->sec, str);
+ 		if (addend == -1)
+ 			return -1;
+ 	}
 -- 
 2.53.0
 
