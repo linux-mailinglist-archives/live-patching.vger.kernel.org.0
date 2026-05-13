@@ -1,49 +1,49 @@
-Return-Path: <live-patching+bounces-2793-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2794-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id cGKjAoHzA2prBAIAu9opvQ
-	(envelope-from <live-patching+bounces-2793-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 05:44:01 +0200
+	id 5NHwEYjzA2rKBAIAu9opvQ
+	(envelope-from <live-patching+bounces-2794-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 05:44:08 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from tor.lore.kernel.org (tor.lore.kernel.org [IPv6:2600:3c04:e001:36c::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id A61CD52CEBB
-	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 05:44:00 +0200 (CEST)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
+	by mail.lfdr.de (Postfix) with ESMTPS id 0162E52CECD
+	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 05:44:07 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id 686B830406A3
-	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 03:37:29 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id 400F930E12E4
+	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 03:37:36 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 46A973B2FF3;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C91B93B442F;
 	Wed, 13 May 2026 03:34:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ezRwnLFh"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="srR52N72"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1960E390209;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1F1F3B3BE5;
 	Wed, 13 May 2026 03:34:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778643298; cv=none; b=DMRnQFL0UtYYcMaZq/W9UowDmu0JSb0Dz+DbXAhVL/0P1Z+A8dRtZcLJbowy4kAShMNhYTglwIkqrtBokcpsk+MBFVnhYY5RfC5X2dIhc1p+T5GUA8HdbHSdc/8V5Qg7CndbVSGYqwIfQYqzy1IbCCKa8o7j9d1uq5MN5m8LN3A=
+	t=1778643298; cv=none; b=jmE+ee/pyiH2QlL3OGjG8iQ2DKfkqHFGaQVBf6sbkjrtnoYvW3r8sioUbn0GqrIx5I7BXGTvH7HF9yBPAAk1ZkJPYhUKkGuE68zJ2bc6R274oja+cd+hc/uO6MeNBCzoqQT6SyGYxHC1Sf5PllpRR0bg/TMgTJ+cLaQk0iV5ARg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1778643298; c=relaxed/simple;
-	bh=Qd0dO/5tgykNYwWLyXzlbqJjDPv/OlwKa96fpijusbY=;
+	bh=YLQATZuaSnhkkzf9eNAaMViHdYeqnWtOoiB9QIjH1E8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ASC0bNGEPet5D1Q74oS3CRLTWZIzlKEmC1lU4NtpGD68DA2JYlG21fBcAOH/oEczYu4Q9pTlpzIoXaZv/VN+FSo7CR3pvYN1pcFCV/U29GxsvDfX9vTyHYw8Kc/AqTAjwjolWsGxUmak5YikHa6VGpZUaB9N7tUoo5blmb0v9a4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ezRwnLFh; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91BBDC2BCC7;
-	Wed, 13 May 2026 03:34:57 +0000 (UTC)
+	 MIME-Version; b=nh/XeTSLHVqON3rwkzGS7oB6ED+r/Y0j0kkQjs4RO5PelbIrM2/WsiNr+omRGf7KNkl+f5kiZ/eKXqHV9+wk+2DMwvfLSXBk32uYupGccyw0nTk/9XpEGrosZIa6STIS3JjSGNFK44EI13MnP5wgd8l6vki/Hs4QzacG9SJoikA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=srR52N72; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24E43C2BCC9;
+	Wed, 13 May 2026 03:34:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1778643298;
-	bh=Qd0dO/5tgykNYwWLyXzlbqJjDPv/OlwKa96fpijusbY=;
+	bh=YLQATZuaSnhkkzf9eNAaMViHdYeqnWtOoiB9QIjH1E8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ezRwnLFhhW/r1qzWrMNMdxEu2H/DqfXiJ2o4GqbWf+0lMYBwxuOqxduhE5ZEUvVoV
-	 cJxTTo+ZYLnCujf7pblg6hk4GFibLqRnpO87CQm8asIkk8EAc6HQhDpewVA9Q8F2Db
-	 SM/Exd57jrsCYYHoYwtyvp2Snn8PqfrdMGh9jj+DneVXyHg8hwONsjcZe4ooN+2xRZ
-	 y7qeOwVxCOyLeyuyeaRIGiDz9NkSVMQPlrN7HrKnMsQdEauN4So5GSCviuU68oblCn
-	 d7t9lqGJlGLg1Km+1zpF0utVYxKUZK4nYJHfx9ZSFOdLO/jVE1lcs7wwFQbGEUpzOb
-	 M5KYm1BhNvC5A==
+	b=srR52N72ajUS/qt0gfNhYQ2ypWHNM39KZV/y9QyU/Tbh9AewWSuInrKg1fY0AqSkq
+	 bGFDCFvmtRYPpmTGDhZ79tmiUbXa1gAPhewu7765XOpGqRWIGtpUnz+AZZTeZxkQ//
+	 aKVf1U6Iq02t1j3k4JpsHZvx0MZ+OAa6pnWil+kljhiX7RrhVJkT1DTAhaGzXhtngs
+	 RhRvPcmm48852UA7rhOaOqZec1cX10IReoOqfMrliWxX0Jyzj1yqFPqqv62qxyToTB
+	 DZH5OeCYUqYw79i2SpwLkdrqf/tZRN7aQEEmQpwdmkmTpyE4sKR3OHymVHXVoFvC2i
+	 xYgYZw1nGVRtQ==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -57,9 +57,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Mark Rutland <mark.rutland@arm.com>,
 	Miroslav Benes <mbenes@suse.cz>,
 	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH v3 20/21] klp-build: Support cross-compilation
-Date: Tue, 12 May 2026 20:34:16 -0700
-Message-ID: <8e19a330a899520434cc83f7ccc434c83101ac3c.1778642121.git.jpoimboe@kernel.org>
+Subject: [PATCH v3 21/21] klp-build: Add arm64 syscall patching macro
+Date: Tue, 12 May 2026 20:34:17 -0700
+Message-ID: <3bf3cee43039fc4da84e83d0891a92e25f40f00f.1778642121.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <cover.1778642120.git.jpoimboe@kernel.org>
 References: <cover.1778642120.git.jpoimboe@kernel.org>
@@ -70,25 +70,25 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: A61CD52CEBB
+X-Rspamd-Queue-Id: 0162E52CECD
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-0.66 / 15.00];
 	MID_CONTAINS_FROM(1.00)[];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	R_MISSING_CHARSET(0.50)[];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c04:e001:36c::/64:c];
+	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2793-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2794-lists,live-patching=lfdr.de];
 	MIME_TRACE(0.00)[0:+];
 	RCPT_COUNT_TWELVE(0.00)[12];
 	RCVD_TLS_LAST(0.00)[];
 	RCVD_COUNT_THREE(0.00)[4];
-	ASN(0.00)[asn:63949, ipnet:2600:3c04::/32, country:SG];
+	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
 	PRECEDENCE_BULK(0.00)[];
 	FROM_NEQ_ENVFROM(0.00)[jpoimboe@kernel.org,live-patching@vger.kernel.org];
@@ -101,61 +101,44 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
 X-Rspamd-Action: no action
 
-Add support for cross-compilation.  The user must export ARCH, and
-either CROSS_COMPILE or LLVM as needed.
+Add arm64 support for KLP_SYSCALL_DEFINEx(), mirroring the arm64
+__SYSCALL_DEFINEx() pattern from arch/arm64/include/asm/syscall_wrapper.h.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- scripts/livepatch/klp-build | 22 +++++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
+ include/linux/livepatch_helpers.h | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/scripts/livepatch/klp-build b/scripts/livepatch/klp-build
-index 911ada05673c2..e83973567c878 100755
---- a/scripts/livepatch/klp-build
-+++ b/scripts/livepatch/klp-build
-@@ -432,6 +432,25 @@ validate_patches() {
- 	revert_patches
- }
+diff --git a/include/linux/livepatch_helpers.h b/include/linux/livepatch_helpers.h
+index 99d68d0773fa8..4b647b83865f9 100644
+--- a/include/linux/livepatch_helpers.h
++++ b/include/linux/livepatch_helpers.h
+@@ -72,6 +72,25 @@
+ 	}								\
+ 	static inline long __klp_do_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))
  
-+cross_compile_init() {
-+	if [[ -v LLVM && -n "$LLVM" ]]; then
-+		local prefix=""
-+		local suffix=""
++#elif defined(CONFIG_ARM64)
 +
-+		if [[ "$LLVM" == */ ]]; then
-+			# LLVM=/path/to/bin/
-+			prefix="$LLVM"
-+		elif [[ "$LLVM" == -* ]]; then
-+			# LLVM=-14
-+			suffix="$LLVM"
-+		fi
++#define __KLP_SYSCALL_DEFINEx(x, name, ...)				\
++	static long __se_sys##name(__MAP(x,__SC_LONG,__VA_ARGS__));	\
++	static inline long __klp_do_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__));\
++	asmlinkage long __arm64_sys##name(const struct pt_regs *regs);	\
++	asmlinkage long __arm64_sys##name(const struct pt_regs *regs)	\
++	{								\
++		return __se_sys##name(SC_ARM64_REGS_TO_ARGS(x,__VA_ARGS__));\
++	}								\
++	static long __se_sys##name(__MAP(x,__SC_LONG,__VA_ARGS__))	\
++	{								\
++		long ret = __klp_do_sys##name(__MAP(x,__SC_CAST,__VA_ARGS__));\
++		__MAP(x,__SC_TEST,__VA_ARGS__);				\
++		__PROTECT(x, ret,__MAP(x,__SC_ARGS,__VA_ARGS__));	\
++		return ret;						\
++	}								\
++	static inline long __klp_do_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))
 +
-+		OBJCOPY="${prefix}llvm-objcopy${suffix}"
-+	else
-+		OBJCOPY="${CROSS_COMPILE:-}objcopy"
-+	fi
-+}
-+
- do_init() {
- 	# We're not yet smart enough to handle anything other than in-tree
- 	# builds in pwd.
-@@ -462,6 +481,7 @@ do_init() {
- 	validate_config
- 	set_module_name
- 	set_kernelversion
-+	cross_compile_init
- }
+ #endif
  
- # Refresh the patch hunk headers, specifically the line numbers and counts.
-@@ -871,7 +891,7 @@ build_patch_module() {
- 	cp -f "$kmod_file" "$kmod_file.orig"
- 
- 	# Work around issue where slight .config change makes corrupt BTF
--	objcopy --remove-section=.BTF "$kmod_file"
-+	"$OBJCOPY" --remove-section=.BTF "$kmod_file"
- 
- 	# Fix (and work around) linker wreckage for klp syms / relocs
- 	"$OBJTOOL" klp post-link "$kmod_file" || die "objtool klp post-link failed"
+ #endif /* _LINUX_LIVEPATCH_HELPERS_H */
 -- 
 2.53.0
 
