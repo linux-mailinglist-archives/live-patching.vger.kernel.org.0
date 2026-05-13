@@ -1,49 +1,49 @@
-Return-Path: <live-patching+bounces-2789-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2791-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id sPwlHjTzA2qrBAIAu9opvQ
-	(envelope-from <live-patching+bounces-2789-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 05:42:44 +0200
+	id aO4uOUrzA2prBAIAu9opvQ
+	(envelope-from <live-patching+bounces-2791-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 05:43:06 +0200
 X-Original-To: lists+live-patching@lfdr.de
 Received: from sin.lore.kernel.org (sin.lore.kernel.org [IPv6:2600:3c15:e001:75::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id BA4EE52CE6A
-	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 05:42:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id DE1A752CE79
+	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 05:43:05 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sin.lore.kernel.org (Postfix) with ESMTP id E6254307809F
-	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 03:37:09 +0000 (UTC)
+	by sin.lore.kernel.org (Postfix) with ESMTP id AC552307B259
+	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 03:37:17 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8E5D93B0AD0;
-	Wed, 13 May 2026 03:34:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3CFFD3B19BB;
+	Wed, 13 May 2026 03:34:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TwaaG1Fw"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BAHMWZye"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A2693A8736;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 194E13A5457;
 	Wed, 13 May 2026 03:34:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778643296; cv=none; b=KAsY4NT4TvdjINGwWXEzzGLb6D/L282QfaEQPCfIFvv1g0PmVK0tWEAVffJ46WoEvg2MSprX+4y7ZkcDnIMkWbhtH2lYxx2L3U2DcSE14tPSX0/OQTPCbipnwmmXHWq8cNwkcAEdmrowm4ZLpQCaeAsJO6bunDJcDAI60SQctlk=
+	t=1778643297; cv=none; b=jdhFtx+U7TYUkbFSWhrxvn4GVh9MXYgpA0XjOjnzGp2vnm2hBS6Ksg4J0zoHhi3xyzTi+u5OlNbibInAEPLcwhqk1eHrrXHv/3qstAc5IGTMLHYAsWy542Jpvj2+mCECvNhkAoiLX6v7uL5ELmeDVy3tDxYoXVxq5El3jc99HH4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778643296; c=relaxed/simple;
-	bh=y8OlQ2u+RBKl5+g5VAi278HKoC71kQ9CG5Kwq0UXfOw=;
+	s=arc-20240116; t=1778643297; c=relaxed/simple;
+	bh=/Ud7RFmvMlyU46qLdzlp+gqu1cwu2w70Cyl79KX3OK0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=u2dfnWY6WI7aXE19oxizSDpMwQ9kRmE0j+sYjIcNnm823sXVHUj9T1oOj9Zoa4fkA8RwHOX/kOB0PiiGbxqJXtfMQEeI3q8VTwCFbh29J0LK0nV7W7X/H0WTFPuOeAXpom7suTlLYXi2hV0ymf9h91CDGvLENP+9Bjj47L1L2Lw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TwaaG1Fw; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE57CC2BCFB;
-	Wed, 13 May 2026 03:34:55 +0000 (UTC)
+	 MIME-Version; b=CqI+cbFgtUeLAnypgntGPXa5YQ1jvoJFEhnssLpx2/kEWTE9jif4WmgKbHwrWzQAi2id72hGQDiQnLQsU6CH6QpbAHiqabGTfJVKD3kDHzx5+JKn8bJIH6Lso5FEUUSPGMSRNZjhZz0G+fmI85UkEP28t66/81jEk0N+aXpcXMY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BAHMWZye; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74873C2BCC7;
+	Wed, 13 May 2026 03:34:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1778643296;
-	bh=y8OlQ2u+RBKl5+g5VAi278HKoC71kQ9CG5Kwq0UXfOw=;
+	bh=/Ud7RFmvMlyU46qLdzlp+gqu1cwu2w70Cyl79KX3OK0=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=TwaaG1FwksSjtDGCqBBb30zlrP/Lef2E9lzbretHPg3Z7pj2aog6WKYOLLmBsLzKD
-	 1RPlSv93beMtMc4YALNhn/nDaxftFgw27pnB7QpPBonygYQr5XqMoshADSOXoNdVSX
-	 8cWdSSDV/0OIJeQVInQMPLrgdQxys0/h5U2vCW0uGz+QYfzYPEmjV4b2vUKImyJVEs
-	 vIbVk61qcKWrogRX+NOMgmE+Xvj+ypo+kb6IrcK5igDjuNvKobRFDkn9XmUwoHdh+o
-	 nvooKYJaq4fYolQAx1bHfX1JA05hAGrwO/X0g9ywfafSI3cXL6SRa+FMhtqE5j2JlB
-	 vIPcIzkI5dbtw==
+	b=BAHMWZye+awNKBMXJe0s5jlOd+m/VZf/9rSyW063iL0R8i+kaE9a0gvMOKew7L1Y6
+	 +OUSZfpwIsEpOrIa0stkHA0jf0PfqYQhFO9ZibdzhbOM+bDgZNB8o/Iw1cvRz9147L
+	 ZWWams6x9W3aI3fir/8pT8F8+N8mDCIe82jSI16wD1atwLsr3tmL9K3fxo6+vAlF6P
+	 K+2jdmsK8nndzFrxGrPlhJiVI27ddZU2CKoKCcLKDcJ3Uh8KeAoXX5Q7DtTi/QGbBA
+	 iRzPG7YHG7tlawYdMrADkDzuEskV8hOjnQWSSNipW0ISOqws7B0sdtT2jA9YboFzFm
+	 6Nu9JDf5X6WDw==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -57,9 +57,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Mark Rutland <mark.rutland@arm.com>,
 	Miroslav Benes <mbenes@suse.cz>,
 	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH v3 17/21] objtool/klp: Don't correlate arm64 mapping symbols
-Date: Tue, 12 May 2026 20:34:13 -0700
-Message-ID: <48efc64058f667159d3dedf367c1d4cdedf84f1c.1778642120.git.jpoimboe@kernel.org>
+Subject: [PATCH v3 18/21] objtool/klp: Clone inline alternative replacements
+Date: Tue, 12 May 2026 20:34:14 -0700
+Message-ID: <de4d1696be0af867573f559448dd82a16c7d7a24.1778642120.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <cover.1778642120.git.jpoimboe@kernel.org>
 References: <cover.1778642120.git.jpoimboe@kernel.org>
@@ -70,20 +70,20 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: BA4EE52CE6A
+X-Rspamd-Queue-Id: DE1A752CE79
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-0.66 / 15.00];
 	MID_CONTAINS_FROM(1.00)[];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	R_MISSING_CHARSET(0.50)[];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c15:e001:75::/64];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c15:e001:75::/64:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2789-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2791-lists,live-patching=lfdr.de];
 	MIME_TRACE(0.00)[0:+];
 	RCPT_COUNT_TWELVE(0.00)[12];
 	RCVD_TLS_LAST(0.00)[];
@@ -101,29 +101,240 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
 X-Rspamd-Action: no action
 
-ARM64 ELF files contain mapping symbols ($d, $x, $a, etc.) which mark
-transitions between code and data.  There are thousands of them per
-object file, all sharing the same few names.
+Unlike x86-64, arm64 places alternative replacement instructions in
+.text, immediately after the affected function.
 
-They aren't "real" symbols so there's no need to correlate them.
+So if the replacement instructions have PC-relative branches without
+relocations, their offsets relative to the function have to remain
+constant.
+
+Achieve that by cloning the function's alternative replacements
+immediately after cloning the function itself.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/klp-diff.c | 1 +
- 1 file changed, 1 insertion(+)
+ tools/objtool/elf.c                 |  9 +++--
+ tools/objtool/include/objtool/elf.h |  7 +++-
+ tools/objtool/klp-diff.c            | 63 ++++++++++++++++++++++++-----
+ 3 files changed, 65 insertions(+), 14 deletions(-)
 
+diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
+index a4d9afa3a079c..a5b2929ea0fa9 100644
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -1413,14 +1413,15 @@ int elf_add_string(struct elf *elf, struct section *strtab, const char *str)
+ 		return -1;
+ 	}
+ 
+-	data = elf_add_data(elf, strtab, str, strlen(str) + 1);
++	data = elf_add_data(elf, strtab, str, strlen(str) + 1, true);
+ 	if (!data)
+ 		return -1;
+ 
+ 	return data - strtab->data->d_buf;
+ }
+ 
+-void *elf_add_data(struct elf *elf, struct section *sec, const void *data, size_t size)
++void *elf_add_data(struct elf *elf, struct section *sec, const void *data,
++		   size_t size, bool align)
+ {
+ 	unsigned long offset, size_old, size_new, alloc_size_old, alloc_size_new;
+ 	Elf_Scn *s;
+@@ -1447,7 +1448,7 @@ void *elf_add_data(struct elf *elf, struct section *sec, const void *data, size_
+ 	}
+ 
+ 	size_old = sec->data->d_size;
+-	offset = ALIGN(size_old, sec->sh.sh_addralign);
++	offset = ALIGN(size_old, align ? sec->sh.sh_addralign : 1);
+ 	size_new = offset + size;
+ 
+ 	if (!sec->data_overallocated)
+@@ -1590,7 +1591,7 @@ static int elf_alloc_reloc(struct elf *elf, struct section *rsec)
+ 	unsigned long nr_alloc_old = 0, nr_alloc_new;
+ 	struct symbol *sym;
+ 
+-	if (!elf_add_data(elf, rsec, NULL, elf_rela_size(elf)))
++	if (!elf_add_data(elf, rsec, NULL, elf_rela_size(elf), true))
+ 		return -1;
+ 
+ 	rsec->data->d_type = ELF_T_RELA;
+diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
+index ab1d53ed23189..fba0a0e08f8b6 100644
+--- a/tools/objtool/include/objtool/elf.h
++++ b/tools/objtool/include/objtool/elf.h
+@@ -106,6 +106,8 @@ struct symbol {
+ 	u8 included	     : 1;
+ 	u8 klp		     : 1;
+ 	u8 dont_correlate    : 1;
++	u8 fake		     : 1;
++	u8 unalign	     : 1;
+ 	struct list_head pv_target;
+ 	struct reloc *relocs;
+ 	struct section *group_sec;
+@@ -186,7 +188,7 @@ struct symbol *elf_create_symbol(struct elf *elf, const char *name,
+ struct symbol *elf_create_section_symbol(struct elf *elf, struct section *sec);
+ 
+ void *elf_add_data(struct elf *elf, struct section *sec, const void *data,
+-		   size_t size);
++		   size_t size, bool align);
+ 
+ int elf_find_string(struct elf *elf, struct section *strtab, const char *str);
+ int elf_add_string(struct elf *elf, struct section *strtab, const char *str);
+@@ -532,6 +534,9 @@ static inline void set_sym_next_reloc(struct reloc *reloc, struct reloc *next)
+ #define sec_for_each_sym_from(sec, sym)					\
+ 	list_for_each_entry_from(sym, &sec->symbol_list, list)
+ 
++#define sec_for_each_sym_continue(sec, sym)				\
++	list_for_each_entry_continue(sym, &sec->symbol_list, list)
++
+ #define sec_prev_sym(sym)						\
+ 	sym->sec && sym->list.prev != &sym->sec->symbol_list ?		\
+ 	list_prev_entry(sym, list) : NULL
 diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
-index eb21f3bf3120b..e1d4d94c9d77c 100644
+index e1d4d94c9d77c..b9624bd9439b9 100644
 --- a/tools/objtool/klp-diff.c
 +++ b/tools/objtool/klp-diff.c
-@@ -501,6 +501,7 @@ static bool dont_correlate(struct symbol *sym)
- 	       is_prefix_func(sym) ||
- 	       is_uncorrelated_static_local(sym) ||
- 	       is_local_label(sym) ||
-+	       is_mapping_sym(sym) ||
- 	       is_string_sec(sym->sec) ||
- 	       is_anonymous_rodata(sym) ||
- 	       is_initcall_sym(sym) ||
+@@ -1027,8 +1027,9 @@ static int clone_sym_relocs(struct elfs *e, struct symbol *patched_sym);
+ static struct symbol *__clone_symbol(struct elf *elf, struct symbol *patched_sym,
+ 				     bool data_too)
+ {
+-	struct section *out_sec = NULL;
+ 	unsigned long offset = 0, pfx_size = 0;
++	bool align = !patched_sym->unalign;
++	struct section *out_sec = NULL;
+ 	struct symbol *out_sym;
+ 
+ 	if (data_too && !is_undef_sym(patched_sym)) {
+@@ -1054,7 +1055,7 @@ static struct symbol *__clone_symbol(struct elf *elf, struct symbol *patched_sym
+ 		}
+ 
+ 		if (!is_sec_sym(patched_sym))
+-			offset = ALIGN(sec_size(out_sec), out_sec->sh.sh_addralign);
++			offset = ALIGN(sec_size(out_sec), align ? out_sec->sh.sh_addralign : 1);
+ 
+ 		if (patched_sym->len || is_sec_sym(patched_sym)) {
+ 			void *data = NULL;
+@@ -1072,7 +1073,7 @@ static struct symbol *__clone_symbol(struct elf *elf, struct symbol *patched_sym
+ 			else
+ 				size = patched_sym->len + pfx_size;
+ 
+-			if (!elf_add_data(elf, out_sec, data, size))
++			if (!elf_add_data(elf, out_sec, data, size, align))
+ 				return NULL;
+ 
+ 			offset += pfx_size;
+@@ -1114,6 +1115,37 @@ static const char *sym_bind(struct symbol *sym)
+ 	}
+ }
+ 
++static struct symbol *clone_symbol(struct elfs *e, struct symbol *patched_sym,
++				   bool data_too);
++
++/*
++ * For arm64 alternatives, the replacement instructions come immediately after
++ * the function.  Clone any such blocks of instructions in place to preserve
++ * their offsets relative to the function in case they have hard-coded PC
++ * relative branches.
++ */
++static int clone_inline_alternatives(struct elfs *e, struct symbol *patched_sym)
++{
++	struct symbol *next;
++
++	if (!__is_defined(ARCH_HAS_INLINE_ALTS) || !is_func_sym(patched_sym))
++		return 0;
++
++	next = patched_sym;
++	sec_for_each_sym_continue(patched_sym->sec, next) {
++		if (next->offset < (patched_sym->offset + patched_sym->len) ||
++		    is_mapping_sym(next))
++			continue;
++		if (!next->fake)
++			break;
++		next->unalign = 1;
++		if (!clone_symbol(e, next, true))
++			return -1;
++	}
++
++	return 0;
++}
++
+ /*
+  * Copy a symbol to the output object, optionally including its data and
+  * relocations.
+@@ -1138,7 +1170,13 @@ static struct symbol *clone_symbol(struct elfs *e, struct symbol *patched_sym,
+ 	if (!__clone_symbol(e->out, patched_sym, data_too))
+ 		return NULL;
+ 
+-	if (data_too && clone_sym_relocs(e, patched_sym))
++	if (!data_too || is_undef_sym(patched_sym))
++		return patched_sym->clone;
++
++	if (clone_sym_relocs(e, patched_sym))
++		return NULL;
++
++	if (clone_inline_alternatives(e, patched_sym))
+ 		return NULL;
+ 
+ 	return patched_sym->clone;
+@@ -1551,7 +1589,7 @@ static int clone_reloc_klp(struct elfs *e, struct reloc *patched_reloc,
+ 	memset(&klp_reloc, 0, sizeof(klp_reloc));
+ 
+ 	klp_reloc.type = reloc_type(patched_reloc);
+-	if (!elf_add_data(e->out, klp_relocs, &klp_reloc, sizeof(klp_reloc)))
++	if (!elf_add_data(e->out, klp_relocs, &klp_reloc, sizeof(klp_reloc), true))
+ 		return -1;
+ 
+ 	/* klp_reloc.offset */
+@@ -1714,6 +1752,7 @@ static int create_fake_symbol(struct elf *elf, struct section *sec,
+ 			      unsigned long offset, size_t size)
+ {
+ 	char name[SYM_NAME_LEN];
++	struct symbol *sym;
+ 	unsigned int type;
+ 	static int ctr;
+ 	char *c;
+@@ -1730,7 +1769,13 @@ static int create_fake_symbol(struct elf *elf, struct section *sec,
+ 	 *	       while still allowing objdump to disassemble it.
+ 	 */
+ 	type = is_text_sec(sec) ? STT_NOTYPE : STT_OBJECT;
+-	return elf_create_symbol(elf, name, sec, STB_LOCAL, type, offset, size) ? 0 : -1;
++
++	sym = elf_create_symbol(elf, name, sec, STB_LOCAL, type, offset, size);
++	if (!sym)
++		return -1;
++
++	sym->fake = 1;
++	return 0;
+ }
+ 
+ /*
+@@ -2095,7 +2140,7 @@ static int create_klp_sections(struct elfs *e)
+ 		return -1;
+ 
+ 	/* allocate klp_object_ext */
+-	obj_data = elf_add_data(e->out, obj_sec, NULL, obj_size);
++	obj_data = elf_add_data(e->out, obj_sec, NULL, obj_size, true);
+ 	if (!obj_data)
+ 		return -1;
+ 
+@@ -2130,7 +2175,7 @@ static int create_klp_sections(struct elfs *e)
+ 			continue;
+ 
+ 		/* allocate klp_func_ext */
+-		func_data = elf_add_data(e->out, funcs_sec, NULL, func_size);
++		func_data = elf_add_data(e->out, funcs_sec, NULL, func_size, true);
+ 		if (!func_data)
+ 			return -1;
+ 
+@@ -2276,7 +2321,7 @@ static int copy_import_ns(struct elfs *e)
+ 			}
+ 		}
+ 
+-		if (!elf_add_data(e->out, out_sec, import_ns, strlen(import_ns) + 1))
++		if (!elf_add_data(e->out, out_sec, import_ns, strlen(import_ns) + 1, true))
+ 			return -1;
+ 	}
+ 
 -- 
 2.53.0
 
