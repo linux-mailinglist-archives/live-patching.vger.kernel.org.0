@@ -1,49 +1,49 @@
-Return-Path: <live-patching+bounces-2764-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2767-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id yKCGM1fyA2prBAIAu9opvQ
-	(envelope-from <live-patching+bounces-2764-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 05:39:03 +0200
+	id gH6UK8XxA2prBAIAu9opvQ
+	(envelope-from <live-patching+bounces-2767-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 05:36:37 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 7AC3852CD69
-	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 05:39:03 +0200 (CEST)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
+	by mail.lfdr.de (Postfix) with ESMTPS id 6146652CCF1
+	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 05:36:36 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id A675F310A0D8
-	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 03:34:51 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id 9944A3070C5F
+	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 03:35:03 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 09FF93A48CA;
-	Wed, 13 May 2026 03:34:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 240B73A640A;
+	Wed, 13 May 2026 03:34:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ncUO3Z32"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ah2axMr4"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4B9639C637;
-	Wed, 13 May 2026 03:34:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3B44399359;
+	Wed, 13 May 2026 03:34:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778643278; cv=none; b=inhXyp9jHWFVQxdOVkcrVnXY1JCVb2D49V9nGpGwI1XSWo4057WmYajqFAG4dCRvGbWhagxW70QvBisc2jwnGHjDNgp+0WRXqi8QkMm3uGWzQFgid/nM47MovmIL69KZ9JYrKlEVRTcVnRQ5B9xmxK17lHItZ/tq9KVaFhMtQ2U=
+	t=1778643282; cv=none; b=CbmstN37w/PdgxP6ZeqxDcK7UA/3A28J9wDRtp00px5Y32ta/wwuZzRZKj+SfgaWuvP0F/3IrcJvDWH3y53IWYxHQ6d2qw/p2o4D1pnRhXLsqdcsPBH0Fg3lCKWbVTon/ZzVRFtrs7YVBHfhERheNYT78koxqlTV9KA+jjaDK9I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778643278; c=relaxed/simple;
-	bh=lYQ1yov6GYXVE+5pFJSvbDLFJ5lLXCdGtVTWLqgmeuM=;
+	s=arc-20240116; t=1778643282; c=relaxed/simple;
+	bh=OGkHFIyLNKCb25myeDpCNSwUOYdeu6CUYnno4eQa9zw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=YqEfCtHEXpvjFz2n65P2q315+GH7D1Rrvax6TCxlWAy8WOAnBjuZonujLXAZAUcQ0JRXj0+zs3xxZcQQv94CWYtRVxc/QCED6TZAsLJNjIk6oAFO03PUXnVm3hbAB4MKJbQQG6C8Bajgg7Kh37F/pfO57EnuUHg3RMzAieURXGI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ncUO3Z32; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11D32C2BCC9;
+	 MIME-Version; b=gz7aev/yQ4J+jqg3SA19I76781KN37XvU/dl6QPebzUEp7JqPdlQKtvt4aheKZYNaT0Z3vS3AeGSYwOEWcT/60ra8GKx8DMGwVkQFpWcKGj3umFKwzX0JVkYPR9ei3lHRRJLQrSOyh8FtV6XwzayFh8qS84ZmLOgjpj+Zj3OPk0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ah2axMr4; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9505C2BCC7;
 	Wed, 13 May 2026 03:34:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778643278;
-	bh=lYQ1yov6GYXVE+5pFJSvbDLFJ5lLXCdGtVTWLqgmeuM=;
+	s=k20201202; t=1778643279;
+	bh=OGkHFIyLNKCb25myeDpCNSwUOYdeu6CUYnno4eQa9zw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ncUO3Z32AbCA3N67e+bLhuW1dnvX0NQjy8olIzxmFBg+0bPjrMcNu0YF6dkAtue9L
-	 ki4CmckhNSZTSQps7z/m/oqN+kRw4sVVYZWOlE67k0U53hsYcyo2Zy7lkEwA194nzD
-	 e1rUTJkVPsoB1Qk1L5vr/1IagUXAy7mPYABMJcccHC0yP6myPwj7diAgZydR6JJxYV
-	 TDoNDG9TaWcpTjCfQ11W4HbQjqOhBSz+tbvEk6FiMdgqhFyCsrfcM8SrUdMy2Z4sYi
-	 p9JB7/eom2Ck4C3MoiDqc+h5JWS+1+R7wp98F/LDjVlfO5I4S9Fs/I5k3PE5CpGbyE
-	 FPkPPhuQSHenw==
+	b=Ah2axMr4EVLERHF+dnOZr5VI9jvDAdtuAyWJTRuQv9RnMa1jfIlqLPyK5QlrfsxyQ
+	 KrENRLOm7JudFMwOaZTSb+QyQhCxSIjwtY2Pmy9TXIKyt8dQNjYqH9W7Y/ROuee/Gg
+	 uPRGCMrXfqU1NRhss9+jN456TRlkTTglLYF847XUEA5Qp9SgDQNRepqBd2ujY81gs6
+	 i0eekvEvXdGD5zpnQoi58wG8WnQU6f41xd0sL+LeVmOEEfrn68ZhC/s7ob4Jdsq+gE
+	 y9lCdnw8g+SQeQZ6ULMyoTOOKvUQm8H7eyvtwJtM05au6lJ+DSXNEthqskxsLj0S7P
+	 FLFsy4ZGARSWA==
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 To: x86@kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -57,9 +57,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Mark Rutland <mark.rutland@arm.com>,
 	Miroslav Benes <mbenes@suse.cz>,
 	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH v3 13/21] objtool: Reuse string references
-Date: Tue, 12 May 2026 20:33:47 -0700
-Message-ID: <8881010b54f07432929acb8e704cd6ffcc835318.1778642120.git.jpoimboe@kernel.org>
+Subject: [PATCH v3 14/21] objtool: Prevent kCFI hashes from being decoded as instructions
+Date: Tue, 12 May 2026 20:33:48 -0700
+Message-ID: <b1d50c9fc9e6b9bca43833cc4ccbd88a31fed84b.1778642120.git.jpoimboe@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <cover.1778642120.git.jpoimboe@kernel.org>
 References: <cover.1778642120.git.jpoimboe@kernel.org>
@@ -70,25 +70,25 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 7AC3852CD69
+X-Rspamd-Queue-Id: 6146652CCF1
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-0.66 / 15.00];
 	MID_CONTAINS_FROM(1.00)[];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	R_MISSING_CHARSET(0.50)[];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
+	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2764-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2767-lists,live-patching=lfdr.de];
 	MIME_TRACE(0.00)[0:+];
 	RCPT_COUNT_TWELVE(0.00)[12];
 	RCVD_TLS_LAST(0.00)[];
 	RCVD_COUNT_THREE(0.00)[4];
-	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
+	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
 	PRECEDENCE_BULK(0.00)[];
 	FROM_NEQ_ENVFROM(0.00)[jpoimboe@kernel.org,live-patching@vger.kernel.org];
@@ -98,108 +98,85 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
 	TAGGED_RCPT(0.00)[live-patching];
 	TO_DN_SOME(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns]
+	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
 X-Rspamd-Action: no action
 
-For duplicate strings, elf_add_string() just blindly adds duplicates.
+On arm64 with CONFIG_CFI=y, Clang places a 4-byte kCFI type hash
+immediately before each address-taken function entry.  Since these
+hashes are in the text section, objtool tries to decode them, leading to
+unpredictable results (e.g., "unannotated intra-function call").
 
-That can be a problem for arm64 which often uses two consecutive
-instructions (and corresponding relocations) to put an address into a
-register, like:
-
-  d8:   90000001        adrp    x1, 0 <meminfo_proc_show>       d8: R_AARCH64_ADR_PREL_PG_HI21  .rodata.meminfo_proc_show.str1.8
-  dc:   91000021        add     x1, x1, #0x0    dc: R_AARCH64_ADD_ABS_LO12_NC   .rodata.meminfo_proc_show.str1.8
-
-Referencing two different addresses in the ADRP+ADD pair would corrupt
-the memory access.  Avoid that by detecting and reusing duplicates when
-cloning string relocs.
+arm64 uses mapping symbols to annotate where code ends and data begins
+(and vice versa).  Use those to just mark such "instructions" as NOP so
+objtool will ignore them.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- tools/objtool/elf.c                 | 29 +++++++++++++++++++++++------
- tools/objtool/include/objtool/elf.h |  3 ++-
- tools/objtool/klp-diff.c            |  4 +++-
- 3 files changed, 28 insertions(+), 8 deletions(-)
+ tools/objtool/check.c               | 15 +++++++++++++++
+ tools/objtool/include/objtool/elf.h |  3 +++
+ 2 files changed, 18 insertions(+)
 
-diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
-index e09bb0a63be35..065ccfeb98288 100644
---- a/tools/objtool/elf.c
-+++ b/tools/objtool/elf.c
-@@ -1366,9 +1366,27 @@ struct elf *elf_create_file(GElf_Ehdr *ehdr, const char *name)
- 	return elf;
- }
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index e05dc7a93dc1e..2b03a2d6fc952 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -25,6 +25,7 @@
+ #include <linux/kernel.h>
+ #include <linux/static_call_types.h>
+ #include <linux/string.h>
++#include <linux/kconfig.h>
  
--unsigned int elf_add_string(struct elf *elf, struct section *strtab, const char *str)
-+int elf_find_string(struct elf *elf, struct section *strtab, const char *str)
- {
--	unsigned int offset;
-+	char *d_buf;
-+	int i;
-+
-+	if (!strtab->data)
-+		return -1;
-+
-+	d_buf = strtab->data->d_buf;
-+
-+	for (i = 0; i < strtab->data->d_size; i += strlen(d_buf + i) + 1) {
-+		if (!strcmp(d_buf + i, str))
-+			return i;
-+	}
-+
-+	return -1;
-+}
-+
-+int elf_add_string(struct elf *elf, struct section *strtab, const char *str)
-+{
-+	void *data;
+ static unsigned long nr_cfi, nr_cfi_reused, nr_cfi_cache;
  
- 	if (!strtab)
- 		strtab = find_section_by_name(elf, ".strtab");
-@@ -1382,12 +1400,11 @@ unsigned int elf_add_string(struct elf *elf, struct section *strtab, const char
- 		return -1;
- 	}
+@@ -428,6 +429,8 @@ static int decode_instructions(struct objtool_file *file)
  
--	offset = ALIGN(sec_size(strtab), strtab->sh.sh_addralign);
--
--	if (!elf_add_data(elf, strtab, str, strlen(str) + 1))
-+	data = elf_add_data(elf, strtab, str, strlen(str) + 1);
-+	if (!data)
- 		return -1;
+ 	for_each_sec(file->elf, sec) {
+ 		struct instruction *insns = NULL;
++		struct symbol *map_sym;
++		bool is_data = false;
+ 		u8 prev_len = 0;
+ 		u8 idx = 0;
  
--	return offset;
-+	return data - strtab->data->d_buf;
- }
+@@ -454,6 +457,8 @@ static int decode_instructions(struct objtool_file *file)
+ 		if (!strcmp(sec->name, ".init.text") && !opts.module)
+ 			sec->init = true;
  
- void *elf_add_data(struct elf *elf, struct section *sec, const void *data, size_t size)
++		map_sym = list_first_entry(&sec->symbol_list, struct symbol, list);
++
+ 		for (offset = 0; offset < sec_size(sec); offset += insn->len) {
+ 			if (!insns || idx == INSN_CHUNK_MAX) {
+ 				insns = calloc(INSN_CHUNK_SIZE, sizeof(*insn));
+@@ -478,6 +483,16 @@ static int decode_instructions(struct objtool_file *file)
+ 
+ 			prev_len = insn->len;
+ 
++			/* Use mapping symbols to skip data in text sections */
++			sec_for_each_sym_from(sec, map_sym) {
++				if (map_sym->offset > offset)
++					break;
++				if (is_mapping_sym(map_sym))
++					is_data = is_data_mapping_sym(map_sym);
++			}
++			if (is_data)
++				insn->type = INSN_NOP;
++
+ 			/*
+ 			 * By default, "ud2" is a dead end unless otherwise
+ 			 * annotated, because GCC 7 inserts it for certain
 diff --git a/tools/objtool/include/objtool/elf.h b/tools/objtool/include/objtool/elf.h
-index 0801fcad516bb..d895023674673 100644
+index d895023674673..9d36b14f420e2 100644
 --- a/tools/objtool/include/objtool/elf.h
 +++ b/tools/objtool/include/objtool/elf.h
-@@ -187,7 +187,8 @@ struct symbol *elf_create_section_symbol(struct elf *elf, struct section *sec);
- void *elf_add_data(struct elf *elf, struct section *sec, const void *data,
- 		   size_t size);
+@@ -507,6 +507,9 @@ static inline void set_sym_next_reloc(struct reloc *reloc, struct reloc *next)
+ #define sec_for_each_sym(sec, sym)					\
+ 	list_for_each_entry(sym, &sec->symbol_list, list)
  
--unsigned int elf_add_string(struct elf *elf, struct section *strtab, const char *str);
-+int elf_find_string(struct elf *elf, struct section *strtab, const char *str);
-+int elf_add_string(struct elf *elf, struct section *strtab, const char *str);
- 
- struct reloc *elf_create_reloc(struct elf *elf, struct section *sec,
- 			       unsigned long offset, struct symbol *sym,
-diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
-index 6a1cec57dc6a3..6957292e455e4 100644
---- a/tools/objtool/klp-diff.c
-+++ b/tools/objtool/klp-diff.c
-@@ -1509,7 +1509,9 @@ static int clone_reloc(struct elfs *e, struct reloc *patched_reloc,
- 
- 		__dbg_clone("\"%s\"", escape_str(str));
- 
--		addend = elf_add_string(e->out, out_sym->sec, str);
-+		addend = elf_find_string(e->out, out_sym->sec, str);
-+		if (addend == -1)
-+			addend = elf_add_string(e->out, out_sym->sec, str);
- 		if (addend == -1)
- 			return -1;
- 	}
++#define sec_for_each_sym_from(sec, sym)					\
++	list_for_each_entry_from(sym, &sec->symbol_list, list)
++
+ #define sec_prev_sym(sym)						\
+ 	sym->sec && sym->list.prev != &sym->sec->symbol_list ?		\
+ 	list_prev_entry(sym, list) : NULL
 -- 
 2.53.0
 
