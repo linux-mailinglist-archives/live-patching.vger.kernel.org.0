@@ -1,81 +1,81 @@
-Return-Path: <live-patching+bounces-2804-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2805-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id QDZeCPKYBGpiLwIAu9opvQ
-	(envelope-from <live-patching+bounces-2804-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 17:29:54 +0200
+	id yEyiBzWOBGoALgIAu9opvQ
+	(envelope-from <live-patching+bounces-2805-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 16:44:05 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
-	by mail.lfdr.de (Postfix) with ESMTPS id 777D2536250
-	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 17:29:52 +0200 (CEST)
+Received: from sin.lore.kernel.org (sin.lore.kernel.org [IPv6:2600:3c15:e001:75::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id 17F8B535583
+	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 16:44:03 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id 67A99326C344
+	by sin.lore.kernel.org (Postfix) with ESMTP id E596A307A325
 	for <lists+live-patching@lfdr.de>; Wed, 13 May 2026 14:34:31 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1494943D4EC;
-	Wed, 13 May 2026 14:34:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5D27A349CCE;
+	Wed, 13 May 2026 14:34:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mr9/ph5J"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qQ7GZsuu"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-pg1-f179.google.com (mail-pg1-f179.google.com [209.85.215.179])
+Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0710443C04B
-	for <live-patching@vger.kernel.org>; Wed, 13 May 2026 14:34:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88CB740B6C4
+	for <live-patching@vger.kernel.org>; Wed, 13 May 2026 14:34:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778682865; cv=none; b=D7ewbnpedW+p2NsjlTN0sflfJM12Kbrd03Ykx0ic5sUZyg0OxsACpeIGhu6VmNxIuOVbEFYTW1EgEh6nQeqKiDOikuculCxPmclzl0+c9Pu1mRZemZsazqSz7hF81eHo7DPFN1OTk7M79XK9/Eqp0yYChaCqLuxBsxYZpcPXSmY=
+	t=1778682869; cv=none; b=pldHSRy4+4WXGnM9wetNuSZbptTrD4oiCGxH9bE6rVto/tGC4RaZl1LP240c1bdc/J76Ta22rCXx/pIy+M8M2AtJfNLYVTh0hKXGZ0K5mcv9Rj8hZmgvyl/kPLbaz2dANQ6O1f2wnRLvhOuIIqhICz2cYSSSbVP2ddGBgBmbn1A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778682865; c=relaxed/simple;
-	bh=ZTK57FPR0fRH176q3hZ4E8zWXqmRTFGyn13aOYEGdlE=;
+	s=arc-20240116; t=1778682869; c=relaxed/simple;
+	bh=hZFicFquxYtfO5mLpd1u3K0Uzyc0WUCMir+LZ66A3sc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=gpDEePXnY9GijeiQWkuL3WdY8IH5J5AwQumX183F8ySysLwngIH1L0FOPqodjD4QSsG7qrFPOQQvWT5QGjKN3t6/8TciuXcX6/h+lHx3yJaPkGfW9+uo1lFGpOVk5jYx6n2c9Apzzd9s9f3+Uw/8ph7WAQPzK4EerH4Jfq/GXcs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mr9/ph5J; arc=none smtp.client-ip=209.85.215.179
+	 MIME-Version; b=TyoMtn3j8bM16ksPWcX/KD4jOiA/t2dEKP7MitmaHx4pWgzLXqdIWfjnx7aGK44dUoRJa7Uaf3Vm/leT9QQ3OWa8aQCu8nzja4zMXof/VCynoqo7wswziZGfcirG2GtQfPpwiWgRg8KIpXUrZ48dIiVr3CFpC6uZZa0Fs7QBOz0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qQ7GZsuu; arc=none smtp.client-ip=209.85.215.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pg1-f179.google.com with SMTP id 41be03b00d2f7-c828daf83e2so1773551a12.2
-        for <live-patching@vger.kernel.org>; Wed, 13 May 2026 07:34:22 -0700 (PDT)
+Received: by mail-pg1-f182.google.com with SMTP id 41be03b00d2f7-c801b30188dso3015556a12.3
+        for <live-patching@vger.kernel.org>; Wed, 13 May 2026 07:34:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778682862; x=1779287662; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1778682867; x=1779287667; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=LbTGwcT4+2y+ODg3LUQ6agKvi3RZJcLWM5ra2jzAlRE=;
-        b=mr9/ph5Jfkc+uQvZTvAP2QRfZloVlbcR3Wt6FU3mnKfWgpac9Zpo4HWugSJg7hofNk
-         Qa25SepR6C0EVdq3GBEzW2BFe1960ocp46eRI2jvh1tb4AGQ6mqzbJnQzw59laxxD83O
-         oO9A2LN18x/lDPn0zhU0d3jf00mGhEg56n/aaPO7ZW8Ptip+MzYzySvo1FVhtoOcGprS
-         41o2Pfnu4svcsJduhZ8Hf30GaWG4YkRe5Mp0CmMP9mz4Ly4KPjea2XfuvLgoOL1SzNzP
-         Nx+UCm5mJVrWpShf+r1hWobKn7R9pYpmNLO8uLNzKoJeDg84AnCMiLZCC/HuCPsD0t6D
-         xrDg==
+        bh=a/CrZO7WeX011tyu8fc4oKQ4F5y7Mh/S66T31FiumP0=;
+        b=qQ7GZsuunaLqgYAyufipt3+dwz3xQShTgwpSw11fhfQw4Xl6QCyK/+ThXFgsw0wqPw
+         Oao/PcB2T9PaKWJPn1uNVeq2dI+JcXWmqVWZvybtg6ZfAljaC1CiwX9qMbCfy+dEHPXp
+         lrARcIo4V4twkHSSfyELPuoeKEWta81xjrkJE0UCLbYW3chXHx6FcTIjmWC7DOmmGJMw
+         1xHYl3W91qq4+AHpJ7ti+DZIb0cwExyMnrrn8YKxtGVwYxGUUIvFS9xQjG2hO/OgtnCF
+         x7KkcsLiZglhvus8wjM5D5YYpRPKZm55hbayj97TG6JBG8s7PnJ2FB1ghxy6skN34l1I
+         egzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778682862; x=1779287662;
+        d=1e100.net; s=20251104; t=1778682867; x=1779287667;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=LbTGwcT4+2y+ODg3LUQ6agKvi3RZJcLWM5ra2jzAlRE=;
-        b=bEhlSMis5fMQQGMcz6ZaF8euLldTVqlcKjFUQ8yT9N0oCijIkaXPWssLjO6KH2jKuZ
-         fphnOQeiAqa8QypC8uxopIGUQETEEj1AaGJXWqwO2jee2s860ht9Nfy2NILyj77A4siK
-         9OvzaNU5foKcTFgXito2HG47TYj3bP+mIk1f+puwsy5xGRrXvIHiqy3kX7aNwb7VnNuU
-         nYSImZ4OTN0BZnCqB/NHfF4CVMkkYpbjvSZ/thhnslUd8hr4YjOUZI3yeEORZpAVO3w7
-         ICdGp3iIuoWVMOZiuKrGMiHz8AH3fph6/smKSVNqDnufMiertJS3EykfMLH+QiLB9NWm
-         oxQA==
-X-Gm-Message-State: AOJu0Yzh+x7mnzZ4bwGzYFo7DQrr75fvkKBtVOs7lfAnDJXM1UFqcwwN
-	Kgslb+QbqXogDlod0UoJjtj3gXBysZte7+7lwduUiFCYv/fP2mCT0zd4
-X-Gm-Gg: Acq92OE2Qsub+Uia/1fHGvA65dK8mvXrRCQmHrtxq4j70HOmIKmxYJzWQSjpNcTckfh
-	w80nIGgK9yShiiclLZLSQE5e2BLrJRh9U1rmw3aAMVAyQlHEUnE6vaXYBueCMPBlVWU1V9JYT2Q
-	dPF8l7LYSkgV1srreFgW2xIl4giFYWncU2t9JFKn8WZi/bY7fWG0CBf6AficvPQvWYA2/V3AZHy
-	1DXva2siDq8VtUEHYHakaCcl7CXSuaoLQRHsJG6/jIyrVMO5DKC2wlHKX9qYqKCfgzbtTMh2bcm
-	qgw8kiV9t4GNco6fNK37az/bkHRfb1vQuoR2Zuj8qkMDz02l6gkkdBh7iTUQH09+AoTt1GpTBBN
-	5quHYyiYCjw9mkwAhzzgZeveJ+OTvXfm9j6QQAWbIPmCKffi2kNADRESOWDAzBBX/YvZhs/WdBd
-	A2CiNTHINRtlpHrqrz5pHehPKG4WIMwFB/QPhd77RLYofChSVA6arNWN1TDElajLZo27/WT4J3+
-	rL9U44c0RlSOPs=
-X-Received: by 2002:a05:6300:210e:b0:3a1:2dbd:c30 with SMTP id adf61e73a8af0-3afb1a11236mr3672258637.45.1778682861843;
-        Wed, 13 May 2026 07:34:21 -0700 (PDT)
+        bh=a/CrZO7WeX011tyu8fc4oKQ4F5y7Mh/S66T31FiumP0=;
+        b=WO4NX5eRGciYjMR1TXpXt2zdRb6mGI/htYinWgHZ4ZrAr+kM/90HpcbOWPzNoWx5VX
+         3eyjRmmopbmp3SRhY0/53JoDX/PlvGgC+tqX72vfNqA0ppoS2G1iG4C+dwB5aU3JxTtP
+         WaYfSsb7LK1fxw4VZrFa+QJ58Lw4/mfzOVq7wKWKA/KcJeQ0qxLaevC+FiIBpS0bNiJT
+         Dh4x4CsQkRHIixdCjA22uMARFc1iRi0YGdY5oJAoaIf7Tw4TmdrbXJKQkVAIzx5DnGOM
+         Zs2ZAhW7iHxOGTs7N6qeDSyPEE2kZdFTMMmV4R0ZfOjs+nrrtkpk7/CtAUW0CVfYAD38
+         7Cfg==
+X-Gm-Message-State: AOJu0YwW4VgG73f+l0P+UW9obHy6ycCJ2eulvUTMVOrZzMTcGd4+UKHK
+	aaXkIz382Jj59ewK1TH0I7Km/vri3DnisYY++9xmAyFWObMy0poP/gBG
+X-Gm-Gg: Acq92OG7yoIT+Wx2dmsT17mJHzm9EZB9IBFvzpyJG6D8yNvcTyL+TuYe3NB5nYoqXCe
+	TuFP66GvXyAAU2GHIwZUwL3ODXTkRLR1LN/LY0Ebhv8d1a3YR/gZVwFaoYFnLCHchkEkmaWaOZ9
+	a/FggyX8q0Z40SAu7mBJUtE82HtAJeg/MYFEhi++Z/xnQuPRW21lIwvtvg7xg6WnSlF2OvidQZ9
+	LOX6QXxZjU/beF9MgLMY05e+BIO8D3FagKuxugKYCHRgGwwSknraeR2p7Px7XBBP7CtHvkHs0Iu
+	d5M/8RjFMcAgypPrRDvmokrB4WBsvCh1Kj5ISivi24zIVeJWmx8KdiKgRyP6eSiz3TDdI/A6CIK
+	JrIPkoFYcj3bkGeEImqqs2k4FGLc9A+LVJK3yQRw1QFtRCr7wIR42DfSFJZTE1oV7egv/5SFqiD
+	j0eME86uTJgOKyXbJpeA7PETvVKXX298dARiwafhtfkIC9YeAFwt09R7kcbUom0+BjIR0BDiGyH
+	Jq0DBqH9tg+xf8=
+X-Received: by 2002:a05:6a20:2592:b0:3a3:a55f:4055 with SMTP id adf61e73a8af0-3af84327859mr4002847637.54.1778682866601;
+        Wed, 13 May 2026 07:34:26 -0700 (PDT)
 Received: from localhost.localdomain ([240e:46c:2200:3c3:e555:e58a:71d1:ef1d])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c826771018bsm15006418a12.17.2026.05.13.07.34.17
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c826771018bsm15006418a12.17.2026.05.13.07.34.22
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Wed, 13 May 2026 07:34:21 -0700 (PDT)
+        Wed, 13 May 2026 07:34:26 -0700 (PDT)
 From: Yafang Shao <laoar.shao@gmail.com>
 To: jpoimboe@kernel.org,
 	jikos@kernel.org,
@@ -85,9 +85,9 @@ To: jpoimboe@kernel.org,
 	song@kernel.org
 Cc: live-patching@vger.kernel.org,
 	Yafang Shao <laoar.shao@gmail.com>
-Subject: [RFC PATCH 5/6] livepatch: Remove obsolete per-object callbacks
-Date: Wed, 13 May 2026 22:33:20 +0800
-Message-ID: <20260513143321.26185-6-laoar.shao@gmail.com>
+Subject: [RFC PATCH 6/6] livepatch: Support replace_set in shadow variable API
+Date: Wed, 13 May 2026 22:33:21 +0800
+Message-ID: <20260513143321.26185-7-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.50.1
 In-Reply-To: <20260513143321.26185-1-laoar.shao@gmail.com>
 References: <20260513143321.26185-1-laoar.shao@gmail.com>
@@ -98,21 +98,21 @@ List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 777D2536250
+X-Rspamd-Queue-Id: 17F8B535583
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-0.16 / 15.00];
 	SUSPICIOUS_RECIPS(1.50)[];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	DMARC_POLICY_ALLOW(-0.50)[gmail.com,none];
 	R_MISSING_CHARSET(0.50)[];
-	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c15:e001:75::/64:c];
 	R_DKIM_ALLOW(-0.20)[gmail.com:s=20251104];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
 	RCVD_TLS_LAST(0.00)[];
 	FROM_HAS_DN(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2804-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2805-lists,live-patching=lfdr.de];
 	RCVD_COUNT_FIVE(0.00)[5];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	MIME_TRACE(0.00)[0:+];
@@ -128,458 +128,298 @@ X-Spamd-Result: default: False [-0.16 / 15.00];
 	TAGGED_RCPT(0.00)[live-patching];
 	FREEMAIL_FROM(0.00)[gmail.com];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,suse.com:email]
+	ASN(0.00)[asn:63949, ipnet:2600:3c15::/32, country:SG];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
 X-Rspamd-Action: no action
 
-This commit removes the obsolete per-object callbacks from the livepatch
-framework.  All selftests have been migrated to the new per-state
-callbacks, making the per-object callbacks redundant.
+To support more complex livepatching scenarios where multiple
+replacement sets might coexist, extend the klp_shadow API to
+include a 'replace_set' identifier.
 
-Instead, use the new per-state callbacks. They offer improved semantics
-by associating callbacks and shadow variables with a specific state,
-enabling better lifetime management of changes.
+To maintain compatibility with the existing 64-bit storage in
+'struct klp_shadow', the internal @id is now treated as a composite
+value. The 64-bit identifier is constructed by packing two 32-bit
+values:
 
-Originally-by: Petr Mladek <pmladek@suse.com>
+  MSB (63-32)          LSB (31-0)
+  +--------------------+--------------------+
+  |    replace_set     |    original @id    |
+  +--------------------+--------------------+
+
 Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
 ---
- include/linux/livepatch.h                | 40 ---------------
- include/linux/livepatch_external.h       | 62 +++++++++++++++---------
- kernel/livepatch/core.c                  | 29 -----------
- kernel/livepatch/core.h                  | 33 -------------
- kernel/livepatch/transition.c            |  9 ----
- scripts/livepatch/init.c                 |  2 -
- tools/include/linux/livepatch_external.h | 62 +++++++++++++++---------
- tools/objtool/klp-diff.c                 | 16 +++---
- 8 files changed, 84 insertions(+), 169 deletions(-)
+ include/linux/livepatch.h | 12 ++++---
+ kernel/livepatch/shadow.c | 70 ++++++++++++++++++++++++---------------
+ kernel/livepatch/state.c  |  3 +-
+ 3 files changed, 52 insertions(+), 33 deletions(-)
 
 diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-index 340b04a0de83..221f176f1f51 100644
+index 221f176f1f51..2dd9fca8c01c 100644
 --- a/include/linux/livepatch.h
 +++ b/include/linux/livepatch.h
-@@ -95,7 +95,6 @@ struct klp_object {
- 	/* external */
- 	const char *name;
- 	struct klp_func *funcs;
--	struct klp_callbacks callbacks;
- 
- 	/* internal */
- 	struct kobject kobj;
-@@ -106,45 +105,6 @@ struct klp_object {
- 	bool patched;
- };
- 
--struct klp_patch;
--struct klp_state;
--
--typedef int (*klp_shadow_ctor_t)(void *obj,
--				 void *shadow_data,
--				 void *ctor_data);
--typedef void (*klp_shadow_dtor_t)(void *obj, void *shadow_data);
--
--/**
-- * struct klp_state_callbacks - callbacks manipulating the state
-- * @pre_patch:		 executed only when the state is being enabled
-- *			 before code patching
-- * @post_patch:		 executed only when the state is being enabled
-- *			 after code patching
-- * @pre_unpatch:	 executed only when the state is being disabled
-- *			 before code unpatching
-- * @post_unpatch:	 executed only when the state is being disabled
-- *			 after code unpatching
-- * @shadow_dtor:	 destructor for the related shadow variable
-- * @pre_patch_succeeded: internal state used by a rollback on error
-- *
-- * All callbacks are optional.
-- *
-- * @pre_patch callback returns 0 on success and an error code otherwise.
-- *
-- * Any error prevents enabling the livepatch. @post_unpatch() callbacks are
-- * then called to rollback @pre_patch callbacks which has already succeeded
-- * before. Also @post_patch callbacks are called for to-be-removed states
-- * to rollback pre_unpatch() callbacks when they were called.
-- */
--struct klp_state_callbacks {
--	int (*pre_patch)(struct klp_patch *patch, struct klp_state *state);
--	void (*post_patch)(struct klp_patch *patch, struct klp_state *state);
--	void (*pre_unpatch)(struct klp_patch *patch, struct klp_state *state);
--	void (*post_unpatch)(struct klp_patch *patch, struct klp_state *state);
--	klp_shadow_dtor_t shadow_dtor;
--	bool pre_patch_succeeded;
--};
--
- /**
-  * struct klp_state - state of the system modified by the livepatch
-  * @id:		system state identifier (non-zero)
-diff --git a/include/linux/livepatch_external.h b/include/linux/livepatch_external.h
-index 138af19b0f5c..d9123d0c5dff 100644
---- a/include/linux/livepatch_external.h
-+++ b/include/linux/livepatch_external.h
-@@ -21,33 +21,48 @@
- #define KLP_PRE_UNPATCH_PREFIX		__stringify(__KLP_PRE_UNPATCH_PREFIX)
- #define KLP_POST_UNPATCH_PREFIX		__stringify(__KLP_POST_UNPATCH_PREFIX)
- 
--struct klp_object;
--
--typedef int (*klp_pre_patch_t)(struct klp_object *obj);
--typedef void (*klp_post_patch_t)(struct klp_object *obj);
--typedef void (*klp_pre_unpatch_t)(struct klp_object *obj);
--typedef void (*klp_post_unpatch_t)(struct klp_object *obj);
-+struct klp_state;
-+struct klp_patch;
-+typedef int (*klp_shadow_ctor_t)(void *obj,
-+				 void *shadow_data,
-+				 void *ctor_data);
-+typedef void (*klp_shadow_dtor_t)(void *obj, void *shadow_data);
- 
- /**
-- * struct klp_callbacks - pre/post live-(un)patch callback structure
-- * @pre_patch:		executed before code patching
-- * @post_patch:		executed after code patching
-- * @pre_unpatch:	executed before code unpatching
-- * @post_unpatch:	executed after code unpatching
-- * @post_unpatch_enabled:	flag indicating if post-unpatch callback
-- *				should run
-+ * struct klp_state_callbacks - callbacks manipulating the state
-+ * @pre_patch:		 executed only when the state is being enabled
-+ *			 before code patching
-+ * @post_patch:		 executed only when the state is being enabled
-+ *			 after code patching
-+ * @pre_unpatch:	 executed only when the state is being disabled
-+ *			 before code unpatching
-+ * @post_unpatch:	 executed only when the state is being disabled
-+ *			 after code unpatching
-+ * @shadow_dtor:	 destructor for the related shadow variable
-+ * @pre_patch_succeeded: internal state used by a rollback on error
-+ *
-+ * All callbacks are optional.
-+ *
-+ * @pre_patch callback returns 0 on success and an error code otherwise.
-  *
-- * All callbacks are optional.  Only the pre-patch callback, if provided,
-- * will be unconditionally executed.  If the parent klp_object fails to
-- * patch for any reason, including a non-zero error status returned from
-- * the pre-patch callback, no further callbacks will be executed.
-+ * Any error prevents enabling the livepatch. @post_unpatch() callbacks are
-+ * then called to rollback @pre_patch callbacks which has already succeeded
-+ * before. Also @post_patch callbacks are called for to-be-removed states
-+ * to rollback pre_unpatch() callbacks when they were called.
-  */
--struct klp_callbacks {
--	klp_pre_patch_t		pre_patch;
--	klp_post_patch_t	post_patch;
--	klp_pre_unpatch_t	pre_unpatch;
--	klp_post_unpatch_t	post_unpatch;
--	bool post_unpatch_enabled;
-+struct klp_state_callbacks {
-+	int (*pre_patch)(struct klp_patch *patch, struct klp_state *state);
-+	void (*post_patch)(struct klp_patch *patch, struct klp_state *state);
-+	void (*pre_unpatch)(struct klp_patch *patch, struct klp_state *state);
-+	void (*post_unpatch)(struct klp_patch *patch, struct klp_state *state);
-+	klp_shadow_dtor_t shadow_dtor;
-+	bool pre_patch_succeeded;
-+};
-+
-+struct klp_state_ext {
-+	unsigned long id;
-+	unsigned int version;
-+	struct klp_state_callbacks callbacks;
- };
- 
- /*
-@@ -69,7 +84,6 @@ struct klp_func_ext {
- struct klp_object_ext {
- 	const char *name;
- 	struct klp_func_ext *funcs;
--	struct klp_callbacks callbacks;
- 	unsigned int nr_funcs;
- };
- 
-diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-index 95c099a8f594..eae807916ca0 100644
---- a/kernel/livepatch/core.c
-+++ b/kernel/livepatch/core.c
-@@ -1009,8 +1009,6 @@ static int klp_init_patch(struct klp_patch *patch)
- 
- static int __klp_disable_patch(struct klp_patch *patch)
- {
--	struct klp_object *obj;
--
- 	if (WARN_ON(!patch->enabled))
- 		return -EINVAL;
- 
-@@ -1021,10 +1019,6 @@ static int __klp_disable_patch(struct klp_patch *patch)
- 
- 	klp_states_pre_unpatch(patch);
- 
--	klp_for_each_object(patch, obj)
--		if (obj->patched)
--			klp_pre_unpatch_callback(obj);
--
- 	/*
- 	 * Enforce the order of the func->transition writes in
- 	 * klp_init_transition() and the TIF_PATCH_PENDING writes in
-@@ -1075,13 +1069,6 @@ static int __klp_enable_patch(struct klp_patch *patch)
- 		if (!klp_is_object_loaded(obj))
- 			continue;
- 
--		ret = klp_pre_patch_callback(obj);
--		if (ret) {
--			pr_warn("pre-patch callback failed for object '%s'\n",
--				klp_is_module(obj) ? obj->name : "vmlinux");
--			goto err;
--		}
--
- 		ret = klp_patch_object(obj);
- 		if (ret) {
- 			pr_warn("failed to patch object '%s'\n",
-@@ -1253,14 +1240,10 @@ static void klp_cleanup_module_patches_limited(struct module *mod,
- 			if (!klp_is_module(obj) || strcmp(obj->name, mod->name))
- 				continue;
- 
--			if (patch != klp_transition_patch)
--				klp_pre_unpatch_callback(obj);
--
- 			pr_notice("reverting patch '%s' on unloading module '%s'\n",
- 				  patch->mod->name, obj->mod->name);
- 			klp_unpatch_object(obj);
- 
--			klp_post_unpatch_callback(obj);
- 			klp_clear_object_relocs(patch, obj);
- 			klp_free_object_loaded(obj);
- 			break;
-@@ -1307,25 +1290,13 @@ int klp_module_coming(struct module *mod)
- 			pr_notice("applying patch '%s' to loading module '%s'\n",
- 				  patch->mod->name, obj->mod->name);
- 
--			ret = klp_pre_patch_callback(obj);
--			if (ret) {
--				pr_warn("pre-patch callback failed for object '%s'\n",
--					obj->name);
--				goto err;
--			}
--
- 			ret = klp_patch_object(obj);
- 			if (ret) {
- 				pr_warn("failed to apply patch '%s' to module '%s' (%d)\n",
- 					patch->mod->name, obj->mod->name, ret);
--
--				klp_post_unpatch_callback(obj);
- 				goto err;
- 			}
- 
--			if (patch != klp_transition_patch)
--				klp_post_patch_callback(obj);
--
- 			break;
- 		}
- 	}
-diff --git a/kernel/livepatch/core.h b/kernel/livepatch/core.h
-index 38209c7361b6..02b8364f6779 100644
---- a/kernel/livepatch/core.h
-+++ b/kernel/livepatch/core.h
-@@ -23,37 +23,4 @@ static inline bool klp_is_object_loaded(struct klp_object *obj)
- 	return !obj->name || obj->mod;
+@@ -195,15 +195,17 @@ static inline bool klp_have_reliable_stack(void)
+ 	       IS_ENABLED(CONFIG_HAVE_RELIABLE_STACKTRACE);
  }
  
--static inline int klp_pre_patch_callback(struct klp_object *obj)
--{
--	int ret = 0;
--
--	if (obj->callbacks.pre_patch)
--		ret = (*obj->callbacks.pre_patch)(obj);
--
--	obj->callbacks.post_unpatch_enabled = !ret;
--
--	return ret;
--}
--
--static inline void klp_post_patch_callback(struct klp_object *obj)
--{
--	if (obj->callbacks.post_patch)
--		(*obj->callbacks.post_patch)(obj);
--}
--
--static inline void klp_pre_unpatch_callback(struct klp_object *obj)
--{
--	if (obj->callbacks.pre_unpatch)
--		(*obj->callbacks.pre_unpatch)(obj);
--}
--
--static inline void klp_post_unpatch_callback(struct klp_object *obj)
--{
--	if (obj->callbacks.post_unpatch_enabled &&
--	    obj->callbacks.post_unpatch)
--		(*obj->callbacks.post_unpatch)(obj);
--
--	obj->callbacks.post_unpatch_enabled = false;
--}
--
- #endif /* _LIVEPATCH_CORE_H */
-diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
-index 1a2b11be7b5a..f844283b5423 100644
---- a/kernel/livepatch/transition.c
-+++ b/kernel/livepatch/transition.c
-@@ -145,15 +145,6 @@ static void klp_complete_transition(void)
- 		klp_states_post_unpatch(klp_transition_patch);
+-void *klp_shadow_get(void *obj, unsigned long id);
+-void *klp_shadow_alloc(void *obj, unsigned long id,
++void *klp_shadow_get(void *obj, unsigned int replace_set, unsigned int id);
++void *klp_shadow_alloc(void *obj, unsigned int replace_set, unsigned int id,
+ 		       size_t size, gfp_t gfp_flags,
+ 		       klp_shadow_ctor_t ctor, void *ctor_data);
+-void *klp_shadow_get_or_alloc(void *obj, unsigned long id,
++void *klp_shadow_get_or_alloc(void *obj, unsigned int replace_set, unsigned int id,
+ 			      size_t size, gfp_t gfp_flags,
+ 			      klp_shadow_ctor_t ctor, void *ctor_data);
+-void klp_shadow_free(void *obj, unsigned long id, klp_shadow_dtor_t dtor);
+-void klp_shadow_free_all(unsigned long id, klp_shadow_dtor_t dtor);
++void klp_shadow_free(void *obj, unsigned int replace_set, unsigned int id,
++		     klp_shadow_dtor_t dtor);
++void klp_shadow_free_all(unsigned int replace_set, unsigned int id,
++			 klp_shadow_dtor_t dtor);
+ 
+ struct klp_state *klp_get_state(struct klp_patch *patch, unsigned long id);
+ struct klp_state *klp_get_prev_state(unsigned long id);
+diff --git a/kernel/livepatch/shadow.c b/kernel/livepatch/shadow.c
+index c2e724d97ddf..35e507fae445 100644
+--- a/kernel/livepatch/shadow.c
++++ b/kernel/livepatch/shadow.c
+@@ -48,7 +48,8 @@ static DEFINE_SPINLOCK(klp_shadow_lock);
+  * @node:	klp_shadow_hash hash table node
+  * @rcu_head:	RCU is used to safely free this structure
+  * @obj:	pointer to parent object
+- * @id:		data identifier
++ * @id:		combined data identifier
++ *		higher 32 bits: replace_set, lower 32 bits: resource ID
+  * @data:	data area
+  */
+ struct klp_shadow {
+@@ -59,6 +60,11 @@ struct klp_shadow {
+ 	char data[];
+ };
+ 
++static unsigned long klp_shadow_combined_id(unsigned int set, unsigned int id)
++{
++	return ((unsigned long)set << 32) | id;
++}
++
+ /**
+  * klp_shadow_match() - verify a shadow variable matches given <obj, id>
+  * @shadow:	shadow variable to match
+@@ -76,11 +82,12 @@ static inline bool klp_shadow_match(struct klp_shadow *shadow, void *obj,
+ /**
+  * klp_shadow_get() - retrieve a shadow variable data pointer
+  * @obj:	pointer to parent object
++ * @replace_set:identifier for the livepatch replacement set
+  * @id:		data identifier
+  *
+  * Return: the shadow variable data element, NULL on failure.
+  */
+-void *klp_shadow_get(void *obj, unsigned long id)
++void *klp_shadow_get(void *obj, unsigned int replace_set, unsigned int id)
+ {
+ 	struct klp_shadow *shadow;
+ 
+@@ -89,7 +96,8 @@ void *klp_shadow_get(void *obj, unsigned long id)
+ 	hash_for_each_possible_rcu(klp_shadow_hash, shadow, node,
+ 				   (unsigned long)obj) {
+ 
+-		if (klp_shadow_match(shadow, obj, id)) {
++		if (klp_shadow_match(shadow, obj,
++				     klp_shadow_combined_id(replace_set, id))) {
+ 			rcu_read_unlock();
+ 			return shadow->data;
+ 		}
+@@ -101,7 +109,7 @@ void *klp_shadow_get(void *obj, unsigned long id)
+ }
+ EXPORT_SYMBOL_GPL(klp_shadow_get);
+ 
+-static void *__klp_shadow_get_or_alloc(void *obj, unsigned long id,
++static void *__klp_shadow_get_or_alloc(void *obj, unsigned int set, unsigned int id,
+ 				       size_t size, gfp_t gfp_flags,
+ 				       klp_shadow_ctor_t ctor, void *ctor_data,
+ 				       bool warn_on_exist)
+@@ -111,7 +119,7 @@ static void *__klp_shadow_get_or_alloc(void *obj, unsigned long id,
+ 	unsigned long flags;
+ 
+ 	/* Check if the shadow variable already exists */
+-	shadow_data = klp_shadow_get(obj, id);
++	shadow_data = klp_shadow_get(obj, set, id);
+ 	if (shadow_data)
+ 		goto exists;
+ 
+@@ -126,7 +134,7 @@ static void *__klp_shadow_get_or_alloc(void *obj, unsigned long id,
+ 
+ 	/* Look for <obj, id> again under the lock */
+ 	spin_lock_irqsave(&klp_shadow_lock, flags);
+-	shadow_data = klp_shadow_get(obj, id);
++	shadow_data = klp_shadow_get(obj, set, id);
+ 	if (unlikely(shadow_data)) {
+ 		/*
+ 		 * Shadow variable was found, throw away speculative
+@@ -147,8 +155,8 @@ static void *__klp_shadow_get_or_alloc(void *obj, unsigned long id,
+ 		if (err) {
+ 			spin_unlock_irqrestore(&klp_shadow_lock, flags);
+ 			kfree(new_shadow);
+-			pr_err("Failed to construct shadow variable <%p, %lx> (%d)\n",
+-			       obj, id, err);
++			pr_err("Failed to construct shadow variable <%p, %x, %x> (%d)\n",
++			       obj, set, id, err);
+ 			return NULL;
+ 		}
+ 	}
+@@ -162,7 +170,7 @@ static void *__klp_shadow_get_or_alloc(void *obj, unsigned long id,
+ 
+ exists:
+ 	if (warn_on_exist) {
+-		WARN(1, "Duplicate shadow variable <%p, %lx>\n", obj, id);
++		WARN(1, "Duplicate shadow variable <%p, %x, %x>\n", obj, set, id);
+ 		return NULL;
  	}
  
--	klp_for_each_object(klp_transition_patch, obj) {
--		if (!klp_is_object_loaded(obj))
--			continue;
--		if (klp_target_state == KLP_TRANSITION_PATCHED)
--			klp_post_patch_callback(obj);
--		else if (klp_target_state == KLP_TRANSITION_UNPATCHED)
--			klp_post_unpatch_callback(obj);
--	}
--
- 	pr_notice("'%s': %s complete\n", klp_transition_patch->mod->name,
- 		  klp_target_state == KLP_TRANSITION_PATCHED ? "patching" : "unpatching");
+@@ -172,6 +180,7 @@ static void *__klp_shadow_get_or_alloc(void *obj, unsigned long id,
+ /**
+  * klp_shadow_alloc() - allocate and add a new shadow variable
+  * @obj:	pointer to parent object
++ * @replace_set:identifier for the livepatch replacement set
+  * @id:		data identifier
+  * @size:	size of attached data
+  * @gfp_flags:	GFP mask for allocation
+@@ -183,8 +192,8 @@ static void *__klp_shadow_get_or_alloc(void *obj, unsigned long id,
+  * function if it is not NULL.  The new shadow variable is then added
+  * to the global hashtable.
+  *
+- * If an existing <obj, id> shadow variable can be found, this routine will
+- * issue a WARN, exit early and return NULL.
++ * If an existing <obj, replace_set, id> shadow variable can be found, this
++ * routine will issue a WARN, exit early and return NULL.
+  *
+  * This function guarantees that the constructor function is called only when
+  * the variable did not exist before.  The cost is that @ctor is called
+@@ -193,11 +202,11 @@ static void *__klp_shadow_get_or_alloc(void *obj, unsigned long id,
+  * Return: the shadow variable data element, NULL on duplicate or
+  * failure.
+  */
+-void *klp_shadow_alloc(void *obj, unsigned long id,
++void *klp_shadow_alloc(void *obj, unsigned int replace_set, unsigned int id,
+ 		       size_t size, gfp_t gfp_flags,
+ 		       klp_shadow_ctor_t ctor, void *ctor_data)
+ {
+-	return __klp_shadow_get_or_alloc(obj, id, size, gfp_flags,
++	return __klp_shadow_get_or_alloc(obj, replace_set, id, size, gfp_flags,
+ 					 ctor, ctor_data, true);
+ }
+ EXPORT_SYMBOL_GPL(klp_shadow_alloc);
+@@ -205,28 +214,29 @@ EXPORT_SYMBOL_GPL(klp_shadow_alloc);
+ /**
+  * klp_shadow_get_or_alloc() - get existing or allocate a new shadow variable
+  * @obj:	pointer to parent object
++ * @replace_set:identifier for the livepatch replacement set
+  * @id:		data identifier
+  * @size:	size of attached data
+  * @gfp_flags:	GFP mask for allocation
+  * @ctor:	custom constructor to initialize the shadow data (optional)
+  * @ctor_data:	pointer to any data needed by @ctor (optional)
+  *
+- * Returns a pointer to existing shadow data if an <obj, id> shadow
++ * Returns a pointer to existing shadow data if an <obj, replace_set, id> shadow
+  * variable is already present.  Otherwise, it creates a new shadow
+  * variable like klp_shadow_alloc().
+  *
+  * This function guarantees that only one shadow variable exists with the given
+- * @id for the given @obj.  It also guarantees that the constructor function
+- * will be called only when the variable did not exist before.  The cost is
+- * that @ctor is called in atomic context under a spin lock.
++ * @id for the given @obj within the same replace_set.  It also guarantees that
++ * the constructor function will be called only when the variable did not exist
++ * before.  The cost is that @ctor is called in atomic context under a spin lock.
+  *
+  * Return: the shadow variable data element, NULL on failure.
+  */
+-void *klp_shadow_get_or_alloc(void *obj, unsigned long id,
+-			      size_t size, gfp_t gfp_flags,
++void *klp_shadow_get_or_alloc(void *obj, unsigned int replace_set,
++			      unsigned int id, size_t size, gfp_t gfp_flags,
+ 			      klp_shadow_ctor_t ctor, void *ctor_data)
+ {
+-	return __klp_shadow_get_or_alloc(obj, id, size, gfp_flags,
++	return __klp_shadow_get_or_alloc(obj, replace_set, id, size, gfp_flags,
+ 					 ctor, ctor_data, false);
+ }
+ EXPORT_SYMBOL_GPL(klp_shadow_get_or_alloc);
+@@ -243,14 +253,16 @@ static void klp_shadow_free_struct(struct klp_shadow *shadow,
+ /**
+  * klp_shadow_free() - detach and free a <obj, id> shadow variable
+  * @obj:	pointer to parent object
++ * @replace_set:identifier for the livepatch replacement set
+  * @id:		data identifier
+  * @dtor:	custom callback that can be used to unregister the variable
+  *		and/or free data that the shadow variable points to (optional)
+  *
+- * This function releases the memory for this <obj, id> shadow variable
++ * This function releases the memory for this <obj, replace_set, id> shadow variable
+  * instance, callers should stop referencing it accordingly.
+  */
+-void klp_shadow_free(void *obj, unsigned long id, klp_shadow_dtor_t dtor)
++void klp_shadow_free(void *obj, unsigned int replace_set, unsigned int id,
++		     klp_shadow_dtor_t dtor)
+ {
+ 	struct klp_shadow *shadow;
+ 	unsigned long flags;
+@@ -261,7 +273,8 @@ void klp_shadow_free(void *obj, unsigned long id, klp_shadow_dtor_t dtor)
+ 	hash_for_each_possible(klp_shadow_hash, shadow, node,
+ 			       (unsigned long)obj) {
  
-diff --git a/scripts/livepatch/init.c b/scripts/livepatch/init.c
-index 659db21a5b53..04e8d20bab2a 100644
---- a/scripts/livepatch/init.c
-+++ b/scripts/livepatch/init.c
-@@ -63,8 +63,6 @@ static int __init livepatch_mod_init(void)
- 
- 		obj->name = obj_ext->name;
- 		obj->funcs = funcs;
--
--		memcpy(&obj->callbacks, &obj_ext->callbacks, sizeof(struct klp_callbacks));
- 	}
- 
- 	patch->mod = THIS_MODULE;
-diff --git a/tools/include/linux/livepatch_external.h b/tools/include/linux/livepatch_external.h
-index 138af19b0f5c..d9123d0c5dff 100644
---- a/tools/include/linux/livepatch_external.h
-+++ b/tools/include/linux/livepatch_external.h
-@@ -21,33 +21,48 @@
- #define KLP_PRE_UNPATCH_PREFIX		__stringify(__KLP_PRE_UNPATCH_PREFIX)
- #define KLP_POST_UNPATCH_PREFIX		__stringify(__KLP_POST_UNPATCH_PREFIX)
- 
--struct klp_object;
--
--typedef int (*klp_pre_patch_t)(struct klp_object *obj);
--typedef void (*klp_post_patch_t)(struct klp_object *obj);
--typedef void (*klp_pre_unpatch_t)(struct klp_object *obj);
--typedef void (*klp_post_unpatch_t)(struct klp_object *obj);
-+struct klp_state;
-+struct klp_patch;
-+typedef int (*klp_shadow_ctor_t)(void *obj,
-+				 void *shadow_data,
-+				 void *ctor_data);
-+typedef void (*klp_shadow_dtor_t)(void *obj, void *shadow_data);
+-		if (klp_shadow_match(shadow, obj, id)) {
++		if (klp_shadow_match(shadow, obj,
++				     klp_shadow_combined_id(replace_set, id))) {
+ 			klp_shadow_free_struct(shadow, dtor);
+ 			break;
+ 		}
+@@ -272,15 +285,17 @@ void klp_shadow_free(void *obj, unsigned long id, klp_shadow_dtor_t dtor)
+ EXPORT_SYMBOL_GPL(klp_shadow_free);
  
  /**
-- * struct klp_callbacks - pre/post live-(un)patch callback structure
-- * @pre_patch:		executed before code patching
-- * @post_patch:		executed after code patching
-- * @pre_unpatch:	executed before code unpatching
-- * @post_unpatch:	executed after code unpatching
-- * @post_unpatch_enabled:	flag indicating if post-unpatch callback
-- *				should run
-+ * struct klp_state_callbacks - callbacks manipulating the state
-+ * @pre_patch:		 executed only when the state is being enabled
-+ *			 before code patching
-+ * @post_patch:		 executed only when the state is being enabled
-+ *			 after code patching
-+ * @pre_unpatch:	 executed only when the state is being disabled
-+ *			 before code unpatching
-+ * @post_unpatch:	 executed only when the state is being disabled
-+ *			 after code unpatching
-+ * @shadow_dtor:	 destructor for the related shadow variable
-+ * @pre_patch_succeeded: internal state used by a rollback on error
-+ *
-+ * All callbacks are optional.
-+ *
-+ * @pre_patch callback returns 0 on success and an error code otherwise.
+- * klp_shadow_free_all() - detach and free all <_, id> shadow variables
++ * klp_shadow_free_all() - detach and free all <_, replace_set, id> shadow variables
++ * @replace_set:identifier for the livepatch replacement set
+  * @id:		data identifier
+  * @dtor:	custom callback that can be used to unregister the variable
+  *		and/or free data that the shadow variable points to (optional)
   *
-- * All callbacks are optional.  Only the pre-patch callback, if provided,
-- * will be unconditionally executed.  If the parent klp_object fails to
-- * patch for any reason, including a non-zero error status returned from
-- * the pre-patch callback, no further callbacks will be executed.
-+ * Any error prevents enabling the livepatch. @post_unpatch() callbacks are
-+ * then called to rollback @pre_patch callbacks which has already succeeded
-+ * before. Also @post_patch callbacks are called for to-be-removed states
-+ * to rollback pre_unpatch() callbacks when they were called.
+- * This function releases the memory for all <_, id> shadow variable
++ * This function releases the memory for all <_, replace_set, id> shadow variable
+  * instances, callers should stop referencing them accordingly.
   */
--struct klp_callbacks {
--	klp_pre_patch_t		pre_patch;
--	klp_post_patch_t	post_patch;
--	klp_pre_unpatch_t	pre_unpatch;
--	klp_post_unpatch_t	post_unpatch;
--	bool post_unpatch_enabled;
-+struct klp_state_callbacks {
-+	int (*pre_patch)(struct klp_patch *patch, struct klp_state *state);
-+	void (*post_patch)(struct klp_patch *patch, struct klp_state *state);
-+	void (*pre_unpatch)(struct klp_patch *patch, struct klp_state *state);
-+	void (*post_unpatch)(struct klp_patch *patch, struct klp_state *state);
-+	klp_shadow_dtor_t shadow_dtor;
-+	bool pre_patch_succeeded;
-+};
-+
-+struct klp_state_ext {
-+	unsigned long id;
-+	unsigned int version;
-+	struct klp_state_callbacks callbacks;
- };
+-void klp_shadow_free_all(unsigned long id, klp_shadow_dtor_t dtor)
++void klp_shadow_free_all(unsigned int replace_set, unsigned int id,
++			 klp_shadow_dtor_t dtor)
+ {
+ 	struct klp_shadow *shadow;
+ 	unsigned long flags;
+@@ -290,7 +305,8 @@ void klp_shadow_free_all(unsigned long id, klp_shadow_dtor_t dtor)
  
- /*
-@@ -69,7 +84,6 @@ struct klp_func_ext {
- struct klp_object_ext {
- 	const char *name;
- 	struct klp_func_ext *funcs;
--	struct klp_callbacks callbacks;
- 	unsigned int nr_funcs;
- };
- 
-diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
-index c2c4e4968bc2..128fbe054417 100644
---- a/tools/objtool/klp-diff.c
-+++ b/tools/objtool/klp-diff.c
-@@ -1606,8 +1606,8 @@ static int create_klp_sections(struct elfs *e)
- 		reloc = find_reloc_by_dest(e->out, sym->sec, sym->offset);
- 
- 		if (!elf_create_reloc(e->out, obj_sec,
--				      offsetof(struct klp_object_ext, callbacks) +
--				      offsetof(struct klp_callbacks, pre_patch),
-+				      offsetof(struct klp_state_ext, callbacks) +
-+				      offsetof(struct klp_state_callbacks, pre_patch),
- 				      reloc->sym, reloc_addend(reloc), R_ABS64))
- 			return -1;
+ 	/* Delete all <_, id> from hash */
+ 	hash_for_each(klp_shadow_hash, i, shadow, node) {
+-		if (klp_shadow_match(shadow, shadow->obj, id))
++		if (klp_shadow_match(shadow, shadow->obj,
++				     klp_shadow_combined_id(replace_set, id)))
+ 			klp_shadow_free_struct(shadow, dtor);
  	}
-@@ -1622,8 +1622,8 @@ static int create_klp_sections(struct elfs *e)
- 		reloc = find_reloc_by_dest(e->out, sym->sec, sym->offset);
  
- 		if (!elf_create_reloc(e->out, obj_sec,
--				      offsetof(struct klp_object_ext, callbacks) +
--				      offsetof(struct klp_callbacks, post_patch),
-+				      offsetof(struct klp_state_ext, callbacks) +
-+				      offsetof(struct klp_state_callbacks, post_patch),
- 				      reloc->sym, reloc_addend(reloc), R_ABS64))
- 			return -1;
- 	}
-@@ -1638,8 +1638,8 @@ static int create_klp_sections(struct elfs *e)
- 		reloc = find_reloc_by_dest(e->out, sym->sec, sym->offset);
+diff --git a/kernel/livepatch/state.c b/kernel/livepatch/state.c
+index 43115e8e8453..6e3d6fb92e64 100644
+--- a/kernel/livepatch/state.c
++++ b/kernel/livepatch/state.c
+@@ -203,7 +203,8 @@ void klp_states_post_unpatch(struct klp_patch *patch)
+ 			state->callbacks.post_unpatch(patch, state);
  
- 		if (!elf_create_reloc(e->out, obj_sec,
--				      offsetof(struct klp_object_ext, callbacks) +
--				      offsetof(struct klp_callbacks, pre_unpatch),
-+				      offsetof(struct klp_state_ext, callbacks) +
-+				      offsetof(struct klp_state_callbacks, pre_unpatch),
- 				      reloc->sym, reloc_addend(reloc), R_ABS64))
- 			return -1;
- 	}
-@@ -1654,8 +1654,8 @@ static int create_klp_sections(struct elfs *e)
- 		reloc = find_reloc_by_dest(e->out, sym->sec, sym->offset);
+ 		if (state->is_shadow)
+-			klp_shadow_free_all(state->id, state->callbacks.shadow_dtor);
++			klp_shadow_free_all(patch->replace_set, state->id,
++					    state->callbacks.shadow_dtor);
  
- 		if (!elf_create_reloc(e->out, obj_sec,
--				      offsetof(struct klp_object_ext, callbacks) +
--				      offsetof(struct klp_callbacks, post_unpatch),
-+				      offsetof(struct klp_state_ext, callbacks) +
-+				      offsetof(struct klp_state_callbacks, post_unpatch),
- 				      reloc->sym, reloc_addend(reloc), R_ABS64))
- 			return -1;
+ 		state->callbacks.pre_patch_succeeded = 0;
  	}
 -- 
 2.47.3
