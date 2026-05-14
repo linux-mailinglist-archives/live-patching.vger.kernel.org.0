@@ -1,68 +1,68 @@
-Return-Path: <live-patching+bounces-2818-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2819-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id 8KzPJFU6Bmo3ggIAu9opvQ
-	(envelope-from <live-patching+bounces-2818-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 14 May 2026 23:10:45 +0200
+	id 8FyiC189BmqmggIAu9opvQ
+	(envelope-from <live-patching+bounces-2819-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 14 May 2026 23:23:43 +0200
 X-Original-To: lists+live-patching@lfdr.de
 Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id F0DF7546F14
-	for <lists+live-patching@lfdr.de>; Thu, 14 May 2026 23:10:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 82FC0547038
+	for <lists+live-patching@lfdr.de>; Thu, 14 May 2026 23:23:42 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id B2129301378B
-	for <lists+live-patching@lfdr.de>; Thu, 14 May 2026 21:10:43 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id 71D5C30382A5
+	for <lists+live-patching@lfdr.de>; Thu, 14 May 2026 21:20:49 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4654B38B7B0;
-	Thu, 14 May 2026 21:10:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D48913B2FCE;
+	Thu, 14 May 2026 21:20:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z3HVZ7O7"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QnZRMLGb"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 232803F413B
-	for <live-patching@vger.kernel.org>; Thu, 14 May 2026 21:10:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF7833ACA49
+	for <live-patching@vger.kernel.org>; Thu, 14 May 2026 21:20:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778793043; cv=none; b=PgYdhuzSutXfmHFvrg4riF2pN0gEKXpND4DCiDAjYM3cLTkZgfTJotrFKAMQqniDq/hNmdAJrC6v4QNU9jYQecFuVZTzrwOAxUrAPk9bpx5ojxEyuD6tdXtOn1HsgBzdMjC+64roGvK6LZWIgN67VogOC6sf5Y968+WpJgfQhIA=
+	t=1778793648; cv=none; b=DAYTXSwPR0bL16Mf/3+fDmuD4WOxeqJX76QPNxD43/EYIIabs4oIIugMGXBd4twQQjW+8tygreywaqgcxvMqYr/twfB565/VIsUXC0nSub3fN0pWDgY4zFRJO9fu/RtVscRX67JocVrrqMKIbQN2E673GGv2K7agFUV7NUcaITQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778793043; c=relaxed/simple;
-	bh=Dy82oTzSFlOiHWW7bC3IpK62IBpi/Ly9xelLwyC5gqQ=;
+	s=arc-20240116; t=1778793648; c=relaxed/simple;
+	bh=84ssf85RHyd57W/mX4XadrQEfKmAMsHwjpfUq65pAX4=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=XaBS181WT+6sr1oYnveNPCjSHNx5mANbIWaD7dr4z/Rmf5EwnXGmbnpUN9n3Nt+vS2ppnlIkeF3r0MJv61wssLToN/EfAj3mxz20p2T/Dk6RCz+Sm/uxCr31IG418Bgsv5Cb7zaTFUEOnhDZZcDA6t8FjPQAHgrg+X6Dv9J3Tag=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z3HVZ7O7; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C96E8C2BCB3;
-	Thu, 14 May 2026 21:10:42 +0000 (UTC)
+	 Message-Id; b=W8oVHMoWYn1YDRfhiPCZBLWVBxTsOeOhiG9o643pTeL7QsAkDn+1tnkqFtQqpO/3GpqonwnK/05fc2/FfgsIGXNdHf9HOzw1Oz5Hg3836xpRMm6odQ/tC+zZYDUGXy9XQpV2z2DDrVKcMSHzpdxKlrcjrnOeiPET9T/h0M7ivns=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QnZRMLGb; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5431CC2BCB3;
+	Thu, 14 May 2026 21:20:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778793043;
-	bh=Dy82oTzSFlOiHWW7bC3IpK62IBpi/Ly9xelLwyC5gqQ=;
+	s=k20201202; t=1778793648;
+	bh=84ssf85RHyd57W/mX4XadrQEfKmAMsHwjpfUq65pAX4=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date:From;
-	b=Z3HVZ7O7trJpkppq3faNIt4ZZdTY9srL4FxGk2tmMKw0l9SWc6eq68ZmblNmoB5UF
-	 6jupXTyteyf4e3Xywa75+mZv0/AalioNMeYruHi5EXnay83jjYchpz0VUHYdKvIdUF
-	 X7dzqGBrureMD+H6HLVZE/OXXB0O6QNhgRgM5OAESRg6Kw1UMLqSCYJvJfnuCfxmZr
-	 ttH0Jx80eoeqj9shcpNIC1dfoQhDnbY1i8itSgLXQQG3pPulGegbqg8vsZA++9uAuS
-	 hOyUIJROMipZe4MXWha5NG4vdnTizvWPtpyc4G66uldQ/0Cl4EiWsuYGPLSCrJB1D8
-	 hMMLCunx0ZkJg==
+	b=QnZRMLGbW+PJ47jjRL6R3eO4/zph6ycJjmHrhEomMQr2E2KZTsO184/T75hwy8S3w
+	 UebTTZZk+l3NyYcB0cO8/D/TlYHX8Biwz/NyipqKfVUW83x8HqElM+GjZCjsJEfCxh
+	 eCuZ1MWnAiz0urDmpgSgB1Kz62f7rgxsnvn4A6txSb/Jx/iDNn8/fsebF9Vp+fw4Lc
+	 Zib6yhTwct/LGRWPNmY5DxvTYGSH1QgzDYaiARQHT+a2sCBYCTYEAspNNz9lkGs92h
+	 r8x+wVVexzI54fW5XQEOAvQ8wQHWH4xsWCvGMwBSeQDxHjyHAQBhTBXy9n8KugS4Ye
+	 AP9XJMNrxdpMg==
 From: sashiko-bot@kernel.org
-Subject: Re: [RFC 3/4] objtool/klp: add --arch option to display target
- architecture
+Subject: Re: [RFC 4/4] livepatch/klp-build: add basic out-of-tree module
+ patching support
 Reply-To: sashiko-reviews@lists.linux.dev
 To: live-patching@vger.kernel.org
-Cc: "Song Liu" <song@kernel.org>, "Petr Mladek" <pmladek@suse.com>, "Josh
- Poimboeuf" <jpoimboe@kernel.org>, "Miroslav Benes" <mbenes@suse.cz>
-In-Reply-To: <20260512221102.2720763-4-joe.lawrence@redhat.com>
-References: <20260512221102.2720763-4-joe.lawrence@redhat.com>
+Cc: "Petr Mladek" <pmladek@suse.com>, "Miroslav Benes" <mbenes@suse.cz>, "Josh
+ Poimboeuf" <jpoimboe@kernel.org>, "Song Liu" <song@kernel.org>
+In-Reply-To: <20260512221102.2720763-5-joe.lawrence@redhat.com>
+References: <20260512221102.2720763-5-joe.lawrence@redhat.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 14 May 2026 21:10:42 +0000
-Message-Id: <20260514211042.C96E8C2BCB3@smtp.kernel.org>
+Date: Thu, 14 May 2026 21:20:47 +0000
+Message-Id: <20260514212048.5431CC2BCB3@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-X-Rspamd-Queue-Id: F0DF7546F14
+X-Rspamd-Queue-Id: 82FC0547038
 X-Rspamd-Server: lfdr
 X-Spamd-Result: default: False [-0.16 / 15.00];
 	MISSING_MIME_VERSION(2.00)[];
@@ -73,9 +73,9 @@ X-Spamd-Result: default: False [-0.16 / 15.00];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[lists.linux.dev:replyto,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,sashiko.dev:url,smtp.kernel.org:mid];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,sashiko.dev:url,lists.linux.dev:replyto];
 	REPLYTO_DN_EQ_FROM_DN(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2818-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2819-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
 	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
@@ -98,47 +98,87 @@ X-Spamd-Result: default: False [-0.16 / 15.00];
 	HAS_REPLYTO(0.00)[sashiko-reviews@lists.linux.dev]
 X-Rspamd-Action: no action
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
+Thank you for your contribution! Sashiko AI review found 2 potential issue(=
 s) to consider:
-- [Medium] The `--arch` option is inaccessible on non-x86 architectures bec=
-ause the `klp` subcommand is conditionally compiled only for x86.
+- [Medium] The script hardcodes the temporary directory (klp-tmp) and defau=
+lt output file to the kernel root directory ($PWD), which breaks building o=
+ut-of-tree modules against read-only system headers.
+- [Medium] The commit message incorrectly states that 'make modules_prepare=
+' is sufficient to prepare the kernel tree for out-of-tree patching.
 --
 
-commit bd45d7b713ebb8e72f88be16df165f29efd9fc96
+commit c21e20dbe33c0ce1976f54b57ae6fc8cea53b65b
 Author: Joe Lawrence <joe.lawrence@redhat.com>
 
-objtool/klp: add --arch option to display target architecture
+livepatch/klp-build: add basic out-of-tree module patching support
 
-This commit adds an --arch option to the klp diff subcommand to print the
-target architecture objtool was compiled for. This allows scripts to verify
-compatibility before processing object files.
+This commit introduces a module-dir option to klp-build to support
+generating livepatches for out-of-tree kernel modules. It performs two
+builds of the out-of-tree module to generate the original and patched
+objects.
 
-> diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
-> --- a/tools/objtool/klp-diff.c
-> +++ b/tools/objtool/klp-diff.c
+>     klp-build is currently limited to patching in-tree kernel modules.
+>     Introduce a -M/--module-dir option to enable livepatch generation for
+>     basic out-of-tree (OOT) modules.  This requires the associated kernel
+>     tree to be pre-configured (e.g., 'make modules_prepare').
+
+The commit message states that running 'make modules_prepare' is
+sufficient to prepare the tree. Is this description accurate?
+
+Looking at do_init(), the script explicitly checks for Module.symvers:
+
+[[ -f "$PWD/Module.symvers" ]] ||
+    die "kernel must be built first (no Module.symvers in $PWD)"
+
+Running 'make modules_prepare' on a clean kernel source tree prepares
+configuration and headers but does not generate Module.symvers.
+
+Could the commit message be updated to clarify that a full build is
+required?
+
+> diff --git a/scripts/livepatch/klp-build b/scripts/livepatch/klp-build
+> index c4a7acf8edc3f..aef3b47db4f24 100755
+> --- a/scripts/livepatch/klp-build
+> +++ b/scripts/livepatch/klp-build
+
 [ ... ]
-> @@ -44,6 +44,7 @@ static const char * const klp_diff_usage[] =3D {
+
+> @@ -433,8 +451,6 @@ validate_patches() {
+>  }
 > =20
->  static const struct option klp_diff_options[] =3D {
->  	OPT_GROUP("Options:"),
-> +	OPT_BOOLEAN('a', "arch", &show_arch, "display target architecture"),
->  	OPT_BOOLEAN('d', "debug", &debug, "enable all debug output"),
+>  do_init() {
+> -	# We're not yet smart enough to handle anything other than in-tree
+> -	# builds in pwd.
+>  	[[ ! "$PWD" -ef "$SCRIPT_DIR/../.." ]] && die "please run from the kern=
+el root directory"
 
-Since the klp subcommand is conditionally compiled and only enabled for x86
-architectures, will this option be accessible on other architectures?
+[ ... ]
 
-According to the objtool Makefile, ARCH_HAS_KLP is strictly set to y
-only when SRCARCH is x86. For all other architectures, BUILD_KLP is
-disabled. This means that on non-x86 architectures, invoking
-objtool klp diff --arch will fall back to the weak stub, returning an
-"objtool: klp not implemented" error instead of printing the
-architecture.
+> +	if [[ -n "$MODULE_DIR" ]]; then
+> +		[[ -d "$MODULE_DIR" ]] || die "module directory not found: $MODULE_DIR"
+> +		MODULE_DIR=3D"$(realpath "$MODULE_DIR")"
+> +		[[ -f "$MODULE_DIR/Kbuild" || -f "$MODULE_DIR/Makefile" ]] ||
+> +			die "no Kbuild or Makefile in $MODULE_DIR"
+> +		[[ -f "$PWD/Module.symvers" ]] ||
+> +			die "kernel must be built first (no Module.symvers in $PWD)"
+> +	fi
+> +
+>  	(( SHORT_CIRCUIT <=3D 1 )) && rm -rf "$TMP_DIR"
+>  	mkdir -p "$TMP_DIR"
 
-Since the architecture is a global property of the binary, would it make
-more sense to expose this via a global flag like objtool --arch instead of
-restricting it to the klp subcommand?
+Does creating the temporary directory in the kernel root directory cause
+permission regressions when building out-of-tree modules?
+
+Out-of-tree modules are often built against system-installed kernel headers,
+which are typically read-only for standard users. Since the script mandates
+running from the kernel root directory, creating the temporary working
+directory and default output file inside the present working directory will
+cause permission denied errors.
+
+Could the script use the module directory or a user-specified path for
+temporary files and the default output instead?
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260512221102.2720=
-763-1-joe.lawrence@redhat.com?part=3D3
+763-1-joe.lawrence@redhat.com?part=3D4
 
