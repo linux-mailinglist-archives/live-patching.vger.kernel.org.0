@@ -1,166 +1,169 @@
-Return-Path: <live-patching+bounces-2812-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2813-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id qLJkNobfBWqjcwIAu9opvQ
-	(envelope-from <live-patching+bounces-2812-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 14 May 2026 16:43:18 +0200
+	id SJ1EK1nuBWpWdgIAu9opvQ
+	(envelope-from <live-patching+bounces-2813-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 14 May 2026 17:46:33 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sto.lore.kernel.org (sto.lore.kernel.org [IPv6:2600:3c09:e001:a7::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 9B62F54358C
-	for <lists+live-patching@lfdr.de>; Thu, 14 May 2026 16:43:18 +0200 (CEST)
+Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
+	by mail.lfdr.de (Postfix) with ESMTPS id 105AC5443B1
+	for <lists+live-patching@lfdr.de>; Thu, 14 May 2026 17:46:32 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sto.lore.kernel.org (Postfix) with ESMTP id CEC5A306CC8B
-	for <lists+live-patching@lfdr.de>; Thu, 14 May 2026 14:35:21 +0000 (UTC)
+	by sea.lore.kernel.org (Postfix) with ESMTP id BA7163030125
+	for <lists+live-patching@lfdr.de>; Thu, 14 May 2026 15:45:58 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0E4D13E5560;
-	Thu, 14 May 2026 14:35:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 52048223DEA;
+	Thu, 14 May 2026 15:45:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EbCH9f7V"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LoYGPWf0"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0EA53DFC6B
-	for <live-patching@vger.kernel.org>; Thu, 14 May 2026 14:35:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2ECA21D45E8
+	for <live-patching@vger.kernel.org>; Thu, 14 May 2026 15:45:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778769320; cv=none; b=S4oa362DyMxE63ZLaIKWyckLgW7k1kLol4KAkF/B5HTcj8IA2TiKoC2n17R88RqVZCD41mfLIWKAxqGc9uVto3tvTnCvHhjv3feaA5zQ1ZDUsqyBEJFNTbCz+y1kfWf8uAlYfY/wHi1pITJ7mQo/+wbS0MDpxjgG9pwJ5mHLt88=
+	t=1778773558; cv=none; b=utp7VFASZp1Q/p5XkJDdLTViC7ltbnI+pjwBDTEV+voX2xN67vZ9khq8/ZJCJdzkJyCLkCcRCtp+EeMyv5L0ailiWtbYe1LII7P+FSSRWbLlalsJAL8SMjq7eLlO71V4aItU69MUBqLcejGLZzd1uIileisR1D98wLyvE4u2Wtw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778769320; c=relaxed/simple;
-	bh=XFku5yzYOiAWkNshlk1RONi26wOOTtlVdHy89dww+pw=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tKgWRetFHA+N4HTZgcmvU5UspQHab+CrOh3o6ZOdQizeVbpp82gOc2rdTI7JATOTJ/zkIIB25K0h01Dx8f2zuT7AlBamVudF0go95IJT2hDxDZ+4Iq7j3B0MflI/otqemfpjeWrc9+xnH/xxPJI0ThQauoH5ZdLFM26mNCb5zgE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EbCH9f7V; arc=none smtp.client-ip=209.85.221.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-43d76dd4ee8so7478997f8f.2
-        for <live-patching@vger.kernel.org>; Thu, 14 May 2026 07:35:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778769318; x=1779374118; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=s/Z4/+H7H1VVZuahgNCo5Gog19+W4f6AXOwm3rTI+q0=;
-        b=EbCH9f7VXhl4iMUnJhrh4wHgMJ3qIumD8DgKlFca+XaCTqZNQeGFu78onpDkbWxcmd
-         L/JYhdp0EhYSLqPhlraBZfLrUjTAhJ+P6OeE2esjOh/Vgwie4XH/Fr6F8DabbH6c+dHZ
-         4tn7qbXi3LTQg60/BphAJRfJ13uAB3jkc47uKEtEvCGZUlH8q/X+AylcW8uUihIExvb7
-         0+FeFiBnVHjWrstRvshoCqSJQCTQJ/F80wMejS/GBvTWY5Oi3jcNRiqjNy8E1ukSpFgf
-         PIxpCRlFHwqf9RLpVPh/OPZyIxJzLTtcG/P0htmJJEFtX3HvFRL1U0lRTGG6HEj3QP3B
-         97cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778769318; x=1779374118;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=s/Z4/+H7H1VVZuahgNCo5Gog19+W4f6AXOwm3rTI+q0=;
-        b=Csp5WFWIUnkx9kkYzmITwKJ6WnCAZigYDqydyKROCC8xevKI6Ed9QBEPEj2g3PRK+K
-         PozMTu6t4SuJVqujs95edMTYf8jsNFY115OYI9w/tY9ALsmn8Kj2/YON0KmD0xrxhw6O
-         YZ+IrzAxGNUkq4Zgp6qaCGM8H5elGtylJO1d9ZcAzqbxvuBFkV7xPtj+I4nbI9AnoNfx
-         1zSvZju/ieWuti3FoX6mFrzohXibW4I89n5lOoU7D5gx9hJWhyj6Vp4dFWCBYRrdwO+C
-         FEOXsn3CLnFboS3Ec+3k810un/Tdgd2hRBD+JjdwIofYmH1yv1DX61HGOpVxuRLAA0oE
-         3d4Q==
-X-Forwarded-Encrypted: i=1; AFNElJ89/V9vOJv/dYyX8sTT69NkyH87CplEkI5MP3PcA0z7awkr+Jel2ms9+ZqEqxTEfNUUHsAh72zqup+H3Sob@vger.kernel.org
-X-Gm-Message-State: AOJu0YydXqjaK3tOax+ClOPS0/EdMaCazVjkWqB+Wy064SRB5JaTE8Ai
-	W3Vtme5fbBOD65cvftc9eJbE6gpxBARVFcX/nJ6CmdChNiMOo1Tbi1Jr
-X-Gm-Gg: Acq92OHwH2SnZWK8lOUt5i8ySTP6yaCVwYgaSA6GDWIjZmolXCrbfuDrLNrlcI9qvTW
-	GmDfLSdMk1NXQ67x3DPVQxoZRzPr8QENlTj154Sq8pi4fYCy7r/08Y0m8KO2EnoyQOKIDEIfUr2
-	EzfmPlj6jGOzzDEot6CuokVjwylTMdXRq1priyLGubYdW8c2LESb12ZCh6KC93XYlhYIb67GR4X
-	2C6tAT3zhX1iVc+WL5gU6mcK6+K8S1gQHI3P7LJnKtfskGby1WCrRjX8vpznqgEujzeL0uJT45E
-	dOF7aw/lyU50P5BVwnUPytBHG1yA59wkT/oLyYhXTUBBRZMdEBUCHIL/0DTlp/YnuLbAoKGYHiz
-	nsZpTX4Jl1rnqV+K5+PP+6eEtnBy24vg15usGERP+lt8j5sL7RKMf2GvVd2qlnzDYX9tYTgGiSm
-	yyABgEriuphWK2pM3C0dDfTOIG4lY7YHUNepau
-X-Received: by 2002:a05:600c:46d2:b0:48f:c903:955f with SMTP id 5b1f17b1804b1-48fc9a4c78dmr120777745e9.23.1778769317918;
-        Thu, 14 May 2026 07:35:17 -0700 (PDT)
-Received: from krava ([2a02:8308:a00c:e200:b655:ff13:e355:16a3])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fe46d8daesm1231655e9.9.2026.05.14.07.35.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 May 2026 07:35:17 -0700 (PDT)
-From: Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date: Thu, 14 May 2026 16:35:15 +0200
-To: Sasha Levin <sashal@kernel.org>
-Cc: Michal Hocko <mhocko@suse.com>, Breno Leitao <leitao@debian.org>,
-	Andrew Morton <akpm@linux-foundation.org>, corbet@lwn.net,
-	skhan@linuxfoundation.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	gregkh@linuxfoundation.org, akinobu.mita@gmail.com,
-	live-patching@vger.kernel.org
-Subject: Re: [PATCH] killswitch: add per-function short-circuit mitigation
- primitive
-Message-ID: <agXdowd63K8j43xi@krava>
-References: <agHUp8ulaWJ75WU5@tiehlicka>
- <agHcFCRVSn5ra5Kc@laps>
- <agHeZPA3eHhJHIsQ@tiehlicka>
- <agHgDgwu8H9Opzpl@laps>
- <agHm9Vj7bPPCRS1g@tiehlicka>
- <agH7_QBPLWKTZucB@laps>
- <agH_bGUTvWm2h5g4@tiehlicka>
- <agIHsN9tiIHnVTeV@laps>
- <agINlnNN4ubZgyiN@tiehlicka>
- <agIbaeBQAr-RkqYc@laps>
+	s=arc-20240116; t=1778773558; c=relaxed/simple;
+	bh=PK7zALDZPSI7rphSqQ4B81Q4rNgfj6uN21QhZTUGxJE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ZDhzHYQrA7lm31HY1mAwA3ti0O/p9s6jGNr9Z6e4fOwWF4qzURKS2t/RG8tHC9n2BPN77nr6AxtVqepF4DPpEYpy1zhPsLKLMXz6dc5LGVPY4ZczgaRnHoeDcJZkeav36srMPkVE2EGYGzKJ/UY7rqldDQm2irRZmoHdRXK2tOc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LoYGPWf0; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBDC6C2BCF5
+	for <live-patching@vger.kernel.org>; Thu, 14 May 2026 15:45:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778773557;
+	bh=PK7zALDZPSI7rphSqQ4B81Q4rNgfj6uN21QhZTUGxJE=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=LoYGPWf0RDPr2EdfQULHUb/E79osUcQd7+a2Ssz5KZmndEq3h27XUft2GaxjlYRwk
+	 91dENnVYodMt2/S/iYVIh3qQBL5qKRQ9m1zhQCarOFRXrSYtute+Ly00xEHixyan5k
+	 egrfj3OEm7miNLFxMzdQW0OFPsRvoGVj+VBKXdxtFhB8CvnwlqWzrQYTEaoqQEqwts
+	 bWVSgvTvmQa0/qUn+iFyU0X7+DL8VR//GymAipC97ti8/AK3cLfkv2S++sLzo8jaOy
+	 diDhsPq5I7oULs1251rJkXpS6koc8aEjy6tmWXCMOfyVpERdMiaT3hy9INRNyx3j6f
+	 dpNlOBTQcYd3g==
+Received: by mail-vk1-f175.google.com with SMTP id 71dfb90a1353d-56a8fdaddebso3055185e0c.0
+        for <live-patching@vger.kernel.org>; Thu, 14 May 2026 08:45:57 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ/Lx0k73rYYXHObpnHIdFWLVYiPvQ8Imt/MeivUe7VRkpOoYXDgxU7e4WsCq8dlZSF+AYeiwy8FdX4amqWS@vger.kernel.org
+X-Gm-Message-State: AOJu0YxiNsBD3PelNYqrQyKn7NOzLldmMIMM3qD/7lSnMyihGB8cQI2+
+	kh3Qso3A4NTkfTPfzjEXMoACEvMsAxojGdQ7P4PLIqSD3kqNC6UUVwMWszAlfeMm4luX0h/INW5
+	W4bSAZi3Bk3puQiom5b6UE0XZ7GCLYnc=
+X-Received: by 2002:a05:6122:6589:b0:56d:9e98:4676 with SMTP id
+ 71dfb90a1353d-575e708a7a8mr4797644e0c.13.1778773556490; Thu, 14 May 2026
+ 08:45:56 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <agIbaeBQAr-RkqYc@laps>
-X-Rspamd-Queue-Id: 9B62F54358C
+References: <agSjM8dxgnV9QQaf@redhat.com> <CAPhsuW6CgBtEGAK+E0n7+tnLAWNPTEuvnAo0vtQsbMVBb6htFw@mail.gmail.com>
+ <ju3k5mp22u37l4m27xygqce2sh2nczwckvmk3exkldk5365csx@q53zbumzj33t> <agV33GZsjwQjZNGb@pathway.suse.cz>
+In-Reply-To: <agV33GZsjwQjZNGb@pathway.suse.cz>
+From: Song Liu <song@kernel.org>
+Date: Thu, 14 May 2026 08:45:44 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW6Op81pTM7AMJKD6K-=ukkS9VGAmngNKpfQ1o0mBTi=nw@mail.gmail.com>
+X-Gm-Features: AVHnY4IKwgtjLq8o81YhkAg2h3LMl9mN2vmv9pt33Zg85zz0mQVM6H0ji7MIg8U
+Message-ID: <CAPhsuW6Op81pTM7AMJKD6K-=ukkS9VGAmngNKpfQ1o0mBTi=nw@mail.gmail.com>
+Subject: Re: Sashiko patch review for live-patching?
+To: Petr Mladek <pmladek@suse.com>
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>, Joe Lawrence <joe.lawrence@redhat.com>, 
+	live-patching@vger.kernel.org, Jiri Kosina <jikos@kernel.org>, 
+	Miroslav Benes <mbenes@suse.cz>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Rspamd-Queue-Id: 105AC5443B1
 X-Rspamd-Server: lfdr
-X-Spamd-Result: default: False [-0.16 / 15.00];
-	SUSPICIOUS_RECIPS(1.50)[];
+X-Spamd-Result: default: False [-1.16 / 15.00];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	MID_RHS_NOT_FQDN(0.50)[];
-	DMARC_POLICY_ALLOW(-0.50)[gmail.com,none];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c09:e001:a7::/64:c];
-	R_DKIM_ALLOW(-0.20)[gmail.com:s=20251104];
+	SUBJECT_ENDS_QUESTION(1.00)[];
+	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
+	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
+	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	FREEMAIL_FROM(0.00)[gmail.com];
-	RCVD_TLS_LAST(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2812-lists,live-patching=lfdr.de];
-	RCPT_COUNT_TWELVE(0.00)[12];
-	FREEMAIL_CC(0.00)[suse.com,debian.org,linux-foundation.org,lwn.net,linuxfoundation.org,vger.kernel.org,gmail.com];
-	MIME_TRACE(0.00)[0:+];
-	FORGED_SENDER_MAILLIST(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	TAGGED_FROM(0.00)[bounces-2813-lists,live-patching=lfdr.de];
 	TO_DN_SOME(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	RCVD_TLS_LAST(0.00)[];
+	DKIM_TRACE(0.00)[kernel.org:+];
+	FORGED_SENDER_MAILLIST(0.00)[];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
 	RCVD_COUNT_FIVE(0.00)[5];
 	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[olsajiri@gmail.com,live-patching@vger.kernel.org];
-	DKIM_TRACE(0.00)[gmail.com:+];
+	FROM_NEQ_ENVFROM(0.00)[song@kernel.org,live-patching@vger.kernel.org];
+	MISSING_XM_UA(0.00)[];
 	NEURAL_HAM(-0.00)[-1.000];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
 	TAGGED_RCPT(0.00)[live-patching];
-	MISSING_XM_UA(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:2600:3c09::/32, country:SG];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sto.lore.kernel.org:helo,sto.lore.kernel.org:rdns]
+	RCPT_COUNT_FIVE(0.00)[6];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[mail.gmail.com:mid,sashiko.dev:url,sea.lore.kernel.org:helo,sea.lore.kernel.org:rdns,suse.com:email]
 X-Rspamd-Action: no action
 
-On Mon, May 11, 2026 at 02:09:45PM -0400, Sasha Levin wrote:
+On Thu, May 14, 2026 at 12:21=E2=80=AFAM Petr Mladek <pmladek@suse.com> wro=
+te:
+>
+> On Wed 2026-05-13 12:47:13, Josh Poimboeuf wrote:
+> > On Wed, May 13, 2026 at 10:17:51AM -0700, Song Liu wrote:
+> > > Hi Joe,
+> > >
+> > > On Wed, May 13, 2026 at 9:13=E2=80=AFAM Joe Lawrence <joe.lawrence@re=
+dhat.com> wrote:
+> > > >
+> > > > Hello live-patching maintainers,
+> > > >
+> > > > I've noticed several references to the Sashiko (https://sashiko.dev=
+/)
+> > > > kernel review bot on this list and was wondering if there is intere=
+st in
+> > > > adding live-patching to the mailing lists Sashiko tracks.
+> > >
+> > > I think it is a great idea. AFAICT, these bots add a lot of values in=
+ the
+> > > code reviews.
+> >
+> > +1
+> >
+> > > > Integration appears straightforward: we can submit an MR to add our
+> > > > entry to sashiko-k8s.yaml and customize the bot's email behavior in
+> > > > email_policy.toml.
+> > > >
+> > > > Full Sashiko Maintainer documentation is available here:
+> > > > https://github.com/sashiko-dev/sashiko/blob/main/MAINTAINERS_GUIDE.=
+md
+> > > >
+> > > > Personally, I would vote to set reply_to_author.  I don't have a st=
+rong
+> > > > opinion on the other custom options, provided that the CC list is o=
+pt-in
+> > > > rather than simply mirrored from the MAINTAINERS::LIVE PATCHING fil=
+e.
+> > > > Either way, I've found the Sashiko web interface very helpful in pa=
+tch
+> > > > review.
+> > >
+> > > Given the relatively low volume of patches to the livepatch mail list=
+, I
+> > > think we can use reply_all. But if folks prefer reply_to_author inste=
+ad,
+> > > we sure can use the cc list.
+> >
+> > I would vote reply_all.  The signal/noise ratio isn't perfect, but it's
+> > high enough to be useful in many cases.  That way the
+> > maintainers/reviewers are aware of any potential issues, and it avoids
+> > duplicating review work and fragmenting conversations.
+>
+> I agree. And it might even motivate us to update the subsystem
+> specific review prompts so that the review gets improved over time.
 
-SNIP
++1 for livepatch specific prompts. We sure have some unique constraints
+due to the nature of livepatch.
 
-> > > Even if I'm okay with rebooting that often (and I really really would prefer
-> > > not to), this doesn't solve the issues of a larger fleet of servers that can't
-> > > just reboot that often.
-> > > 
-> > > What am I missing?
-> > 
-> > For one, you are missing more maintainers of code modification infrastructures.
-> 
-> Happy to add more, but I don't want to be too spammy. I'll add in the
-> livepatching ML and the fault injection maintainer (I couldn't find a list).
-> Please add any other folks/lists who you think might want to contribute to this
-> discussion.
-
-hi,
-could you please add bpf (bpf@vger.kernel.org) to the loop?
-
-thanks,
-jirka
+Thanks,
+Song
 
