@@ -1,188 +1,195 @@
-Return-Path: <live-patching+bounces-2815-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2816-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id MKpTCfI0BmoIgQIAu9opvQ
-	(envelope-from <live-patching+bounces-2815-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 14 May 2026 22:47:46 +0200
+	id 2GM/EaI2BmqWgQIAu9opvQ
+	(envelope-from <live-patching+bounces-2816-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 14 May 2026 22:54:58 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sto.lore.kernel.org (sto.lore.kernel.org [IPv6:2600:3c09:e001:a7::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id B388F546CE4
-	for <lists+live-patching@lfdr.de>; Thu, 14 May 2026 22:47:45 +0200 (CEST)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [IPv6:2600:3c04:e001:36c::12fc:5321])
+	by mail.lfdr.de (Postfix) with ESMTPS id B014B546D65
+	for <lists+live-patching@lfdr.de>; Thu, 14 May 2026 22:54:57 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sto.lore.kernel.org (Postfix) with ESMTP id DE2853011E9F
-	for <lists+live-patching@lfdr.de>; Thu, 14 May 2026 20:47:44 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id 840463024459
+	for <lists+live-patching@lfdr.de>; Thu, 14 May 2026 20:54:42 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0AA71346E46;
-	Thu, 14 May 2026 20:47:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 53F3B3B992E;
+	Thu, 14 May 2026 20:54:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="M9/IhVZV"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WD4R9YFA"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC6D43F413B
-	for <live-patching@vger.kernel.org>; Thu, 14 May 2026 20:47:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31596346ACE
+	for <live-patching@vger.kernel.org>; Thu, 14 May 2026 20:54:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778791661; cv=none; b=HWTQNg8qWb5gXAmv7Zp4ex2bdZBIZjWURAnKiRThmqs9gcOK8FrPFCPS79dCGA629MALbaG+gHlLzu6RFanNY/Sg2zm1SMZwQ+sCvCLBregOjlULi93fmFUbtBoYkhRghrExSD1bS6Wa7AO5xRu76PYTGaFdDTlmpSj5TnKWvw8=
+	t=1778792080; cv=none; b=Qs8cnPEp/Z1miirt2z7ActC4EHJW5u6Rz3NEJFQY/8gMxKWkS6mJ00NQQ4ZrLNo+EJahF8SRpvlkhtAmtAfIEUQGqARP6qcKLU1Bt1ryRw23skohmK9/F5BqI2bd5Dzi4bQUqIbmFgVxB6f13H8F1CDXiBaUa67Nr5mMYczH3Go=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778791661; c=relaxed/simple;
-	bh=SpTNK/jpbbcjCflRgtJLYpnFQ0FkaMDzt734LcM8Rlw=;
+	s=arc-20240116; t=1778792080; c=relaxed/simple;
+	bh=EmnH44RhmTDM/tecfkSlKb9n0OmqkD20yy2elx6Ux5I=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=Fnsr+llEDgu5ozBnIb6eQpEPdczgv4nuhEohw5jJlyQiXc91mdBNOIcymUlmelE1N/BtFxh47u3leTVTZHCSY/Rl/NDhyQfA4tvKiZ+sJPvHJLnlJ1gc9FffVYlyeDjASuMJKwNZWsPuB2TwKmWQW/gRgwU5wXfGppM8VY2vfko=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=M9/IhVZV; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ECCAC2BCB3;
-	Thu, 14 May 2026 20:47:41 +0000 (UTC)
+	 Message-Id; b=bQ4/NNczWMXv18q7Kkn+JkASP1xa9me9MA/2X5yaGZqKo+ALoM0cBESQig0I8yi3iDBoKf925kvGAV4ITFn22bU6BYumB2F3y/um8zo0l9PEkYe+xXL9QMPyZ28awFa1RahFky254GDFYrBgOna+lV0KG7dIFbE4vIOsruf1IBA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WD4R9YFA; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 925F1C2BCB7;
+	Thu, 14 May 2026 20:54:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778791661;
-	bh=SpTNK/jpbbcjCflRgtJLYpnFQ0FkaMDzt734LcM8Rlw=;
+	s=k20201202; t=1778792079;
+	bh=EmnH44RhmTDM/tecfkSlKb9n0OmqkD20yy2elx6Ux5I=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date:From;
-	b=M9/IhVZVjK6g1xk0KLdCbVMiYfJGmxdYD3IYERGe43SQFccqyo1caZxqYGqb7kf+J
-	 9ulOR5oF02PzfH0xuLZucjaFQFkGQ1yLatHTklsPwi8qY5js+mP7EJZgs0FS7FFG7E
-	 NhWcF7QQsA0UA7BYoB47K9M5HrQqBQlNWpSbPdzgf2pw4gzkLF8nHULnxTBZ5T43la
-	 jSEeAHOa0V9ze9mLB3G0xso4058z+4ZIV8S835xzwIQf96Ct0pRO3nujrZBUJwsqBP
-	 dZtxXhEoApu+9dLHn1P4rTd7fj99Qmklu/EUbHVK6zvPfewxglYiGgIuzc3o4tKCTT
-	 t0jHOWRzQJaIg==
+	b=WD4R9YFAa1aMlI50ntIBajGhpF3CXcr88pZB0l0mAFplA9jTHUn9FDYhB179ivktE
+	 WQ8fsqPzHJU1i2y89Zkd7Xw3v/wA4nhNaKY2q1EHQUHW9uBaR+e4ZeOMRZfnVsRKxW
+	 79HalnZp/BffIjfmlmPTYSlLkFRKoocPtldQ7Mbx/gZi5A3Yos2zvfPeKs7pU+k/TF
+	 d0cdk5p4qiCjpwxTF8nasSUKWqNKCKc8xQWjEwh/5z1w7NHpcdtdAS/hu2ECUvjVA3
+	 TBZJKo8gaNerF3JON9/fEi24VP2pSJM0LyG4GCbYpQW2yvlvLA6eoiNvoiRLECi27w
+	 iYqoV/Qxow7dA==
 From: sashiko-bot@kernel.org
-Subject: Re: [RFC 1/4] objtool/klp: add --symvers option to klp diff
+Subject: Re: [RFC PATCH 1/6] livepatch: Support scoped atomic replace using
+ replace set
 Reply-To: sashiko-reviews@lists.linux.dev
-To: live-patching@vger.kernel.org
-Cc: "Song Liu" <song@kernel.org>, "Petr Mladek" <pmladek@suse.com>, "Josh
- Poimboeuf" <jpoimboe@kernel.org>, "Miroslav Benes" <mbenes@suse.cz>
-In-Reply-To: <20260512221102.2720763-2-joe.lawrence@redhat.com>
-References: <20260512221102.2720763-2-joe.lawrence@redhat.com>
+To: mbenes@suse.cz, song@kernel.org, jikos@kernel.org, jpoimboe@kernel.org, pmladek@suse.com, joe.lawrence@redhat.com
+Cc: "Yafang Shao" <laoar.shao@gmail.com>, live-patching@vger.kernel.org
+In-Reply-To: <20260513143321.26185-2-laoar.shao@gmail.com>
+References: <20260513143321.26185-2-laoar.shao@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Thu, 14 May 2026 20:47:40 +0000
-Message-Id: <20260514204741.1ECCAC2BCB3@smtp.kernel.org>
+Date: Thu, 14 May 2026 20:54:38 +0000
+Message-Id: <20260514205439.925F1C2BCB7@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-X-Rspamd-Queue-Id: B388F546CE4
+X-Rspamd-Queue-Id: B014B546D65
 X-Rspamd-Server: lfdr
-X-Spamd-Result: default: False [-0.16 / 15.00];
+X-Spamd-Result: default: False [1.34 / 15.00];
 	MISSING_MIME_VERSION(2.00)[];
+	SUSPICIOUS_RECIPS(1.50)[];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
 	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
 	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c09:e001:a7::/64];
+	R_SPF_ALLOW(-0.20)[+ip6:2600:3c04:e001:36c::/64:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sashiko.dev:url,smtp.kernel.org:mid,lists.linux.dev:replyto];
 	REPLYTO_DN_EQ_FROM_DN(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2815-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2816-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[sashiko-bot@kernel.org,live-patching@vger.kernel.org];
 	RCVD_COUNT_THREE(0.00)[4];
+	TO_DN_SOME(0.00)[];
+	FREEMAIL_CC(0.00)[gmail.com,vger.kernel.org];
+	MIME_TRACE(0.00)[0:+];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	REPLYTO_DOM_NEQ_FROM_DOM(0.00)[];
-	TO_DN_SOME(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	DKIM_TRACE(0.00)[kernel.org:+];
-	MISSING_XM_UA(0.00)[];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	NEURAL_HAM(-0.00)[-1.000];
-	MID_RHS_MATCH_FROMTLD(0.00)[];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[sashiko-bot@kernel.org,live-patching@vger.kernel.org];
 	REPLYTO_DOM_NEQ_TO_DOM(0.00)[];
+	MID_RHS_MATCH_FROMTLD(0.00)[];
+	RCPT_COUNT_SEVEN(0.00)[8];
+	NEURAL_HAM(-0.00)[-1.000];
+	PRECEDENCE_BULK(0.00)[];
+	DKIM_TRACE(0.00)[kernel.org:+];
 	TAGGED_RCPT(0.00)[live-patching];
-	ASN(0.00)[asn:63949, ipnet:2600:3c09::/32, country:SG];
+	ASN(0.00)[asn:63949, ipnet:2600:3c04::/32, country:SG];
+	HAS_REPLYTO(0.00)[sashiko-reviews@lists.linux.dev];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	RCPT_COUNT_FIVE(0.00)[5];
+	MISSING_XM_UA(0.00)[];
 	FROM_NO_DN(0.00)[];
-	HAS_REPLYTO(0.00)[sashiko-reviews@lists.linux.dev]
+	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns,smtp.kernel.org:mid,sashiko.dev:url,lists.linux.dev:replyto]
 X-Rspamd-Action: no action
 
-Thank you for your contribution! Sashiko AI review found 3 potential issue(=
+Thank you for your contribution! Sashiko AI review found 4 potential issue(=
 s) to consider:
-- [Medium] NULL pointer dereference and crash when the implicitly generated=
- `--no-symvers` option is passed.
-- [Medium] The fallback file resolution logic incorrectly concatenates abso=
-lute paths to the kernel root directory, resulting in malformed paths and u=
-nintended file resolution.
-- [Low] Misleading error diagnostics for custom path failures.
+- [High] Module reference leak during forced transition.
+- [High] Silent semantic reversion for zero-initialized out-of-tree livepat=
+ches.
+- [High] Sysfs ABI breakage and incorrect type formatting for the `replace`=
+ attribute.
+- [Medium] Build failure in livepatch selftests.
 --
 
-commit ad4674adedd0ef34b67a931273e6e044219ae8b0
-Author: Joe Lawrence <joe.lawrence@redhat.com>
+commit 8a05e8a3ebd9241541926ac6aba19452a820c899
+Author: Yafang Shao <laoar.shao@gmail.com>
 
-objtool/klp: add --symvers option to klp diff
+livepatch: Support scoped atomic replace using replace set
 
-This commit adds a --symvers (-s) option to klp diff that allows specifying
-a custom path to Module.symvers. The change aims to support out-of-tree
-module patching by decoupling the tool from the default Module.symvers
-location while preserving the existing fallback detection logic.
+This commit converts the boolean replace attribute to a u32 replace_set
+to allow livepatches to atomically replace only existing patches within
+the same set. Patches with different replace sets can now remain active
+simultaneously.
 
-> diff --git a/tools/objtool/klp-diff.c b/tools/objtool/klp-diff.c
-> --- a/tools/objtool/klp-diff.c
-> +++ b/tools/objtool/klp-diff.c
+> diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
+> --- a/include/linux/livepatch.h
+> +++ b/include/linux/livepatch.h
 [ ... ]
-> @@ -46,6 +47,7 @@ static const struct option klp_diff_options[] =3D {
->  	OPT_BOOLEAN('d', "debug", &debug, "enable all debug output"),
->  	OPT_BOOLEAN(0, "debug-correlate", &debug_correlate, "enable correlation=
- debug output"),
->  	OPT_BOOLEAN(0, "debug-clone", &debug_clone, "enable cloning debug outpu=
-t"),
-> +	OPT_STRING('s', "symvers", &symvers_path, "path", "path to Module.symve=
-rs (default: Module.symvers)"),
+> @@ -137,7 +138,7 @@ struct klp_patch {
+>  	struct module *mod;
+>  	struct klp_object *objs;
+>  	struct klp_state *states;
+> -	bool replace;
+> +	unsigned int replace_set;
 
-Could this cause a NULL pointer dereference if a user passes --no-symvers?
+By removing the boolean replace flag, out-of-tree livepatches that
+zero-initialize their patch structures will now default to a replace_set of=
+ 0.
+Will this cause them to unintentionally replace all other zero-initialized
+patches instead of stacking safely?
 
-Since OPT_STRING doesn't include the PARSE_OPT_NONEG flag, the option
-parsing machinery will automatically accept --no-symvers and set
-symvers_path to NULL. Later in read_exports(), this would result in calling
-fopen(NULL, "r").
+Additionally, does this rename break the livepatch selftests in
+tools/testing/selftests/livepatch/test_modules/ (such as test_klp_state2.c),
+which still explicitly set patch.replace =3D true?
 
->  	OPT_END(),
->  };
 [ ... ]
-> @@ -85,16 +87,15 @@ static char *escape_str(const char *orig)
+> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+> --- a/kernel/livepatch/core.c
+> +++ b/kernel/livepatch/core.c
+> @@ -454,7 +454,7 @@ static ssize_t replace_show(struct kobject *kobj,
+>  	struct klp_patch *patch;
 > =20
->  static int read_exports(void)
->  {
-> -	const char *symvers =3D "Module.symvers";
->  	char line[1024], *path =3D NULL;
->  	unsigned int line_num =3D 1;
->  	FILE *file;
-> =20
-> -	file =3D fopen(symvers, "r");
-> +	file =3D fopen(symvers_path, "r");
->  	if (!file) {
-> -		path =3D top_level_dir(symvers);
-> +		path =3D top_level_dir(symvers_path);
+>  	patch =3D container_of(kobj, struct klp_patch, kobj);
+> -	return sysfs_emit(buf, "%d\n", patch->replace);
+> +	return sysfs_emit(buf, "%d\n", patch->replace_set);
 
-What happens here if the user supplies an absolute path like
-/build/out-of-tree/Module.symvers that fails the initial fopen()?
+Does changing the sysfs output from a boolean to a replace set ID break
+compatibility for userspace tools expecting strict 0 or 1 values from the
+replace attribute?
 
-It looks like top_level_dir() will unconditionally append the absolute path
-to the kernel root directory, resulting in a malformed path like
-/path/to/linux//build/out-of-tree/Module.symvers. Is it intentional to
-apply the top-level directory fallback to absolute paths?
-
->  		if (!path) {
-> -			ERROR("can't open '%s', \"objtool diff\" should be run from the kerne=
-l tree", symvers);
-> +			ERROR("can't open '%s', \"objtool diff\" should be run from the kerne=
-l tree", symvers_path);
-
-Since the goal of this patch is to enable out-of-tree module patching, does
-this error message still make sense when a custom path is provided?
-
-It might be confusing to tell users they must run from the kernel tree when
-they explicitly passed an out-of-tree --symvers path.
-
-Additionally, if the fallback fopen() fails later on, the code calls
-ERROR_GLIBC("fopen") which prints "fopen: No such file or directory" without
-indicating which path failed. Would it be helpful to include the actual file
-path in these error diagnostics?
+Also, since replace_set is declared as an unsigned int, will using the
+signed %d format specifier cause large replace set IDs to overflow and
+display as negative numbers?
 
 [ ... ]
+> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+> --- a/kernel/livepatch/transition.c
+> +++ b/kernel/livepatch/transition.c
+[ ... ]
+> @@ -720,11 +720,11 @@ void klp_force_transition(void)
+>  		klp_update_patch_state(idle_task(cpu));
+> =20
+>  	/* Set forced flag for patches being removed. */
+> -	if (klp_target_state =3D=3D KLP_TRANSITION_UNPATCHED)
+> +	if (klp_target_state =3D=3D KLP_TRANSITION_UNPATCHED) {
+>  		klp_transition_patch->forced =3D true;
+> -	else if (klp_transition_patch->replace) {
+> +	} else {
+>  		klp_for_each_patch(patch) {
+> -			if (patch !=3D klp_transition_patch)
+> +			if (patch->replace_set =3D=3D klp_transition_patch->replace_set)
+>  				patch->forced =3D true;
+>  		}
+>  	}
+
+Could this inadvertently set forced =3D true on the klp_transition_patch
+itself?
+
+Since klp_transition_patch was already added to the global list during
+klp_init_patch(), it will match its own replace_set here. If it is marked
+as forced during a patching transition, wouldn't we leak its module referen=
+ce
+in klp_free_patch_finish() when it is cleanly disabled later?
 
 --=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260512221102.2720=
-763-1-joe.lawrence@redhat.com?part=3D1
+Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260513143321.2618=
+5-1-laoar.shao@gmail.com?part=3D1
 
