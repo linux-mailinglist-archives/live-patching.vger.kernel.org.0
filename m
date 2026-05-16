@@ -1,119 +1,167 @@
-Return-Path: <live-patching+bounces-2836-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2837-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id CDajMtiSB2pU9AIAu9opvQ
-	(envelope-from <live-patching+bounces-2836-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Fri, 15 May 2026 23:40:40 +0200
+	id qCgRHnQkCGoVbQMAu9opvQ
+	(envelope-from <live-patching+bounces-2837-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Sat, 16 May 2026 10:01:56 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
-	by mail.lfdr.de (Postfix) with ESMTPS id EC50A5584DD
-	for <lists+live-patching@lfdr.de>; Fri, 15 May 2026 23:40:39 +0200 (CEST)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
+	by mail.lfdr.de (Postfix) with ESMTPS id A859155AB33
+	for <lists+live-patching@lfdr.de>; Sat, 16 May 2026 10:01:55 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sin.lore.kernel.org (Postfix) with ESMTP id A3BFE3082790
-	for <lists+live-patching@lfdr.de>; Fri, 15 May 2026 21:20:54 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id 9643D3011A45
+	for <lists+live-patching@lfdr.de>; Sat, 16 May 2026 08:01:54 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BD39F405C2A;
-	Fri, 15 May 2026 21:20:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IYOY24OW"
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7D21935AC13;
+	Sat, 16 May 2026 08:01:53 +0000 (UTC)
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A194405C26
-	for <live-patching@vger.kernel.org>; Fri, 15 May 2026 21:20:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3E8F5464D;
+	Sat, 16 May 2026 08:01:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778880035; cv=none; b=pDw59rZ9EZ6Tz+sAcex8x9w90US+hOuTt6N/2/lhd0amHiUDDV1gYD8g6Y6U/YmnCoqjk39Ga027NRufgJP72X/52WHNC1LJiIkTwm3u5dkuTPDRWbZjJ+Cy3lSVG65hVYB0fk1euIyF+FeWlnFxWHeMqaxKdVjrqY0WLjtWbJc=
+	t=1778918513; cv=none; b=shlMFdj98H/a4Xj+EzTHUEmbImUAbtqBJjlHCX12eFDq5sHrsvJaWbFGF9iNiQQNobjh20rCQEaYdJVGnKODQ4edpHitgGPeyUX7tFNcNNE5g3zE7oGE7K1kkZog1GkcgFXwGFkjgdzwLW+L4lJbp9R9Nu7jbIWN4LBM9veEe9o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778880035; c=relaxed/simple;
-	bh=pdmef4fBgIAbfqgK4jVS0fI/dYehx2orZtpEc9nD0JU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=qtlskaxhVMu3o0o29sTrQt7LDeSQZ08L41Yvobtn52xYUyyUBekAPADXlb5AJAw6TiuEqUEkyTPKS1vlOSBKkes9SADsYdRmXTIep1CxJLP1pd0gacuOcgluULCPmZnUVJu+1jH1z2EEiser3XLLmitaQiIX4xmsiidornXTkfU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IYOY24OW; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55E1BC2BCB0
-	for <live-patching@vger.kernel.org>; Fri, 15 May 2026 21:20:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778880035;
-	bh=pdmef4fBgIAbfqgK4jVS0fI/dYehx2orZtpEc9nD0JU=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=IYOY24OWX6ceCGsHtAjp6Wvo1cIMp9hgQ/9aKGF7NTGTeSz+QxXtMpRfNtF+8N/1I
-	 vbfJWf+yHy6VoG7E08uKcdz3YUDN4bO4jZpTE8K11oT2TYwPEvqXzBzVcZgqU+WTuI
-	 ZpgOTuV8+6ulfK6z12BiiWZo0kuz3otSiPECpO/hi1xFbYnt5b5ouBQk0Dm28nYjRz
-	 dG5UGYsyPjrvLcwkkmTg7QMNTks54KjV5yeUIddpFeY9cXZ8BNydEWpo997iIYOxqb
-	 nrkHuKZ/qyZyrT0khwC+bxD+uW1227kxfE6N+so/vdHdjAHlFppic5OSEotpaKKGVl
-	 XOqBC7HsVZuqw==
-Received: by mail-qv1-f46.google.com with SMTP id 6a1803df08f44-8b6dd874471so4774886d6.0
-        for <live-patching@vger.kernel.org>; Fri, 15 May 2026 14:20:35 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ+xuCiTEd5WxpwFWFZ9GVbh83+9YQ/v72SI1qeznQMLrz0WXzOg25hbDum1hae3c9RdVLpfZRKpOoGzX5Yj@vger.kernel.org
-X-Gm-Message-State: AOJu0YwJC6RlrZQxgBDAC17yvjwohIVLV3gQFNvtv1kKYNtiMYoHdtyr
-	BiNqI9AumH5kd5zkU+Eue/nEXv6QiPkwNfOpfrKak/V9AFR+SujWiOhZDQ9PRkUYI1tx1njm7f5
-	AlfaGqgFxPHeSnRMHh4VODHyJi5t7tMA=
-X-Received: by 2002:a05:6214:5c42:b0:8ca:16fd:7297 with SMTP id
- 6a1803df08f44-8ca16fd752cmr63903586d6.30.1778880034532; Fri, 15 May 2026
- 14:20:34 -0700 (PDT)
+	s=arc-20240116; t=1778918513; c=relaxed/simple;
+	bh=YYBOT9SAw/kvvT59yW0yk0gldX2sepN5EQq2haYatJs=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=kr49uEbIar+xe8PYLCsa5Eu+wX7LUfE8twnV89qYD3jxwUhxG+Ppii9aw/1S+1n/jUzABVhgifhNaD+olpaHxLeh0qqGokuBKB8N+i27ezdEon8piOcPL5Zct++cWiW44gbztfN976pcfXGtgyHLiU/MnHt9KealOQCH263wxAo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
+Received: from mail.maildlp.com ([172.25.15.154])
+	by h3cspam02-ex.h3c.com with ESMTP id 64G80A55093149;
+	Sat, 16 May 2026 16:00:10 +0800 (+08)
+	(envelope-from lu.haoA@h3c.com)
+Received: from DAG6EX08-BJD.srv.huawei-3com.com (unknown [10.153.34.10])
+	by mail.maildlp.com (Postfix) with ESMTP id B0F0A20045B7;
+	Sat, 16 May 2026 16:12:17 +0800 (CST)
+Received: from localhost.localdomain (10.114.186.34) by
+ DAG6EX08-BJD.srv.huawei-3com.com (10.153.34.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.2.1258.27; Sat, 16 May 2026 16:00:10 +0800
+From: luhao <lu.haoA@h3c.com>
+To: <jpoimboe@kernel.org>, <jikos@kernel.org>, <mbenes@suse.cz>,
+        <pmladek@suse.com>
+CC: <joe.lawrence@redhat.com>, <live-patching@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <zhang.chunA@h3c.com>,
+        <wang.shijie@h3c.com>, <lu.haoA@h3c.com>
+Subject: [PATCH] livepatch: Improve the accuracy of symbol search
+Date: Sat, 16 May 2026 16:08:33 +0800
+Message-ID: <20260516080833.218948-1-lu.haoA@h3c.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1778642120.git.jpoimboe@kernel.org> <236050080db7b2462fdb13a03ed48a8efb2415a4.1778642120.git.jpoimboe@kernel.org>
-In-Reply-To: <236050080db7b2462fdb13a03ed48a8efb2415a4.1778642120.git.jpoimboe@kernel.org>
-From: Song Liu <song@kernel.org>
-Date: Fri, 15 May 2026 14:20:23 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW7ZrmF+5kPn=SqSvG_9hMYg90Oxp=JNZyEGXvU0KvJQbA@mail.gmail.com>
-X-Gm-Features: AVHnY4L9sdxUgUXVbcL56ZDtdzvOBRji1QMIemxm16TDxuJg2SXmVG3dhNfVWn8
-Message-ID: <CAPhsuW7ZrmF+5kPn=SqSvG_9hMYg90Oxp=JNZyEGXvU0KvJQbA@mail.gmail.com>
-Subject: Re: [PATCH v3 16/21] objtool/klp: Filter arm64 mapping symbols in find_symbol_by_offset()
-To: Josh Poimboeuf <jpoimboe@kernel.org>
-Cc: x86@kernel.org, linux-kernel@vger.kernel.org, 
-	live-patching@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>, 
-	Joe Lawrence <joe.lawrence@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org, 
-	Mark Rutland <mark.rutland@arm.com>, Miroslav Benes <mbenes@suse.cz>, Petr Mladek <pmladek@suse.com>
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Rspamd-Queue-Id: EC50A5584DD
+Content-Type: text/plain
+X-ClientProxiedBy: BJSMTP01-EX.srv.huawei-3com.com (10.63.20.132) To
+ DAG6EX08-BJD.srv.huawei-3com.com (10.153.34.10)
+X-DNSRBL: 
+X-SPAM-SOURCE-CHECK: pass
+X-MAIL:h3cspam02-ex.h3c.com 64G80A55093149
+X-Rspamd-Queue-Id: A859155AB33
 X-Rspamd-Server: lfdr
-X-Spamd-Result: default: False [-2.16 / 15.00];
+X-Spamd-Result: default: False [0.04 / 15.00];
+	MID_CONTAINS_FROM(1.00)[];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
-	R_SPF_ALLOW(-0.20)[+ip4:104.64.211.4:c];
-	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20201202];
+	R_MISSING_CHARSET(0.50)[];
+	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	TAGGED_FROM(0.00)[bounces-2836-lists,live-patching=lfdr.de];
-	RCVD_TLS_LAST(0.00)[];
-	FROM_HAS_DN(0.00)[];
+	DMARC_NA(0.00)[h3c.com];
+	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	DKIM_TRACE(0.00)[kernel.org:+];
-	RCPT_COUNT_TWELVE(0.00)[12];
-	MIME_TRACE(0.00)[0:+];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:104.64.192.0/19, country:SG];
-	TO_DN_SOME(0.00)[];
+	RCVD_TLS_LAST(0.00)[];
+	TAGGED_FROM(0.00)[bounces-2837-lists,live-patching=lfdr.de];
+	RCPT_COUNT_SEVEN(0.00)[10];
+	MIME_TRACE(0.00)[0:+];
 	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[song@kernel.org,live-patching@vger.kernel.org];
-	MISSING_XM_UA(0.00)[];
-	RCVD_COUNT_FIVE(0.00)[5];
+	FROM_NEQ_ENVFROM(0.00)[lu.haoA@h3c.com,live-patching@vger.kernel.org];
+	FROM_HAS_DN(0.00)[];
 	TAGGED_RCPT(0.00)[live-patching];
-	NEURAL_HAM(-0.00)[-1.000];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[mail.gmail.com:mid,sin.lore.kernel.org:helo,sin.lore.kernel.org:rdns]
+	RCVD_COUNT_FIVE(0.00)[6];
+	NEURAL_HAM(-0.00)[-0.998];
+	TO_DN_NONE(0.00)[];
+	R_DKIM_NA(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:helo,tor.lore.kernel.org:rdns]
 X-Rspamd-Action: no action
 
-On Tue, May 12, 2026 at 8:34=E2=80=AFPM Josh Poimboeuf <jpoimboe@kernel.org=
-> wrote:
->
-> ARM64 ELF objects contain $d/$x mapping symbols (STT_NOTYPE) at offset 0
-> in data/text sections.  These aren't "real" symbols so filter them from
-> find_symbol_by_offset(), consistent with the existing section symbol
-> filter.
->
-> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+module_kallsyms_on_each_symbol, when the input parameter modname is not
+ empty, only searches for symbols within the current module. When
+patching a kernel object (ko), if the patched function calls
+functions from vmlinux or other ko modules, symbol lookup may fail.
 
-Acked-by: Song Liu <song@kernel.org>
+When patching a ko, the current approach first searches for symbols
+within the module itself. If not found, it uses
+kallsyms_on_each_match_symbol to search in vmlinux. If still not
+found, it calls module_kallsyms_on_each_symbol with modname set to
+NULL to search across all ko modules. The reason for not searching
+across all ko modules from the start is to avoid issues with
+duplicate symbol names.
+
+Reviewed-by: zhangchun <zhang.chunA@h3c.com>
+Reviewed-by: wangshijie <wang.shijie@h3c.com>
+Signed-off-by: luhao <lu.haoA@h3c.com>
+---
+ kernel/livepatch/core.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+index 28d15ba58a26..9c587cc4896b 100644
+--- a/kernel/livepatch/core.c
++++ b/kernel/livepatch/core.c
+@@ -167,9 +167,14 @@ static int klp_find_object_symbol(const char *objname,=
+ const char *name,
+                .pos =3D sympos,
+        };
+
+-       if (objname)
++       if (objname) {
+                module_kallsyms_on_each_symbol(objname, klp_find_callback, =
+&args);
+-       else
++
++               if (args.addr =3D=3D 0)
++                       kallsyms_on_each_match_symbol(klp_match_callback, n=
+ame, &args);
++               if (args.addr =3D=3D 0)
++                       module_kallsyms_on_each_symbol(NULL, klp_find_callb=
+ack, &args);
++       } else
+                kallsyms_on_each_match_symbol(klp_match_callback, name, &ar=
+gs);
+
+        /*
+--
+2.51.0
+
+---------------------------------------------------------------------------=
+----------------------------------------------------------
+=B1=BE=D3=CA=BC=FE=BC=B0=C6=E4=B8=BD=BC=FE=BA=AC=D3=D0=D0=C2=BB=AA=C8=FD=BC=
+=AF=CD=C5=B5=C4=B1=A3=C3=DC=D0=C5=CF=A2=A3=AC=BD=F6=CF=DE=D3=DA=B7=A2=CB=CD=
+=B8=F8=C9=CF=C3=E6=B5=D8=D6=B7=D6=D0=C1=D0=B3=F6=B5=C4=B8=F6=C8=CB=BB=F2=C8=
+=BA=D7=E9=A1=A3
+=BD=FB=D6=B9=C8=CE=BA=CE=C6=E4=CB=FB=C8=CB=D2=D4=C8=CE=BA=CE=D0=CE=CA=BD=CA=
+=B9=D3=C3=A3=A8=B0=FC=C0=A8=B5=AB=B2=BB=CF=DE=D3=DA=C8=AB=B2=BF=BB=F2=B2=BF=
+=B7=D6=B5=D8=D0=B9=C2=B6=A1=A2=B8=B4=D6=C6=A1=A2=BB=F2=C9=A2=B7=A2=A3=A9=B1=
+=BE=D3=CA=BC=FE=D6=D0=B5=C4=D0=C5=CF=A2=A1=A3
+=C8=E7=B9=FB=C4=FA=B4=ED=CA=D5=C1=CB=B1=BE=D3=CA=BC=FE=A3=AC=C7=EB=C4=FA=C1=
+=A2=BC=B4=B5=E7=BB=B0=BB=F2=D3=CA=BC=FE=CD=A8=D6=AA=B7=A2=BC=FE=C8=CB=B2=A2=
+=C9=BE=B3=FD=B1=BE=D3=CA=BC=FE=A3=A1
+This e-mail and its attachments contain confidential information from New H=
+3C, which is intended only for the person or entity whose address is listed=
+ above.
+Any use of the information contained herein in any way (including, but not =
+limited to, total or partial disclosure, reproduction, or dissemination) by=
+ persons other than the intended recipient(s) is prohibited.
+If you receive this e-mail in error, please notify the sender by phone or e=
+mail immediately and delete it!
 
