@@ -1,58 +1,58 @@
-Return-Path: <live-patching+bounces-2873-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2874-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id iBy4KpBKD2qRIwYAu9opvQ
-	(envelope-from <live-patching+bounces-2873-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 21 May 2026 20:10:24 +0200
+	id mBV5GqBND2rgIwYAu9opvQ
+	(envelope-from <live-patching+bounces-2874-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 21 May 2026 20:23:28 +0200
 X-Original-To: lists+live-patching@lfdr.de
 Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
-	by mail.lfdr.de (Postfix) with ESMTPS id 27D7A5AAD8F
-	for <lists+live-patching@lfdr.de>; Thu, 21 May 2026 20:10:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 060805AAFE8
+	for <lists+live-patching@lfdr.de>; Thu, 21 May 2026 20:23:27 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id 5362B30FF14A
-	for <lists+live-patching@lfdr.de>; Thu, 21 May 2026 18:02:15 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id 551943025C75
+	for <lists+live-patching@lfdr.de>; Thu, 21 May 2026 18:17:05 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6293437C90D;
-	Thu, 21 May 2026 18:02:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 47CF83911CE;
+	Thu, 21 May 2026 18:17:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PE6S/s9s"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VuyXq1tq"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02A743630AD
-	for <live-patching@vger.kernel.org>; Thu, 21 May 2026 18:02:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5C7A37EFF6
+	for <live-patching@vger.kernel.org>; Thu, 21 May 2026 18:17:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779386534; cv=none; b=XBARXK1ZmJaWINw4MZrB+RpHXTclHCRb0pHRVIQVKq26gfgr5yaU9DWZnn79K0HXMdu8sQp0RXjkY6xOvyw998xLxShZNrC6ernXOT4Ed3vK6kJEa0wkiqvYuhL2SrI1DmlGEJ2mUOMZKFYHAEMkP7xYBFUWIuB/aRmS4eiuptE=
+	t=1779387422; cv=none; b=MkvP5RtgJArJNhbBMgkiN5nNUejDTy3Jp0CQ2yjwp1fLHqO+hr5Rvq0bFca/RjG7+5CmBPfeZ2DoFNZGjeolvTy0O3wgZe4155oFXEIj+57vmmkXs36XvYy5sFeIPIwTl8Jt1uxLIp5m4cjHMZTcmJXkouM4B4go/JdRVcAz6ig=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779386534; c=relaxed/simple;
-	bh=uLPZQ9vUr/4uTv8PfAlMmoLOrphUtX99fCwYRINzO4I=;
+	s=arc-20240116; t=1779387422; c=relaxed/simple;
+	bh=+VWCLDENbyTrufBDf5/wO7Oma9uH1Q8L65+rax8aTO4=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=kgNU3I7sR2USow7U7IescUVmjTpvdt5h/qVpE+hUhdEBKcCwMzqQoELuSGGBG/SUR6Lto2EKR9uBp9xRYV4onXfAV9rGg2HlNQJGIvh2q5zJnDZ+KbOvQpOoIo8lMxa1uGpuGHhV+DEYXh8XIeltQNk3NrTG1RU3BGKItsD3R78=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PE6S/s9s; arc=none smtp.client-ip=100.103.45.18
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A81B11F000E9
-	for <live-patching@vger.kernel.org>; Thu, 21 May 2026 18:02:12 +0000 (UTC)
+	 To:Cc:Content-Type; b=C7iMf9t2bdSDu2SA8d/+68uJB172tHNC7pg2vh33AKqeBRntYXQhI9572aqc2Hcnbqk2PttfPjQEE3O+dlL1SRKOExq0GeE84Wv+jukjJhx0bgGFExjjOYWFsNaFuezN5X8XXxp1JDkkwylm32qNrNsG6n9r8e1tQGp23Uhzh3s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VuyXq1tq; arc=none smtp.client-ip=100.103.45.18
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 853891F01568
+	for <live-patching@vger.kernel.org>; Thu, 21 May 2026 18:17:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779386532;
-	bh=uLPZQ9vUr/4uTv8PfAlMmoLOrphUtX99fCwYRINzO4I=;
+	s=k20260515; t=1779387420;
+	bh=+VWCLDENbyTrufBDf5/wO7Oma9uH1Q8L65+rax8aTO4=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=PE6S/s9sd0mSPmBeb70+EozqZRA4T1mvNxnlUCE5EebvYUJojOEw7Fpw9ddGli/kl
-	 awZHd2fHG/VeDlDf/6c7YW5LTGZfSjRtUa/96H4h1QorCjWWCRDmuwhsO1mUrQpkqE
-	 YhqF8erFyZAU5gPRY6tn/qIILJHW4cC3sUUkX/Evagk+7vt7C8asqSU17rxiCNRFRI
-	 9eegBoWp5PsqHl/aHBNKNS3duNbZzmpBCTjDPYvo83QCFZtWTKTMGepo5XutvGtGl0
-	 LZJhqtuh180NVXBtsVKMyceRCdTbwerJaigc8CMHx15XS39ufuiolqMoUO3jqUVAcT
-	 ei/qrJbdoqNvw==
-Received: by mail-pj1-f53.google.com with SMTP id 98e67ed59e1d1-36a3aff302aso1205927a91.1
-        for <live-patching@vger.kernel.org>; Thu, 21 May 2026 11:02:12 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AFNElJ9sK7kOwz9pSagijJpmJMTRYPIp18gTj0pROepZMsabv0GkLWnHYCthvIhu7BCDBwWA0lJYaR7QIk0z+hHf@vger.kernel.org
-X-Gm-Message-State: AOJu0YxrWcLWn7rNmpju1n03QTFCJV9AmIMU2UtB2YGVGuQZdbqe8kCm
-	R4x5K2+KWFZD8g62R6Kzmrhd6ZTuNSgx7JGYK8JEJWt6OVKbY1PFf/5xZz+kvfwykvQvg3v1giR
-	PjUcTVCUiEMbNL/7kCzvCmjEi+1iXjG0=
-X-Received: by 2002:a17:90b:5845:b0:368:d8a1:3bd4 with SMTP id
- 98e67ed59e1d1-36a6741da05mr328033a91.3.1779386532181; Thu, 21 May 2026
- 11:02:12 -0700 (PDT)
+	b=VuyXq1tqiHVI2YZ3Blv3BD2WCJdC9/dUivuyWddy+wydX2ooJe2bkg9Gm9++B3oEo
+	 sh0UdIEN9umrNBhjufrQIqRV3lx0D0GA8Sb7poWd0s8udQW6ciJHHeZHcCK3RrRCoQ
+	 bGWOb0NZbLBqj12BfjSZwfav5msDWT0Qq2t7Gmh4n2mSLQTSilf1F8j/1uecoi0PwC
+	 ncOg8TwZYbC16t5C2LBE0N1MO/fsA442mc1wd4TmR96Jef0gJGQbZWXmNtulPenO/u
+	 aQc0Km8pCckySifBInQIQvxQgvVAFm6CPvp2h04FbPQVgYDV+qLBCdJy5FkQDlrlXV
+	 Lr+UDPJcnr6hQ==
+Received: by mail-vs1-f49.google.com with SMTP id ada2fe7eead31-631a7868228so4457284137.0
+        for <live-patching@vger.kernel.org>; Thu, 21 May 2026 11:17:00 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AFNElJ9eINmxlR8mO1KogJC6xj0tAjLtRvTkNupZXTmr8PSzG2IvlA7GuvwNK5efAPtbBzZ/5aBXabV/hUzJ30E+@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxg0ExLlEv5pGJHofvfQEVWepEamjDMeGCIHeje0Zl/gWOQqDTD
+	KBzWukndeO9XcVhsxPowVZLwkmUIWP/naO5Binsrsqh6xvS/JRahEsxOmzzH1oWCcxuAfk3aRh8
+	/H3sVNqCvYhmuC8T5t+oF0WnNOtPEJ8s=
+X-Received: by 2002:a05:6102:5a9a:b0:631:28c1:154e with SMTP id
+ ada2fe7eead31-6739772de2emr3100077137.16.1779387419475; Thu, 21 May 2026
+ 11:16:59 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -63,13 +63,13 @@ References: <20260508195749.1885522-1-sashal@kernel.org> <20260517134858.146569-
  <CAPhsuW4x8shWon8Moi5VgCq2n4E2EzaaauZ2HHpy42Rp1Y-J-g@mail.gmail.com>
  <agsVDqdALBoHEHlv@laps> <CAPhsuW44UX663Au=WwHz8MVwnQgLkjxOqpJSCKxNiv3=RpZvqw@mail.gmail.com>
  <b342c38b-7323-4b72-a239-8a574d6bc36b@iogearbox.net> <agzAwjKhOhuANz_P@laps>
- <CAPhsuW6C3hyciA4=z+V0BkQ9EEubuNCKLwoxtXorSbnhkUxdJQ@mail.gmail.com> <ag8Y8L2WCcSEDPkG@laps>
-In-Reply-To: <ag8Y8L2WCcSEDPkG@laps>
+ <3dd6d852-18fb-4c64-a1ae-0d79ef7c061f@iogearbox.net> <ag8lOe6dAOgnWmsQ@laps>
+In-Reply-To: <ag8lOe6dAOgnWmsQ@laps>
 From: Song Liu <song@kernel.org>
-Date: Thu, 21 May 2026 11:02:00 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW5tUQ3J6hgdqXWiLEGV5zpJm+nuqy_dXovRvFkUHEyg=g@mail.gmail.com>
-X-Gm-Features: AVHnY4JBfdUFRyhiKfJw5pxU2Y29FHkTxkEQ7Mu2Iqr9cDc-c-vLuUobNPxFRro
-Message-ID: <CAPhsuW5tUQ3J6hgdqXWiLEGV5zpJm+nuqy_dXovRvFkUHEyg=g@mail.gmail.com>
+Date: Thu, 21 May 2026 11:16:46 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7sbt5B+ZeGW8O2JMJ0ELPU-vhZFNvbB+0Q8XhZg6pKYw@mail.gmail.com>
+X-Gm-Features: AVHnY4Ihdl75axpqRxaDxb23j1ycahjc8W-Yta5RRqXxUzFNMBCHqx-JtojbAKM
+Message-ID: <CAPhsuW7sbt5B+ZeGW8O2JMJ0ELPU-vhZFNvbB+0Q8XhZg6pKYw@mail.gmail.com>
 Subject: Re: [PATCH v3] killswitch: add per-function short-circuit mitigation primitive
 To: Sasha Levin <sashal@kernel.org>
 Cc: Daniel Borkmann <daniel@iogearbox.net>, linux-kernel@vger.kernel.org, 
@@ -79,7 +79,8 @@ Cc: Daniel Borkmann <daniel@iogearbox.net>, linux-kernel@vger.kernel.org,
 	Jonathan Corbet <corbet@lwn.net>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
 	Joshua Peisach <jpeisach@ubuntu.com>, Florian Weimer <fw@deneb.enyo.de>, Breno Leitao <leitao@debian.org>, 
 	Anthony Iliopoulos <ailiop@suse.com>, Michal Hocko <mhocko@suse.com>, Jiri Olsa <jolsa@kernel.org>, 
-	John Fastabend <john.fastabend@gmail.com>, Christian Brauner <brauner@kernel.org>
+	John Fastabend <john.fastabend@gmail.com>, Christian Brauner <brauner@kernel.org>, 
+	KP Singh <kpsingh@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spamd-Result: default: False [-0.66 / 15.00];
@@ -91,12 +92,12 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	TAGGED_FROM(0.00)[bounces-2873-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2874-lists,live-patching=lfdr.de];
 	FREEMAIL_CC(0.00)[iogearbox.net,vger.kernel.org,linuxfoundation.org,linux-foundation.org,lwn.net,efficios.com,ubuntu.com,deneb.enyo.de,debian.org,suse.com,kernel.org,gmail.com];
 	FROM_HAS_DN(0.00)[];
 	FORGED_SENDER_MAILLIST(0.00)[];
 	RCVD_TLS_LAST(0.00)[];
-	RCPT_COUNT_TWELVE(0.00)[19];
+	RCPT_COUNT_TWELVE(0.00)[20];
 	MIME_TRACE(0.00)[0:+];
 	DKIM_TRACE(0.00)[kernel.org:+];
 	MISSING_XM_UA(0.00)[];
@@ -110,47 +111,62 @@ X-Spamd-Result: default: False [-0.66 / 15.00];
 	TAGGED_RCPT(0.00)[live-patching];
 	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
 	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:rdns,tor.lore.kernel.org:helo,mail.gmail.com:mid]
-X-Rspamd-Queue-Id: 27D7A5AAD8F
+X-Rspamd-Queue-Id: 060805AAFE8
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-On Thu, May 21, 2026 at 7:38=E2=80=AFAM Sasha Levin <sashal@kernel.org> wro=
+On Thu, May 21, 2026 at 8:31=E2=80=AFAM Sasha Levin <sashal@kernel.org> wro=
 te:
 >
-> On Tue, May 19, 2026 at 03:00:15PM -0700, Song Liu wrote:
-> >On Tue, May 19, 2026 at 12:57=E2=80=AFPM Sasha Levin <sashal@kernel.org>=
- wrote:
-> >[...]
-> >> >Fully agree with Song here that there is no clear boundary, and that =
-the
-> >> >killswitch could lead to arbitrary, hard to debug breakage if applied=
- to
-> >> >the wrong function.. introducing worse bugs than the one being mitiga=
-ted
-> >> >or even /short-circuit LSM enforcement/ (engage security_file_open 0,
-> >> >engage cap_capable 0, engage apparmor_* etc).
-> >>
-> >> This is similar to livepatch, right? Do we need guardrails there too?
+> On Thu, May 21, 2026 at 11:11:16AM +0200, Daniel Borkmann wrote:
+> >On 5/19/26 9:57 PM, Sasha Levin wrote:
+> >>Sure, this would also work. How do you see this happening? Can we let a=
+ certain
+> >>user/pid/etc disable the allowlist if they choose to?
 > >
-> >livepatch has the same guardrails as other kernel modules:
-> >CONFIG_MODULE_SIG, CONFIG_MODULE_SIG_FORCE, etc.
+> >I don't think we should, given then we're back to square one where root
+> >or some other user would be able to just override/bypass an LSM.
 >
-> Which the user can choose to enable or disable. Livepatches will work jus=
-t fine
-> with CONFIG_MODULE_SIG=3Dn, right?
+> killswitch already disables itself when lockdown is active. We can easily
+> disable it too when one of the LSMs that cares about this is active.
 >
-> With the whitelist approach, the user has no choice but to accept it.
+> >[...]
+> >>How do you see this working with the allowlist?
+> >
+> >We should look at the underlying areas where most of the CVE-like fixes
+> >took place (these days should be more easily doable given Claude and fri=
+ends)
+> >and based on that either extend ALLOW_ERROR_INJECTION() or (better) crea=
+te
+> >new hooks which BPF LSM can consume where you can then have a policy to =
+reject
+> >requests and tighten the attack surface. For example, the AF_ALG stuff y=
+ou
 >
-> Would it make sense to allow disabling the whitelist via a kernel config =
-or
-> some runtime flag?
+> So we could grow the LSM tentacles deeper into the kernel, and we can see=
+ where
+> current CVEs are happening, which I suspect is the darker corners of the =
+kernel
+> (old unmaintained, rarely used code), but this definitely won't stay the =
+case,
+> right? Newer and better LLMs will discover issues elsewhere, and once the=
+ low
+> hanging fruits are picked off of the current target subsystems, researche=
+rs
+> will move elsewhere. We will be dooming ourselves to an endless cat and m=
+ouse
+> game where we go add LSM hooks after some big security issue goes public.
 
-I personally think it makes sense to have options to allow bypassing/blocki=
-ng
-more kernel functions than the current allow list. But I don't know whether
-we would like to go all the way to allow it for all the ftrace-able functio=
-ns.
-I think we will need some careful analysis on this.
+Do we really need to add new LSM hooks for recent CVEs?
+
+The LSM hooks are designed to cover all the user-kernel interfaces. Then
+with properly designed policies, we should have coverage for potential CVEs=
+.
+Existing LSM hooks may not be perfect, but we can improve the hooks,
+potentially with the help of smart LLMs, so that these hooks can cover
+future security issues. In some cases, we will need new policies, but I don=
+'t
+think new hooks will be needed for most of these CVEs.
 
 Thanks,
 Song
