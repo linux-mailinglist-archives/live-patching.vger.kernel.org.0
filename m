@@ -1,205 +1,142 @@
-Return-Path: <live-patching+bounces-2870-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2871-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id WGONJWPzDmqmDQYAu9opvQ
-	(envelope-from <live-patching+bounces-2870-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Thu, 21 May 2026 13:58:27 +0200
+	id 6HVXGG8vD2r+HQYAu9opvQ
+	(envelope-from <live-patching+bounces-2871-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Thu, 21 May 2026 18:14:39 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [IPv6:2600:3c0a:e001:db::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id D7CE25A459E
-	for <lists+live-patching@lfdr.de>; Thu, 21 May 2026 13:58:26 +0200 (CEST)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
+	by mail.lfdr.de (Postfix) with ESMTPS id C99485A9069
+	for <lists+live-patching@lfdr.de>; Thu, 21 May 2026 18:14:38 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id 06DC53010DA8
-	for <lists+live-patching@lfdr.de>; Thu, 21 May 2026 11:53:49 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id 7BCFC34621A8
+	for <lists+live-patching@lfdr.de>; Thu, 21 May 2026 14:44:22 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DDB6E3C8C55;
-	Thu, 21 May 2026 11:53:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8EA4F3EC2EB;
+	Thu, 21 May 2026 14:38:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="YawXK3qo";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="ytU1Rs4C";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="YawXK3qo";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="ytU1Rs4C"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XsBlQTOC"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4993E3C8C60
-	for <live-patching@vger.kernel.org>; Thu, 21 May 2026 11:53:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D52C3E9C16;
+	Thu, 21 May 2026 14:38:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779364427; cv=none; b=SsthjdNgo5evSgbKYoO6qmjSrZ5tN720fYYW0zTx0M4nKKtq1GtdzbBQJMoPkhWyxy5DpJigE4KLESwuR2HlSKuRV7cbNVxR3z0Lxuyh3j/mDxLWl68AKzDFqeMknSvzJIUnco60Gb5LInCURQHB7E1g33iikRT4pR3f4fUkzdA=
+	t=1779374323; cv=none; b=ZYGJl7wkYRyU/fEvkOBEF6oAi21Qe4zdvq+FP7d+P1P1ndyM+ofGsDT+kS7U6kudEyo7P/5uT09EtaXFdehjy6rJPVJU1gBA9WoEi2ydfB06q7+025YgFQ986IZDEUclI1t8v6g23nWu7G8+94KZGcT0OMXSwT4MI0l7jedYV8g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779364427; c=relaxed/simple;
-	bh=ogPFkY+WitEERwL2m5OfHSmHmUChtcyk+7ER9e5B3bA=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=HPec7KNyVmCYz80K4yMhHtwhu6s/NrwxngKCKTw1At34Xom1cluK0E44jBBn2GmWGP9RAj1/nN6UYLIORWPCF2WM2GIHukyifEftQNiXHEurp0K4pVQJcBsHOqi0tlj1PUw5DJA/OtoObg05MzvHZUtzCIfmy2bfdatQoNTZVv8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=YawXK3qo; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=ytU1Rs4C; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=YawXK3qo; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=ytU1Rs4C; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
-Received: from pobox.suse.cz (unknown [10.128.32.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 2B72F6AE1E;
-	Thu, 21 May 2026 11:53:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1779364421; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Mg5EJr8FDgyEbmlI45mdIldxqSgNMCoMde9zBBwXohI=;
-	b=YawXK3qonKEgiyfNN+dUnuP4U+l1T4xnMIVZDyYKGCG9HIaWlQxENNeyQuw+MBlUNSKm1i
-	F7CfgMT/AuznuQPyhj7TgtOt076vhrIL0/Tp1wiqrULGG7YApJSTlxiJf59U4nR29vROdn
-	EOdE0aD0RKKu2OLwJOI+wn7ezhXYLvk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1779364421;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Mg5EJr8FDgyEbmlI45mdIldxqSgNMCoMde9zBBwXohI=;
-	b=ytU1Rs4CTTLrJqYUSv2EmVrIwztQI0rKkh/BBMCuRy7EVr7m0FXIJ6YB/TD78S+9+x19ds
-	71VmYBV74Rm3MrAg==
-Authentication-Results: smtp-out1.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1779364421; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Mg5EJr8FDgyEbmlI45mdIldxqSgNMCoMde9zBBwXohI=;
-	b=YawXK3qonKEgiyfNN+dUnuP4U+l1T4xnMIVZDyYKGCG9HIaWlQxENNeyQuw+MBlUNSKm1i
-	F7CfgMT/AuznuQPyhj7TgtOt076vhrIL0/Tp1wiqrULGG7YApJSTlxiJf59U4nR29vROdn
-	EOdE0aD0RKKu2OLwJOI+wn7ezhXYLvk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1779364421;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Mg5EJr8FDgyEbmlI45mdIldxqSgNMCoMde9zBBwXohI=;
-	b=ytU1Rs4CTTLrJqYUSv2EmVrIwztQI0rKkh/BBMCuRy7EVr7m0FXIJ6YB/TD78S+9+x19ds
-	71VmYBV74Rm3MrAg==
-Date: Thu, 21 May 2026 13:53:41 +0200 (CEST)
-From: Miroslav Benes <mbenes@suse.cz>
-To: luhao <lu.haoA@h3c.com>
-cc: jpoimboe@kernel.org, jikos@kernel.org, pmladek@suse.com, 
-    joe.lawrence@redhat.com, live-patching@vger.kernel.org, 
-    linux-kernel@vger.kernel.org, zhang.chunA@h3c.com, wang.shijie@h3c.com
-Subject: Re: [PATCH] livepatch: Improve the accuracy of symbol search
-In-Reply-To: <20260516080833.218948-1-lu.haoA@h3c.com>
-Message-ID: <alpine.LSU.2.21.2605211348470.31340@pobox.suse.cz>
-References: <20260516080833.218948-1-lu.haoA@h3c.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+	s=arc-20240116; t=1779374323; c=relaxed/simple;
+	bh=XK48jeRB+QfYua9qvT6nkgqWoyk74EnZmHziGEhJckQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CZfb8BFFnQWOx+LsXHPZCYEUgQv1GPCMFU29vnJIV6n2ZViu3SEwJIoWiD2BkYG/pPcHKoi50zEvGLa2f5aw8XElXgLijJoAyYlPRIED/TAIx+0mP+diX9PD7Labmi+rLRXvytYw6xiY1jXVyHnUZXLNi+BmarduS2Tq6Yexh6E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XsBlQTOC; arc=none smtp.client-ip=100.103.45.18
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA3991F00A3B;
+	Thu, 21 May 2026 14:38:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779374322;
+	bh=nTzgC5HjU2axc7qp/6EBnj55/XJGfG1tYASFCI0U7g0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=XsBlQTOCK2YksJm2MNjyE7j0ny1HPTgDymFmsxNKKxr1BVdAvgPOBuNn6tFA7vGjg
+	 CSQXiV3VGsBWuWOwPes8pP8JUZc2AK1A75GOlY3qX2oC5FjQ7qoHn31pb8iXNfDSFm
+	 iXK2YnCBCaUWupOdSh0ZVPN+0hcaS9CE+UFVcZubluvtHYPOHE110zqo5nJZBbiaNl
+	 07zGPmwKluAZrGdXdG5ILZLoarbkdL9yDRoeg2O+Yo3PYLyE8/2+NE9g1lJxASkcRS
+	 B6VRE8y+mpZLmBsjrXBLlPLTbSWjyT2Yslzd/guaonNwFYtLf41VMjJQhPrDfeUtxL
+	 sB6G0e3DI2Biw==
+Date: Thu, 21 May 2026 10:38:40 -0400
+From: Sasha Levin <sashal@kernel.org>
+To: Song Liu <song@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	bpf@vger.kernel.org, live-patching@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Joshua Peisach <jpeisach@ubuntu.com>,
+	Florian Weimer <fw@deneb.enyo.de>, Breno Leitao <leitao@debian.org>,
+	Anthony Iliopoulos <ailiop@suse.com>,
+	Michal Hocko <mhocko@suse.com>, Jiri Olsa <jolsa@kernel.org>,
+	John Fastabend <john.fastabend@gmail.com>,
+	Christian Brauner <brauner@kernel.org>
+Subject: Re: [PATCH v3] killswitch: add per-function short-circuit mitigation
+ primitive
+Message-ID: <ag8Y8L2WCcSEDPkG@laps>
+References: <20260508195749.1885522-1-sashal@kernel.org>
+ <20260517134858.146569-1-sashal@kernel.org>
+ <CAPhsuW4x8shWon8Moi5VgCq2n4E2EzaaauZ2HHpy42Rp1Y-J-g@mail.gmail.com>
+ <agsVDqdALBoHEHlv@laps>
+ <CAPhsuW44UX663Au=WwHz8MVwnQgLkjxOqpJSCKxNiv3=RpZvqw@mail.gmail.com>
+ <b342c38b-7323-4b72-a239-8a574d6bc36b@iogearbox.net>
+ <agzAwjKhOhuANz_P@laps>
+ <CAPhsuW6C3hyciA4=z+V0BkQ9EEubuNCKLwoxtXorSbnhkUxdJQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Level: 
-X-Spam-Flag: NO
-X-Spam-Score: -4.30
-X-Spamd-Result: default: False [-1.66 / 15.00];
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAPhsuW6C3hyciA4=z+V0BkQ9EEubuNCKLwoxtXorSbnhkUxdJQ@mail.gmail.com>
+X-Spamd-Result: default: False [-0.16 / 15.00];
+	SUSPICIOUS_RECIPS(1.50)[];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	R_SPF_ALLOW(-0.20)[+ip6:2600:3c0a:e001:db::/64:c];
-	R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	MID_RHS_NOT_FQDN(0.50)[];
+	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
+	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20260515];
+	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	TAGGED_FROM(0.00)[bounces-2870-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2871-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
-	DMARC_NA(0.00)[suse.cz];
-	DKIM_TRACE(0.00)[suse.cz:+];
-	RCVD_COUNT_THREE(0.00)[4];
-	MIME_TRACE(0.00)[0:+];
-	FORGED_SENDER_MAILLIST(0.00)[];
-	FORGED_RECIPIENTS_MAILLIST(0.00)[];
 	FROM_HAS_DN(0.00)[];
+	FORGED_SENDER_MAILLIST(0.00)[];
+	RCVD_COUNT_THREE(0.00)[4];
+	RCPT_COUNT_TWELVE(0.00)[19];
+	MIME_TRACE(0.00)[0:+];
+	FREEMAIL_CC(0.00)[iogearbox.net,vger.kernel.org,linuxfoundation.org,linux-foundation.org,lwn.net,efficios.com,ubuntu.com,deneb.enyo.de,debian.org,suse.com,kernel.org,gmail.com];
+	FORGED_RECIPIENTS_MAILLIST(0.00)[];
 	TO_DN_SOME(0.00)[];
-	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[mbenes@suse.cz,live-patching@vger.kernel.org];
-	ASN(0.00)[asn:63949, ipnet:2600:3c0a::/32, country:SG];
 	NEURAL_HAM(-0.00)[-1.000];
-	RCPT_COUNT_SEVEN(0.00)[9];
-	MID_RHS_MATCH_FROMTLD(0.00)[];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[sashal@kernel.org,live-patching@vger.kernel.org];
+	DKIM_TRACE(0.00)[kernel.org:+];
 	TAGGED_RCPT(0.00)[live-patching];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:dkim,sea.lore.kernel.org:rdns,sea.lore.kernel.org:helo,pobox.suse.cz:mid]
-X-Rspamd-Queue-Id: D7CE25A459E
+	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	MISSING_XM_UA(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:rdns,tor.lore.kernel.org:helo]
+X-Rspamd-Queue-Id: C99485A9069
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-Hi,
+On Tue, May 19, 2026 at 03:00:15PM -0700, Song Liu wrote:
+>On Tue, May 19, 2026 at 12:57 PM Sasha Levin <sashal@kernel.org> wrote:
+>[...]
+>> >Fully agree with Song here that there is no clear boundary, and that the
+>> >killswitch could lead to arbitrary, hard to debug breakage if applied to
+>> >the wrong function.. introducing worse bugs than the one being mitigated
+>> >or even /short-circuit LSM enforcement/ (engage security_file_open 0,
+>> >engage cap_capable 0, engage apparmor_* etc).
+>>
+>> This is similar to livepatch, right? Do we need guardrails there too?
+>
+>livepatch has the same guardrails as other kernel modules:
+>CONFIG_MODULE_SIG, CONFIG_MODULE_SIG_FORCE, etc.
 
-thank you for the patch...
+Which the user can choose to enable or disable. Livepatches will work just fine
+with CONFIG_MODULE_SIG=n, right?
 
-> module_kallsyms_on_each_symbol, when the input parameter modname is not
->  empty, only searches for symbols within the current module.
+With the whitelist approach, the user has no choice but to accept it.
 
-Yes, correct.
+Would it make sense to allow disabling the whitelist via a kernel config or
+some runtime flag?
 
-> When
-> patching a kernel object (ko), if the patched function calls
-> functions from vmlinux or other ko modules, symbol lookup may fail.
-
-dtto, expected behaviour.
-
-> When patching a ko, the current approach first searches for symbols
-> within the module itself. If not found, it uses
-> kallsyms_on_each_match_symbol to search in vmlinux. If still not
-> found, it calls module_kallsyms_on_each_symbol with modname set to
-> NULL to search across all ko modules. The reason for not searching
-> across all ko modules from the start is to avoid issues with
-> duplicate symbol names.
-
-No, your patch would break things. What are you trying to achieve? Is it 
-motivated by a failure or an issue that you met? Could you share it, 
-please? There may be a bug somewhere but it is difficult to judge without 
-data.
-
-> Reviewed-by: zhangchun <zhang.chunA@h3c.com>
-> Reviewed-by: wangshijie <wang.shijie@h3c.com>
-
-Drop these tags next time, please. The review happens here in the open.
-
-> Signed-off-by: luhao <lu.haoA@h3c.com>
-> ---
->  kernel/livepatch/core.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
-> index 28d15ba58a26..9c587cc4896b 100644
-> --- a/kernel/livepatch/core.c
-> +++ b/kernel/livepatch/core.c
-> @@ -167,9 +167,14 @@ static int klp_find_object_symbol(const char *objname, const char *name,
->                 .pos = sympos,
->         };
-> 
-> -       if (objname)
-> +       if (objname) {
->                 module_kallsyms_on_each_symbol(objname, klp_find_callback, &args);
-> -       else
-> +
-> +               if (args.addr == 0)
-> +                       kallsyms_on_each_match_symbol(klp_match_callback, name, &args);
-> +               if (args.addr == 0)
-> +                       module_kallsyms_on_each_symbol(NULL, klp_find_callback, &args);
-> +       } else
->                 kallsyms_on_each_match_symbol(klp_match_callback, name, &args);
-> 
->         /*
-> --
-> 2.51.0
-> 
-> -------------------------------------------------------------------------------------------------------------------------------------
-> ????????????????????????????????????????????????????????????????????????????????
-> ??????????????????????????????????????????????????????????????????????????????????????????
-> ??????????????????????????????????????????????????????????????
-> This e-mail and its attachments contain confidential information from New H3C, which is intended only for the person or entity whose address is listed above.
-> Any use of the information contained herein in any way (including, but not limited to, total or partial disclosure, reproduction, or dissemination) by persons other than the intended recipient(s) is prohibited.
-> If you receive this e-mail in error, please notify the sender by phone or email immediately and delete it!
-
-I think that you do not want the above disclaimer when you submit a patch 
-to an open source project. Could you fix your email client, please?
-
-Regards
-Miroslav
-
+-- 
+Thanks,
+Sasha
 
