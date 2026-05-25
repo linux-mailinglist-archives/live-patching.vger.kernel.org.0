@@ -1,64 +1,63 @@
-Return-Path: <live-patching+bounces-2881-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2882-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id ePRJK4iRE2ofDgcAu9opvQ
-	(envelope-from <live-patching+bounces-2881-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Mon, 25 May 2026 02:02:16 +0200
+	id CK/xM4eSE2ofDgcAu9opvQ
+	(envelope-from <live-patching+bounces-2882-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Mon, 25 May 2026 02:06:31 +0200
 X-Original-To: lists+live-patching@lfdr.de
 Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
-	by mail.lfdr.de (Postfix) with ESMTPS id 2819A5C4EF6
-	for <lists+live-patching@lfdr.de>; Mon, 25 May 2026 02:02:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id 4CD4F5C4FBE
+	for <lists+live-patching@lfdr.de>; Mon, 25 May 2026 02:06:31 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id 92E7F300CFF0
-	for <lists+live-patching@lfdr.de>; Sun, 24 May 2026 23:59:09 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id 4096930073D2
+	for <lists+live-patching@lfdr.de>; Mon, 25 May 2026 00:06:30 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 975AB3B8930;
-	Sun, 24 May 2026 23:59:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 50E8B3B1BD;
+	Mon, 25 May 2026 00:06:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fDpvULPy"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Nm7JD8Su"
 X-Original-To: live-patching@vger.kernel.org
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C98E43B8409;
-	Sun, 24 May 2026 23:59:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53CD61EA84;
+	Mon, 25 May 2026 00:06:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779667148; cv=none; b=SdT0ktYQfJ5FA3Z5weBSX2iy2RiEubMxJul8VQGlEMoYyXUX9eP43/jxSnVRVzoDgF37NgsDYUYS78e5V4lWt0Lf7V9Qhbgd/lfDclrRYv51RuSbFU8RKoaeM9HP+SQD5CTAylM04+xY56wvRGmfMNSKb/irEGXxBBxwbXwZpNI=
+	t=1779667585; cv=none; b=AjQHVd8YehncveFA93fqQKSuXiNajxitu6EdqB3syvXvGDfk1EbB/BY8KDPfaZe+IBME8a4ugDVPg/1nXbcJoBC34FKVk/n2oBL9zZ/zKBaZlI2ZbM1etcW0xFX0562keVxqbfM2hm7v/wdiiqsGLvO/bmT3d7+YyFeSWXSqeOc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779667148; c=relaxed/simple;
-	bh=6UXC54hRmDwkmXOwnTVNeMmfz3TdEeC5oeTi81zYzxM=;
+	s=arc-20240116; t=1779667585; c=relaxed/simple;
+	bh=jJRZTqf9JGzaEBxOWLXcB7e9r+vbN7SX71HA7uxULa0=;
 	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=Il/5ccFwOH+IdaXiDu4n2s0BzOKEWDut1QmDzVpJmDjWUYSI7sXpAyhfCWiwDR6vk++ZYE0fG69V1t1pkST7O32pDUBbpIOecvbmqK4RYPDyd3RpxRgK0S2HvARpPOmUU0D72cM1jTwJHiyvaL+JyKaeUtpY5KT2L9Mco2peWzw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fDpvULPy; arc=none smtp.client-ip=100.103.45.18
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 267EF1F000E9;
-	Sun, 24 May 2026 23:59:06 +0000 (UTC)
+	 Message-Id; b=rOjHne5gI9FIkY4eZ9IFNWKdW7Fb6tqdAJkmIj92VyrWuBRxRZzkRT0lBzRtdVD21YFOZSKj5jr3e8/fw5q7XQQ0zI/Hc4Itr3n7D2VIiB+wixXanxzsutZFKVdJ5wnQEkAUGQEgC/z67iePygzv6UYjM4xsrStGQtYbp9Aw6mo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Nm7JD8Su; arc=none smtp.client-ip=100.103.45.18
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D4551F000E9;
+	Mon, 25 May 2026 00:06:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1779667146;
-	bh=1psQOCO3F0yNdG7quk+/rwu4kIJo/yT0WHmCnwuF1gs=;
+	s=k20260515; t=1779667582;
+	bh=LgC1MDxQTYdqHAPzuT6k6NdmrfH+EdwjIfbtvZG8Y2w=;
 	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=fDpvULPyAut1QhJeXBA/HRiI5mmODh/YmrSFp47SnP0Yyu8zUoc/fHe5hoJFRjcQ7
-	 5ha3mLxmvqp4S/zp58GBxSPeAA1P6rmS/I5l2vBLtl/qwVIPuLTj/WFFgYiXxh6pou
-	 BH6jK/kD50UAODtRvjGQ/8o2Ti3CRR/iAql0rHON3LiC9SaVUbMn5bb5djryIWEvLJ
-	 EABb3x1EZ+wvaVDhrzfWfxtZPOcUuFpmIY+SBAVuUxiAC4lHHvwcM4ej6CP50j7+MB
-	 +zrTnMBO8YqQEHRpQZQwXZV9RxMNOIkZV54JseidOXnpvr27yJsF7TIVDwSPhuFxA3
-	 4KP/QWSW60CpQ==
+	b=Nm7JD8SupFt846zDBPbViKiwC7uo8l0Q2KP31h4258Tui9VvGZue2wx6Ue4UfXzMR
+	 BpaFaUn0h8qa/BfrPYmdjdlaqe/VK9oFkR62IEa6/iux7vaLA6LO9U4bGXWvn7VDNg
+	 xiXv5DyMUHsSHZA2NgS0nWtlzBXMW8TFLjlDQnJSsOV7J3yJHJDrdFYAtnN3LPoGkQ
+	 /CqoWVF50tpBuq8Elw/rk4qZ9tsTRfNV1s/wdH0q9614XegHrF/K7/t+TtbwNGI/aB
+	 dN2kJFaNxgsa3KhqO9HiGSSMzF4PFq78A1DzRb932Q91y92qf8akypKiOd4m5QkQuT
+	 Qg2RwF22u9E3Q==
 From: sashiko-bot@kernel.org
-Subject: Re: [PATCH 1/4] selftests: livepatch: Introduce _remove_mod
- function
+Subject: Re: [PATCH 2/4] selftests: livepatch: Remove leftover modules when
+ a testcase fails
 Reply-To: sashiko-reviews@lists.linux.dev
-To: "Jiri Kosina" <jikos@kernel.org>, "Petr Mladek" <pmladek@suse.com>, "Joe
- Lawrence" <joe.lawrence@redhat.com>, "Shuah Khan" <shuah@kernel.org>, "Miroslav
- Benes" <mbenes@suse.cz>, "Josh Poimboeuf" <jpoimboe@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org, marcos@mpdesouza.com, live-patching@vger.kernel.org, "Marcos
- Paulo de Souza" <mpdesouza@suse.com>
-In-Reply-To: <20260524-livepatch-unload-on-fail-v1-1-7465de7f741d@suse.com>
-References: <20260524-livepatch-unload-on-fail-v1-1-7465de7f741d@suse.com>
+To: "Josh Poimboeuf" <jpoimboe@kernel.org>, "Joe Lawrence" <joe.lawrence@redhat.com>, "Jiri
+ Kosina" <jikos@kernel.org>, "Miroslav Benes" <mbenes@suse.cz>, "Petr Mladek" <pmladek@suse.com>, "Shuah
+ Khan" <shuah@kernel.org>
+Cc: "Marcos Paulo de Souza" <mpdesouza@suse.com>, linux-kselftest@vger.kernel.org, marcos@mpdesouza.com, live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20260524-livepatch-unload-on-fail-v1-2-7465de7f741d@suse.com>
+References: <20260524-livepatch-unload-on-fail-v1-2-7465de7f741d@suse.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Date: Sun, 24 May 2026 23:59:05 +0000
-Message-Id: <20260524235906.267EF1F000E9@smtp.kernel.org>
+Date: Mon, 25 May 2026 00:06:21 +0000
+Message-Id: <20260525000622.3D4551F000E9@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
@@ -75,7 +74,7 @@ X-Spamd-Result: default: False [-0.16 / 15.00];
 	HAS_LIST_UNSUB(-0.01)[];
 	FROM_NEQ_ENVFROM(0.00)[sashiko-bot@kernel.org,live-patching@vger.kernel.org];
 	REPLYTO_DN_EQ_FROM_DN(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2881-lists,live-patching=lfdr.de];
+	TAGGED_FROM(0.00)[bounces-2882-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
 	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_SENDER_MAILLIST(0.00)[];
@@ -95,68 +94,82 @@ X-Spamd-Result: default: False [-0.16 / 15.00];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
 	HAS_REPLYTO(0.00)[sashiko-reviews@lists.linux.dev];
 	FROM_NO_DN(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sashiko.dev:url,tor.lore.kernel.org:rdns,tor.lore.kernel.org:helo,suse.com:email]
-X-Rspamd-Queue-Id: 2819A5C4EF6
+	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:rdns,tor.lore.kernel.org:helo,suse.com:email,sashiko.dev:url,smtp.kernel.org:mid,lists.linux.dev:replyto]
+X-Rspamd-Queue-Id: 4CD4F5C4FBE
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
+Thank you for your contribution! Sashiko AI review found 2 potential issue(=
 s) to consider:
-- [Medium] `_remove_mod` uses `die()` which will terminate the script durin=
-g cleanup operations.
+- [Medium] The cleanup loop iterates over the TEST_MODS array in forward or=
+der, violating dependency requirements and causing rmmod to fail.
+- [Medium] Functions invoked during cleanup call die() on failure, prematur=
+ely aborting the EXIT trap and skipping pop_config().
 --
 
-commit 7b1591f4e5c3b351136e7fe2821eb2e15ae59ad0
+commit aafb48b2a54fe2209742378f31fb96583598557a
 Author: Marcos Paulo de Souza <mpdesouza@suse.com>
 
-selftests: livepatch: Introduce _remove_mod function
+selftests: livepatch: Remove leftover modules when a testcase fails
 
-This commit introduces the _remove_mod internal function to remove a loaded
-module, intended to be used during cleanup when a testcase fails. It also
-refactors unload_mod to use this new helper function.
+This commit introduces a cleanup mechanism for livepatch selftests that
+tracks loaded modules and attempts to remove them if a test fails or exits
+prematurely. It uses a TEST_MODS array to keep track of dependencies and
+unloads the remaining modules during an EXIT trap.
 
 > diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testi=
 ng/selftests/livepatch/functions.sh
-> index 2bc50271729c6..3ec0b7962fc5c 100644
+> index 3ec0b7962fc5c..25f1370038654 100644
 > --- a/tools/testing/selftests/livepatch/functions.sh
 > +++ b/tools/testing/selftests/livepatch/functions.sh
-
 [ ... ]
-
-> @@ -241,9 +241,10 @@ function load_failing_mod() {
->  	log "$ret"
+> @@ -125,6 +127,14 @@ function set_ftrace_enabled() {
 >  }
 > =20
-> -# unload_mod(modname) - unload a kernel module
-> +# _remove_mod(modname) - Internal function to remove a loaded module.
-> +#                        Use unload_mod() instead, which also updates TE=
-ST_MODS tracking.
->  #	modname - module name to unload
-> -function unload_mod() {
-> +function _remove_mod() {
->  	local mod=3D"$1"
-> =20
->  	# Wait for module reference count to clear ...
-> @@ -261,6 +262,14 @@ function unload_mod() {
->  		die "failed to unload module $mod (/sys/module)"
+>  function cleanup() {
+> +	# Remove leftover modules in reverse order to handle dependencies
+> +	for mod_item in "${TEST_MODS[@]}"; do
 
 [Severity: Medium]
-The commit message notes this function will be used to remove loaded modules
-when a testcase fails. If used in a cleanup path (such as a bash EXIT trap),
-will calling die() here terminate the script prematurely?
+Does this loop actually iterate in reverse order?
 
-If a module fails to unload (for example, if its refcount doesn't drop),
-die() executes exit 1. Inside a trap, this aborts the rest of the
-cleanup process. This could skip unloading any remaining modules and
-prevent final cleanup operations like pop_config() from running, potentially
-leaving kernel tracing persistently enabled and polluting the system state
-for subsequent tests.
+The comment states the modules will be removed in reverse order to handle
+dependencies, but ${TEST_MODS[@]} expands the array in ascending index
+order.
 
+Because dependent modules (like livepatches) are loaded after their base
+modules, iterating in forward order will attempt to unload the base modules
+first. This would likely cause rmmod to fail with a module in use error.
+
+> +		if is_livepatch_mod "$mod_item"; then
+> +			disable_lp "$mod_item"
+> +		fi
+> +		_remove_mod "$mod_item"
+
+[Severity: Medium]
+Can this call prematurely abort the cleanup process?
+
+The cleanup() function is executed within an EXIT trap. If _remove_mod()
+fails to unload a module, it calls die() which executes an exit command:
+
+tools/testing/selftests/livepatch/functions.sh:_remove_mod() {
+    ...
+    die "failed to unload module $mod (/sys/module)"
+}
+
+Executing exit inside a bash EXIT trap immediately halts the execution of
+the trap itself. This would abruptly skip the remaining iterations of the
+module cleanup loop and skip the subsequent pop_config() call.
+
+Failing to execute pop_config() leaves the global kernel debug and tracing
+configurations modified, which could pollute the state of the test system.
+
+> +	done
+> +
+>  	pop_config
 >  }
-
-[ ... ]
 
 --=20
 Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260524-livepatch-=
-unload-on-fail-v1-0-7465de7f741d@suse.com?part=3D1
+unload-on-fail-v1-0-7465de7f741d@suse.com?part=3D2
 
