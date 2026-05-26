@@ -1,206 +1,220 @@
-Return-Path: <live-patching+bounces-2888-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2889-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id YMv1GiCbFWryWgcAu9opvQ
-	(envelope-from <live-patching+bounces-2888-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Tue, 26 May 2026 15:07:44 +0200
+	id IK9KLNWdFWr9WgcAu9opvQ
+	(envelope-from <live-patching+bounces-2889-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Tue, 26 May 2026 15:19:17 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sea.lore.kernel.org (sea.lore.kernel.org [172.234.253.10])
-	by mail.lfdr.de (Postfix) with ESMTPS id D5AF45D60D0
-	for <lists+live-patching@lfdr.de>; Tue, 26 May 2026 15:07:43 +0200 (CEST)
+Received: from tor.lore.kernel.org (tor.lore.kernel.org [172.105.105.114])
+	by mail.lfdr.de (Postfix) with ESMTPS id 497545D644F
+	for <lists+live-patching@lfdr.de>; Tue, 26 May 2026 15:19:17 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sea.lore.kernel.org (Postfix) with ESMTP id D8FD4301052B
-	for <lists+live-patching@lfdr.de>; Tue, 26 May 2026 13:04:52 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id A958F305B2D1
+	for <lists+live-patching@lfdr.de>; Tue, 26 May 2026 13:11:11 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6EF0E21256C;
-	Tue, 26 May 2026 13:04:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B05E93D5254;
+	Tue, 26 May 2026 13:11:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="cQNHzapT"
+	dkim=pass (2048-bit key) header.d=iogearbox.net header.i=@iogearbox.net header.b="aBd9MYdZ"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E500B395AF8
-	for <live-patching@vger.kernel.org>; Tue, 26 May 2026 13:04:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0034395AF8;
+	Tue, 26 May 2026 13:11:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.133.104.62
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779800692; cv=none; b=DENUeA6wKTUSfxI+WKNwwtWKWP4IB5qWX4NdW0bswvWNHE7ZYCeNVlQqwge8ygMshx2Qn0q43ycgX8+nYc1lJbjcT+j9gLAszpfKRfbrRLQdJqFlgROJ9/U5Q0ABd3507yNe0lCTziM1Tb/LeaUbyK5jXHzFmxr43Dy//J3TI6U=
+	t=1779801070; cv=none; b=goRCESbv13GGYeZVUw8tLI8EOs+VwWeu7cnS4Ipagj45bWkEx+EIHOYHq5Vbmka7I107OhjKiGsRi21IQpUGV+CkX6OFeaEt/qrLDI9WRCxgWrqK+Yb+cUnQU8TnCiDhnTx6wtNYD9eQKBaELblXmojaQtViGDdYSgPSjIEVgEk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779800692; c=relaxed/simple;
-	bh=m7Q9A3BsA4g5ShdylxUqNbaVpn6Gex+vbVoZLZB2cCU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=m6ltp5BSnLm0aS5Z2mEaJRBRq1DDofVh2BZ3HfBibhDDalPn/W4vKc9MUQhTBIq0j9G2xP/dBkQmqq1+XneXIvELY5vftXaR26fVSXoLNEnYGVVptJ7z1NrQZXp9wpN55g8bRQOoIo2LenKTYRmNGfDzDP5iBkdTXm/OQ+I/hJw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=cQNHzapT; arc=none smtp.client-ip=209.85.221.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-45ed9336049so406075f8f.0
-        for <live-patching@vger.kernel.org>; Tue, 26 May 2026 06:04:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1779800689; x=1780405489; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=myRDjcw9KKQ2OHHG8nnh9SbYNyjk9ns/M4+PR6HC5RY=;
-        b=cQNHzapTFU38ZhdYrKeSbBpGnwCgxFrWEfI+gfYsEZfi8h+W/Mz4qbotGOaWI0OD7n
-         Tj4a85AudQumBPLuc7C5BxwEXN0N8xRRhBJdeRehfCoBDd3mZWypYXZipA649HT9409B
-         zK2HyrCSx/MYNTE73u31P0r3Ybx1U6E3PQBf7EFFglmdFY67CSMumzZ4f8ZLZAhiQtxX
-         C20XlFfQD8VCCW03e60lcd8MaPfDCTJp8uN1LOnF6O4/Mgqd9o4M8z5Dwib3QLKcTGND
-         a4PBPwY9yLuBdq7cX7+k2BYJhh/qIzFLOtYsn+DNkwETjrZyCWu2pWf1BnJMF0MqgamG
-         igog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779800689; x=1780405489;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=myRDjcw9KKQ2OHHG8nnh9SbYNyjk9ns/M4+PR6HC5RY=;
-        b=r0UHV8lSVX1CF7La5xfa5OM7LmyFGuS57QzkUxeV//jSM+dwgouI3TmWgF9UE6HLjg
-         ezGIcRzr+fNKOoYRiObHmaXjfF0LoAMcduYWoGU/gKuxWKVZE5WFKPA9cxhPZF8LGn/f
-         rbyaEENMMf8Ide5pGsGYEJtgQHU9W6pWrxS/X6Zy5h1vuuN91WCwr8pQswoSY1rL6A6T
-         uIQeDqcbfxsxU0nOdo22cpUD6dSvUebh/Zs9rQsxcmrJzSwbBHH0FYzBNYvgjtqkzdLH
-         llAsRlvDgHpvy4h39X56o+lExFXgvkEzvNYhufcio1uNYDwMr533l3ECi3H3IDG7FjFy
-         Su3Q==
-X-Forwarded-Encrypted: i=1; AFNElJ81DhUsg5k7G0Up9gA18grvR9/DZxOBnBdlevSsELr28Mw/xbNIojjwT1EUQi9eOWctNl6KrMxHX0n4NcwV@vger.kernel.org
-X-Gm-Message-State: AOJu0YyattXZ3lzfeW8lVSIUchkiS8bLfDwL1inDnXAJgrZQYAb5kLcR
-	T4bIRVHl4Bvw6jh+xepfUbxd8I2gB3INGl7n2xGi56RJCzprXVKiNJMIa58mi1M+xWU=
-X-Gm-Gg: Acq92OEMme62NvRL5+F6OT0loa2f8xhxZmEAo+otrePDzCCEdRxbK4sEqIzvbJ/OEiI
-	Dh+WxrOyRlVIGMLoh5hkFdEASKjmIYlj6V6WGqEIqzcaQT/LQ+yPcehXqVNpZh/KYfwJa29AWy+
-	HHtNNVD3YQrYlaoVBP/nxhzomp/YP2Nidfh6mGAjxC5x4nY4Ioi8hLZpftw15Kwe59NhhPl3Rp5
-	9Gd/Mr3bXIyjA49b3teB87el6Vo5qdg6BXvriuTLxexxXBrrMani7/qXRZpSYE75JwJB3g5Z6LE
-	M9gUgIwKXewW3sLS8B8XhxGDhamAZbt0GWINDLTr6sy/1aAfbES1wgZTNFsPgAMG86nDygajj0B
-	eLEnabpzvkjJBz50efMHZS5tPa51o+cefJtRR/7SF7i2D7TDhYf6AxgyS+YoamYZO+akgPsjMk7
-	dfk9ngEX3JJYcEJveoUZgeBRGM5w==
-X-Received: by 2002:a05:6000:4905:b0:439:beb9:5a96 with SMTP id ffacd0b85a97d-45eb389fde2mr27656002f8f.31.1779800689177;
-        Tue, 26 May 2026 06:04:49 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45eb6d5cb76sm31082573f8f.25.2026.05.26.06.04.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 May 2026 06:04:48 -0700 (PDT)
-Date: Tue, 26 May 2026 15:04:47 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: Yafang Shao <laoar.shao@gmail.com>
-Cc: jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz,
-	joe.lawrence@redhat.com, song@kernel.org,
-	live-patching@vger.kernel.org
-Subject: Re: [RFC PATCH 6/6] livepatch: Support replace_set in shadow
- variable API
-Message-ID: <ahWaby45THrzbwDK@pathway.suse.cz>
-References: <20260513143321.26185-1-laoar.shao@gmail.com>
- <20260513143321.26185-7-laoar.shao@gmail.com>
+	s=arc-20240116; t=1779801070; c=relaxed/simple;
+	bh=jZaYvFS49V3m5VnLD2cZlrdAnFOKppFeUK57VvFACDU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=nvzNchdaOQu3Snwhw5pSnqZ1ypvszRILWwOZRUo7woJ2XfuwQM9ihSrYT/55jloYwlc1rWWXT7i9BMcZHwOQG1YETaZMhYeXYRZU0f5e6LJpnpFX//E+S0kB0PwuqyagnHbQuUaVrF6FGsNHPD2tpqeB9Mj84xXmSRwYWx9COTw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=iogearbox.net; spf=pass smtp.mailfrom=iogearbox.net; dkim=pass (2048-bit key) header.d=iogearbox.net header.i=@iogearbox.net header.b=aBd9MYdZ; arc=none smtp.client-ip=213.133.104.62
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=iogearbox.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iogearbox.net
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
+	bh=AgMDFJrjrYSD5tQ4L77fCa1U5IsXK28ZMeo66odWFf8=; b=aBd9MYdZmAo6NU5P/zhte4A81Y
+	hakX6Q7SgFNkPDbcOwUiznhh1No2yKvrx0FzMe2e28z+V1N5xvayLo7mYVx2QMYqwLqA1UNbayoEE
+	22W9RazFyqvC421+Ym4i1Qvm+4J+SqM3Fhu7jbEDUbkooDJzWcwkUIypsuO/zj6wERge57kD61r4a
+	1j/ddh79AtvxN2X9FNZFQiQxYn6qXGcJO3BMNorr+SUASICyILouMtK1bkYh/5zKj12og+k8gkAO8
+	6Kb1jPjt6Xv2SEjuAdy+bq2UVF+GyTaZ9D3PHuMc+IhogVYL+yP5jkjWV2MEPCN7MniVy3zg7h5HI
+	Dm400Zbg==;
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+	by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.96.2)
+	(envelope-from <daniel@iogearbox.net>)
+	id 1wRrYV-000Ms1-23;
+	Tue, 26 May 2026 15:10:47 +0200
+Received: from localhost ([127.0.0.1])
+	by sslproxy01.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <daniel@iogearbox.net>)
+	id 1wRrYU-000PmQ-2B;
+	Tue, 26 May 2026 15:10:46 +0200
+Message-ID: <e7464a71-7e97-44a9-a5eb-831306fb5019@iogearbox.net>
+Date: Tue, 26 May 2026 15:10:45 +0200
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260513143321.26185-7-laoar.shao@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3] killswitch: add per-function short-circuit mitigation
+ primitive
+To: Sasha Levin <sashal@kernel.org>, Song Liu <song@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-kselftest@vger.kernel.org, bpf@vger.kernel.org,
+ live-patching@vger.kernel.org,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Andrew Morton <akpm@linux-foundation.org>, Jonathan Corbet <corbet@lwn.net>,
+ Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+ Joshua Peisach <jpeisach@ubuntu.com>, Florian Weimer <fw@deneb.enyo.de>,
+ Breno Leitao <leitao@debian.org>, Anthony Iliopoulos <ailiop@suse.com>,
+ Michal Hocko <mhocko@suse.com>, Jiri Olsa <jolsa@kernel.org>,
+ John Fastabend <john.fastabend@gmail.com>,
+ Christian Brauner <brauner@kernel.org>, KP Singh <kpsingh@kernel.org>
+References: <20260508195749.1885522-1-sashal@kernel.org>
+ <20260517134858.146569-1-sashal@kernel.org>
+ <CAPhsuW4x8shWon8Moi5VgCq2n4E2EzaaauZ2HHpy42Rp1Y-J-g@mail.gmail.com>
+ <agsVDqdALBoHEHlv@laps>
+ <CAPhsuW44UX663Au=WwHz8MVwnQgLkjxOqpJSCKxNiv3=RpZvqw@mail.gmail.com>
+ <b342c38b-7323-4b72-a239-8a574d6bc36b@iogearbox.net> <agzAwjKhOhuANz_P@laps>
+ <3dd6d852-18fb-4c64-a1ae-0d79ef7c061f@iogearbox.net> <ag8lOe6dAOgnWmsQ@laps>
+ <CAPhsuW7sbt5B+ZeGW8O2JMJ0ELPU-vhZFNvbB+0Q8XhZg6pKYw@mail.gmail.com>
+ <ahGufsGqmLZZQL4M@laps>
+Content-Language: en-US
+From: Daniel Borkmann <daniel@iogearbox.net>
+Autocrypt: addr=daniel@iogearbox.net; keydata=
+ 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
+In-Reply-To: <ahGufsGqmLZZQL4M@laps>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: Clear (ClamAV 1.4.3/28012/Tue May 26 08:24:34 2026)
 X-Spamd-Result: default: False [-0.66 / 15.00];
 	SUSPICIOUS_RECIPS(1.50)[];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[suse.com,quarantine];
-	R_SPF_ALLOW(-0.20)[+ip4:172.234.253.10:c];
-	R_DKIM_ALLOW(-0.20)[suse.com:s=google];
+	DMARC_POLICY_ALLOW(-0.50)[iogearbox.net,reject];
+	R_DKIM_ALLOW(-0.20)[iogearbox.net:s=default2302];
+	R_SPF_ALLOW(-0.20)[+ip4:172.105.105.114:c];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	TAGGED_FROM(0.00)[bounces-2888-lists,live-patching=lfdr.de];
-	FROM_HAS_DN(0.00)[];
-	DKIM_TRACE(0.00)[suse.com:+];
-	MIME_TRACE(0.00)[0:+];
+	TAGGED_FROM(0.00)[bounces-2889-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
+	RECEIVED_HELO_LOCALHOST(0.00)[];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	FREEMAIL_TO(0.00)[gmail.com];
+	FREEMAIL_CC(0.00)[vger.kernel.org,linuxfoundation.org,linux-foundation.org,lwn.net,efficios.com,ubuntu.com,deneb.enyo.de,debian.org,suse.com,kernel.org,gmail.com];
+	RCPT_COUNT_TWELVE(0.00)[20];
+	MIME_TRACE(0.00)[0:+];
+	FROM_HAS_DN(0.00)[];
+	ASN(0.00)[asn:63949, ipnet:172.105.96.0/20, country:SG];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:172.234.224.0/19, country:SG];
-	TO_DN_SOME(0.00)[];
 	RCVD_COUNT_FIVE(0.00)[5];
 	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[pmladek@suse.com,live-patching@vger.kernel.org];
-	MISSING_XM_UA(0.00)[];
-	NEURAL_HAM(-0.00)[-0.996];
+	FROM_NEQ_ENVFROM(0.00)[daniel@iogearbox.net,live-patching@vger.kernel.org];
+	DKIM_TRACE(0.00)[iogearbox.net:+];
+	NEURAL_HAM(-0.00)[-0.998];
 	TAGGED_RCPT(0.00)[live-patching];
-	RCPT_COUNT_SEVEN(0.00)[7];
+	MID_RHS_MATCH_FROM(0.00)[];
+	TO_DN_SOME(0.00)[];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sea.lore.kernel.org:rdns,sea.lore.kernel.org:helo,suse.com:dkim,pathway.suse.cz:mid]
-X-Rspamd-Queue-Id: D5AF45D60D0
+	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:rdns,tor.lore.kernel.org:helo]
+X-Rspamd-Queue-Id: 497545D644F
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-On Wed 2026-05-13 22:33:21, Yafang Shao wrote:
-> To support more complex livepatching scenarios where multiple
-> replacement sets might coexist, extend the klp_shadow API to
-> include a 'replace_set' identifier.
+On 5/23/26 3:41 PM, Sasha Levin wrote:
+> On Thu, May 21, 2026 at 11:16:46AM -0700, Song Liu wrote:
+>> On Thu, May 21, 2026 at 8:31 AM Sasha Levin <sashal@kernel.org> wrote:
+>>> On Thu, May 21, 2026 at 11:11:16AM +0200, Daniel Borkmann wrote:
+>>> >On 5/19/26 9:57 PM, Sasha Levin wrote:
+>>> >>Sure, this would also work. How do you see this happening? Can we let a certain
+>>> >>user/pid/etc disable the allowlist if they choose to?
+>>> >
+>>> >I don't think we should, given then we're back to square one where root
+>>> >or some other user would be able to just override/bypass an LSM.
+>>>
+>>> killswitch already disables itself when lockdown is active. We can easily
+>>> disable it too when one of the LSMs that cares about this is active.
+>>>
+>>> >[...]
+>>> >>How do you see this working with the allowlist?
+>>> >
+>>> >We should look at the underlying areas where most of the CVE-like fixes
+>>> >took place (these days should be more easily doable given Claude and friends)
+>>> >and based on that either extend ALLOW_ERROR_INJECTION() or (better) create
+>>> >new hooks which BPF LSM can consume where you can then have a policy to reject
+>>> >requests and tighten the attack surface. For example, the AF_ALG stuff you
+>>>
+>>> So we could grow the LSM tentacles deeper into the kernel, and we can see where
+>>> current CVEs are happening, which I suspect is the darker corners of the kernel
+>>> (old unmaintained, rarely used code), but this definitely won't stay the case,
+>>> right? Newer and better LLMs will discover issues elsewhere, and once the low
+>>> hanging fruits are picked off of the current target subsystems, researchers
+>>> will move elsewhere. We will be dooming ourselves to an endless cat and mouse
+>>> game where we go add LSM hooks after some big security issue goes public.
+>>
+>> Do we really need to add new LSM hooks for recent CVEs?
+>>
+>> The LSM hooks are designed to cover all the user-kernel interfaces. Then
+>> with properly designed policies, we should have coverage for potential CVEs.
+>> Existing LSM hooks may not be perfect, but we can improve the hooks,
+>> potentially with the help of smart LLMs, so that these hooks can cover
+>> future security issues. In some cases, we will need new policies, but I don't
+>> think new hooks will be needed for most of these CVEs.
 > 
-> To maintain compatibility with the existing 64-bit storage in
-> 'struct klp_shadow', the internal @id is now treated as a composite
-> value. The 64-bit identifier is constructed by packing two 32-bit
-> values:
-> 
->   MSB (63-32)          LSB (31-0)
->   +--------------------+--------------------+
->   |    replace_set     |    original @id    |
->   +--------------------+--------------------+
-> 
-> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> ---
->  include/linux/livepatch.h | 12 ++++---
->  kernel/livepatch/shadow.c | 70 ++++++++++++++++++++++++---------------
->  kernel/livepatch/state.c  |  3 +-
->  3 files changed, 52 insertions(+), 33 deletions(-)
-> 
-> diff --git a/include/linux/livepatch.h b/include/linux/livepatch.h
-> index 221f176f1f51..2dd9fca8c01c 100644
-> --- a/include/linux/livepatch.h
-> +++ b/include/linux/livepatch.h
-> @@ -195,15 +195,17 @@ static inline bool klp_have_reliable_stack(void)
->  	       IS_ENABLED(CONFIG_HAVE_RELIABLE_STACKTRACE);
->  }
->  
-> -void *klp_shadow_get(void *obj, unsigned long id);
-> -void *klp_shadow_alloc(void *obj, unsigned long id,
-> +void *klp_shadow_get(void *obj, unsigned int replace_set, unsigned int id);
-> +void *klp_shadow_alloc(void *obj, unsigned int replace_set, unsigned int id,
->  		       size_t size, gfp_t gfp_flags,
->  		       klp_shadow_ctor_t ctor, void *ctor_data);
-> -void *klp_shadow_get_or_alloc(void *obj, unsigned long id,
-> +void *klp_shadow_get_or_alloc(void *obj, unsigned int replace_set, unsigned int id,
->  			      size_t size, gfp_t gfp_flags,
->  			      klp_shadow_ctor_t ctor, void *ctor_data);
-> -void klp_shadow_free(void *obj, unsigned long id, klp_shadow_dtor_t dtor);
-> -void klp_shadow_free_all(unsigned long id, klp_shadow_dtor_t dtor);
-> +void klp_shadow_free(void *obj, unsigned int replace_set, unsigned int id,
-> +		     klp_shadow_dtor_t dtor);
-> +void klp_shadow_free_all(unsigned int replace_set, unsigned int id,
-> +			 klp_shadow_dtor_t dtor);
->  
->  struct klp_state *klp_get_state(struct klp_patch *patch, unsigned long id);
->  struct klp_state *klp_get_prev_state(unsigned long id);
-> diff --git a/kernel/livepatch/shadow.c b/kernel/livepatch/shadow.c
-> index c2e724d97ddf..35e507fae445 100644
-> --- a/kernel/livepatch/shadow.c
-> +++ b/kernel/livepatch/shadow.c
-> @@ -48,7 +48,8 @@ static DEFINE_SPINLOCK(klp_shadow_lock);
->   * @node:	klp_shadow_hash hash table node
->   * @rcu_head:	RCU is used to safely free this structure
->   * @obj:	pointer to parent object
-> - * @id:		data identifier
-> + * @id:		combined data identifier
-> + *		higher 32 bits: replace_set, lower 32 bits: resource ID
+> Running a quick LLM evaluation on the last ~70 severe CVEs, it seems that about
+> 40% is doable with the current hooks.
 
-I am not sure if this is worth the complexity.
 
-The 2nd patch allows to associate klp state ID with klp shadow ID.
-People should really use it because it helps to maintain the lifetime
-of shadow variables and makes it safe.
-
-Then we could refuse loading livepatches with a shadow/state ID when
-it is already being used by another livepatch with another "replace_set".
-
->   * @data:	data area
->   */
->  struct klp_shadow {
-
-Best Regards,
-Petr
+Interesting, do you have some more details in which areas your eval sees new
+lsm hooks missing?
 
