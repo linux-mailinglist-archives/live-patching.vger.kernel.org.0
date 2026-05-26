@@ -1,169 +1,192 @@
-Return-Path: <live-patching+bounces-2890-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2891-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id GHXPKg2fFWr9WgcAu9opvQ
-	(envelope-from <live-patching+bounces-2890-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Tue, 26 May 2026 15:24:29 +0200
+	id 0JaPO5awFWpxYAcAu9opvQ
+	(envelope-from <live-patching+bounces-2891-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Tue, 26 May 2026 16:39:19 +0200
 X-Original-To: lists+live-patching@lfdr.de
 Received: from tor.lore.kernel.org (tor.lore.kernel.org [IPv6:2600:3c04:e001:36c::12fc:5321])
-	by mail.lfdr.de (Postfix) with ESMTPS id 256125D6625
-	for <lists+live-patching@lfdr.de>; Tue, 26 May 2026 15:24:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTPS id AB0DE5D7BF2
+	for <lists+live-patching@lfdr.de>; Tue, 26 May 2026 16:39:18 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by tor.lore.kernel.org (Postfix) with ESMTP id 4907930D5E27
-	for <lists+live-patching@lfdr.de>; Tue, 26 May 2026 13:14:50 +0000 (UTC)
+	by tor.lore.kernel.org (Postfix) with ESMTP id 2EB8C3061DF8
+	for <lists+live-patching@lfdr.de>; Tue, 26 May 2026 14:29:57 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 45F223FBEA3;
-	Tue, 26 May 2026 13:13:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 59F393FF1D6;
+	Tue, 26 May 2026 14:29:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="N3MC34xt"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EzsWz/vl"
 X-Original-To: live-patching@vger.kernel.org
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CFCC3FBB67
-	for <live-patching@vger.kernel.org>; Tue, 26 May 2026 13:13:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A05B3FF1AB;
+	Tue, 26 May 2026 14:29:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779801190; cv=none; b=lOysg2tMA5K0gNAaafwwBoer4UqShgQMyzcORzBbqM8QVg11/nmppRUNJ2jQR5qcnCoJ1nGqnlhLb69whF+zI7OyOwBu9l2WtYZk2WTQZMXS8tSkpQshtW7rHzqiweCzhEm56CgEP9yDwoFeyOKD4t4EsrqIoAMH/izNcqtK3JU=
+	t=1779805787; cv=none; b=AUc5MNpjfYJLd9hFWghdGyk54Ry0pxtYN4CLMwfXQ56mLdFKOSrU81ME70q3qMDpc3R5RwvbJh3BTNo3iCIxb486dS3kJQtsuWKYQX24pIUocgxs0k2Kgij5ULalyfjHg1VI+P4azaIuZ9Q2FADLWEH9eduU3FU5Ih79+n1TcIw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779801190; c=relaxed/simple;
-	bh=J5D53oHKCgGzVGJBu07gqgGh/ye/Ed29NgZWZAutzxM=;
+	s=arc-20240116; t=1779805787; c=relaxed/simple;
+	bh=01QZ3Oc+k3R391wthpsoqAJ4A4j9P7bKR8UG9T3xXXo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=EyXWhzy8dHxTFoFTcTIXd3/VK6NHZVawnh2lNa/fz+NIb3aqw7fG/7xjIReNf+VqjKzZL7dLY3Jsu7t+jrW+XB//+df4PruK4u74AH/1yFsViDyyRwlknMWhz/Y4rU+w9ir1lmXbmjGNuDDrpvLFbyAU7rnh+2/sHJvfr1O1OTQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=N3MC34xt; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-48e6db3ff7eso54563125e9.0
-        for <live-patching@vger.kernel.org>; Tue, 26 May 2026 06:13:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1779801187; x=1780405987; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=4F9B7tafR/ijsY9adgUj8UiiCy4/8yDhFSR6oHsyOpk=;
-        b=N3MC34xtdrAHu789efUPK2MKUbJZ8BirCkpqoZ27mtD+p0sX/rtVwc1Ebs6HhwuloT
-         usyvj7ZRm8K9cdpYUjHtO+GCCmfUS5FHOm8jWRBoSlGcaZ0L4aAjXDm5Kg7QFL9iBRj+
-         2uqSdw3O8hwqYgnVQ1P1zwKceO+4WK5lLWgSoSnDST3iUK+ERwlr1fGLLXUpCIip/mk/
-         lzUKO8fzNMXumjI/kQIBLB6X9cM2Sm95B7DMNHRT7tPYhZGAWeC+RBwwLGkxJumLFBAU
-         jXjhsxmNgnk1Wm7Oeti5MiW2/lEuYEvTk+PDXXnro0vGPfQ0z13GrRez/iws2fpz3PKJ
-         vDxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779801187; x=1780405987;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=4F9B7tafR/ijsY9adgUj8UiiCy4/8yDhFSR6oHsyOpk=;
-        b=oQLPeWHE0SwIADC7VAX1Yh6nydXdh8KfGs7oB78yxSBmxoS6sMkUjwJl0tHI/KPRzc
-         WcLNCcNLPkgtQRlEAP4pi+gZloMzkoCOvyofsE/jYb3faswo1nVndjk/FDi2RRs6JEeJ
-         MQSmC2HcBKEplrNoHcWHFxfkMPTmraigMxr6FaSnWcl02+zU+OiTBOFR2/JYeIrHY2V1
-         MIFJwLhhDfCC43EsRiFb7gMJ/zE0KC6gwa8WQ5kQYpLSqHg4iO58lbc6GO9yfIUM2NOC
-         Jike30OaiATSngu9aGqGKBvrQqEixcCir51p0bB+lCJ6qK1FiHl59FlWqm65RYPFmSwD
-         6FxA==
-X-Forwarded-Encrypted: i=1; AFNElJ/zgeW96Ws0qse6PgpO+PNwbvw6Vrmf6mrW+JuwcpwNVDXYHiVFUmO0D3dt2JRQlvw1bq3v3YzRQJYJAJyo@vger.kernel.org
-X-Gm-Message-State: AOJu0YxUsdLHtO6hydMkVus9aXS49ogqqDryZQncTRixQhY3QJuYRV0l
-	3h2stcCDgAzXI90f6yeQQH89a8558AFvCMahtidv7eeKDIUyzJRaBKON9EM2ywa1Juo=
-X-Gm-Gg: Acq92OEBYZHmTRTeNrHYUApXtjQ7QZll9UAI2Au6+hYyFNe3oJzys7tkC++p9gtU4EC
-	2SfIX7CN0hdupkOFnWHTtTEYO8ums1saU6rElW9rbRdZgSOZLN5iVnUFDd7CR9VZO4sle8HHBw4
-	9GHY0EIQTiWbo6Zhk2HkP/MyI4PKzBfb9SWc+dElx40dwbieX0IcvfEgGc8WupAVCmJuSM/eyea
-	qevywH43X4XQxmClmPZ0vbTlPEVR+cy1FjfLYohvmb0v2FIwcRfirTbP3XQFzfeQwEeZRyZLynE
-	dfnQyaPHx1KdmasOBiHLUUcHIop/JtMF5FCo+0SyIe6xSDZtQZkWMxqdG6nRmG2GsOptxAcVrka
-	fyfQOrsXkCruZE6uqKOvmc+82MV5cNeBdSOnEsqhKII5notYVInEAEq+47ZAX3CGqg3sH9g7fx+
-	HgLzl3aORdXwCSR8rEZRslQZ11dkF/jlLghvow
-X-Received: by 2002:a5d:5f90:0:b0:43d:781d:37b9 with SMTP id ffacd0b85a97d-45eb3af9bd3mr31708410f8f.42.1779801186906;
-        Tue, 26 May 2026 06:13:06 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45eb6c9f58dsm34856649f8f.5.2026.05.26.06.13.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 May 2026 06:13:06 -0700 (PDT)
-Date: Tue, 26 May 2026 15:13:04 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: Yafang Shao <laoar.shao@gmail.com>
-Cc: jpoimboe@kernel.org, jikos@kernel.org, mbenes@suse.cz,
-	joe.lawrence@redhat.com, song@kernel.org,
-	live-patching@vger.kernel.org
-Subject: Re: [RFC PATCH 0/6] livepatch: Introduce replace set support
-Message-ID: <ahWcYIFs408vuvGP@pathway.suse.cz>
-References: <20260513143321.26185-1-laoar.shao@gmail.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=GKJewTHD96pW9neIFhdR92mobyLjNtcTYZSdmdGQSY4pAFXP+l6pBsQmpd+IrTIYWkFYWa7ivmjlQfpSYYArIvLuCz0VhDrYBERngxlUpUGDjDnGHMfBZSvHryFg6PXuS7RLoq0VXEfqQfrlCVtI1n3yuvcdOLkUbtfQXa4tymA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EzsWz/vl; arc=none smtp.client-ip=100.103.45.18
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76D741F000E9;
+	Tue, 26 May 2026 14:29:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1779805785;
+	bh=GSX/o3tGKH8prhZQKAGSjMb4rUlV/Z55PxckME59z4U=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=EzsWz/vlNWJNW+NMA+grSpGmEAlzW1dMhzljG4DDGQOP42grQ3eEtdXE+yg/tu0nJ
+	 e2v3LjX3uBcVx2JXnnVCBQNmCVQI7uLKvZgmd7Nxrd6B+jZBk85BEhu6L9hr4AWOhN
+	 DmVXv8lzXWvF/wiKNTotwFW8EP7Ra+ZA35C0sV8SMVdKBC9j5ntx1+ijctMD6qQYF9
+	 3qUB2mKBtFBdFI85Oqtg3YjaU1gaQYfEjc1plhfWPXZUkEMZg3O4ZfPw+YIn8ZesD3
+	 5FkFfGfwX6V0F/bhrOcnpOSpiV6QT7FJQ6li+thvYCff9a1ujIZiIrS55YWerf7k2a
+	 Zd7p7PpJbHEkA==
+Date: Tue, 26 May 2026 10:29:44 -0400
+From: Sasha Levin <sashal@kernel.org>
+To: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Song Liu <song@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	bpf@vger.kernel.org, live-patching@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Joshua Peisach <jpeisach@ubuntu.com>,
+	Florian Weimer <fw@deneb.enyo.de>, Breno Leitao <leitao@debian.org>,
+	Anthony Iliopoulos <ailiop@suse.com>,
+	Michal Hocko <mhocko@suse.com>, Jiri Olsa <jolsa@kernel.org>,
+	John Fastabend <john.fastabend@gmail.com>,
+	Christian Brauner <brauner@kernel.org>,
+	KP Singh <kpsingh@kernel.org>
+Subject: Re: [PATCH v3] killswitch: add per-function short-circuit mitigation
+ primitive
+Message-ID: <ahWuWBrZlFsAVZo2@laps>
+References: <CAPhsuW4x8shWon8Moi5VgCq2n4E2EzaaauZ2HHpy42Rp1Y-J-g@mail.gmail.com>
+ <agsVDqdALBoHEHlv@laps>
+ <CAPhsuW44UX663Au=WwHz8MVwnQgLkjxOqpJSCKxNiv3=RpZvqw@mail.gmail.com>
+ <b342c38b-7323-4b72-a239-8a574d6bc36b@iogearbox.net>
+ <agzAwjKhOhuANz_P@laps>
+ <3dd6d852-18fb-4c64-a1ae-0d79ef7c061f@iogearbox.net>
+ <ag8lOe6dAOgnWmsQ@laps>
+ <CAPhsuW7sbt5B+ZeGW8O2JMJ0ELPU-vhZFNvbB+0Q8XhZg6pKYw@mail.gmail.com>
+ <ahGufsGqmLZZQL4M@laps>
+ <e7464a71-7e97-44a9-a5eb-831306fb5019@iogearbox.net>
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20260513143321.26185-1-laoar.shao@gmail.com>
-X-Spamd-Result: default: False [-0.66 / 15.00];
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <e7464a71-7e97-44a9-a5eb-831306fb5019@iogearbox.net>
+X-Spamd-Result: default: False [-0.16 / 15.00];
 	SUSPICIOUS_RECIPS(1.50)[];
 	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[suse.com,quarantine];
+	MID_RHS_NOT_FQDN(0.50)[];
+	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
+	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20260515];
 	R_SPF_ALLOW(-0.20)[+ip6:2600:3c04:e001:36c::/64:c];
-	R_DKIM_ALLOW(-0.20)[suse.com:s=google];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	TAGGED_FROM(0.00)[bounces-2890-lists,live-patching=lfdr.de];
-	FROM_HAS_DN(0.00)[];
-	DKIM_TRACE(0.00)[suse.com:+];
-	MIME_TRACE(0.00)[0:+];
+	TAGGED_FROM(0.00)[bounces-2891-lists,live-patching=lfdr.de];
 	RCVD_TLS_LAST(0.00)[];
+	FROM_HAS_DN(0.00)[];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	FREEMAIL_TO(0.00)[gmail.com];
+	RCVD_COUNT_THREE(0.00)[4];
+	RCPT_COUNT_TWELVE(0.00)[20];
+	MIME_TRACE(0.00)[0:+];
+	FREEMAIL_CC(0.00)[kernel.org,vger.kernel.org,linuxfoundation.org,linux-foundation.org,lwn.net,efficios.com,ubuntu.com,deneb.enyo.de,debian.org,suse.com,gmail.com];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	ASN(0.00)[asn:63949, ipnet:2600:3c04::/32, country:SG];
 	TO_DN_SOME(0.00)[];
-	RCVD_COUNT_FIVE(0.00)[5];
+	NEURAL_HAM(-0.00)[-0.999];
 	PRECEDENCE_BULK(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[pmladek@suse.com,live-patching@vger.kernel.org];
-	MISSING_XM_UA(0.00)[];
-	NEURAL_HAM(-0.00)[-0.996];
+	FROM_NEQ_ENVFROM(0.00)[sashal@kernel.org,live-patching@vger.kernel.org];
+	DKIM_TRACE(0.00)[kernel.org:+];
 	TAGGED_RCPT(0.00)[live-patching];
-	RCPT_COUNT_SEVEN(0.00)[7];
+	ASN(0.00)[asn:63949, ipnet:2600:3c04::/32, country:SG];
 	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:rdns,tor.lore.kernel.org:helo,pathway.suse.cz:mid,suse.com:dkim]
-X-Rspamd-Queue-Id: 256125D6625
+	MISSING_XM_UA(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[tor.lore.kernel.org:rdns,tor.lore.kernel.org:helo]
+X-Rspamd-Queue-Id: AB0DE5D7BF2
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-On Wed 2026-05-13 22:33:15, Yafang Shao wrote:
-> We previously proposed a BPF+livepatch method to enable rapid
-> experimentation with new kernel features without interrupting production
-> workloads:
-> 
->   https://lore.kernel.org/live-patching/20260402092607.96430-1-laoar.shao@gmail.com/
-> 
-> In the resulting discussion, Song and Petr suggested adding a "replace set"
-> to support scenarios where specific livepatches can be selectively replaced
-> or skipped.
-> 
-> - Patch #1:
->   Adds replace set support for livepatch functions.
-> 
-> - Patch #2~#5:
->   Derived from Petr's original patchset:
-> 
->     https://lore.kernel.org/all/20250115082431.5550-3-pmladek@suse.com/
-> 
->   All the selftests are not included in this RFC.
->   Note: Due to a significant refactor in Patch #5, I have omitted Petr's
->   Signed-off-by for that specific patch. Please let me know if this is not
->   the preferred approach.
+On Tue, May 26, 2026 at 03:10:45PM +0200, Daniel Borkmann wrote:
+>On 5/23/26 3:41 PM, Sasha Levin wrote:
+>>On Thu, May 21, 2026 at 11:16:46AM -0700, Song Liu wrote:
+>>>On Thu, May 21, 2026 at 8:31 AM Sasha Levin <sashal@kernel.org> wrote:
+>>>>On Thu, May 21, 2026 at 11:11:16AM +0200, Daniel Borkmann wrote:
+>>>>>On 5/19/26 9:57 PM, Sasha Levin wrote:
+>>>>>>Sure, this would also work. How do you see this happening? Can we let a certain
+>>>>>>user/pid/etc disable the allowlist if they choose to?
+>>>>>
+>>>>>I don't think we should, given then we're back to square one where root
+>>>>>or some other user would be able to just override/bypass an LSM.
+>>>>
+>>>>killswitch already disables itself when lockdown is active. We can easily
+>>>>disable it too when one of the LSMs that cares about this is active.
+>>>>
+>>>>>[...]
+>>>>>>How do you see this working with the allowlist?
+>>>>>
+>>>>>We should look at the underlying areas where most of the CVE-like fixes
+>>>>>took place (these days should be more easily doable given Claude and friends)
+>>>>>and based on that either extend ALLOW_ERROR_INJECTION() or (better) create
+>>>>>new hooks which BPF LSM can consume where you can then have a policy to reject
+>>>>>requests and tighten the attack surface. For example, the AF_ALG stuff you
+>>>>
+>>>>So we could grow the LSM tentacles deeper into the kernel, and we can see where
+>>>>current CVEs are happening, which I suspect is the darker corners of the kernel
+>>>>(old unmaintained, rarely used code), but this definitely won't stay the case,
+>>>>right? Newer and better LLMs will discover issues elsewhere, and once the low
+>>>>hanging fruits are picked off of the current target subsystems, researchers
+>>>>will move elsewhere. We will be dooming ourselves to an endless cat and mouse
+>>>>game where we go add LSM hooks after some big security issue goes public.
+>>>
+>>>Do we really need to add new LSM hooks for recent CVEs?
+>>>
+>>>The LSM hooks are designed to cover all the user-kernel interfaces. Then
+>>>with properly designed policies, we should have coverage for potential CVEs.
+>>>Existing LSM hooks may not be perfect, but we can improve the hooks,
+>>>potentially with the help of smart LLMs, so that these hooks can cover
+>>>future security issues. In some cases, we will need new policies, but I don't
+>>>think new hooks will be needed for most of these CVEs.
+>>
+>>Running a quick LLM evaluation on the last ~70 severe CVEs, it seems that about
+>>40% is doable with the current hooks.
+>
+>
+>Interesting, do you have some more details in which areas your eval sees new
+>lsm hooks missing?
 
-I am not going to review these patches in this round. They are based
-on an outdated RFC. I guess that they do not handle feedback against
-the RFC. Also they would require massive changes in the selftests.
+The recent ones I saw fall into about 5 buckets:
 
-Note that I have already done most of the work, see
-https://github.com/pmladek/linux/tree/klp-state-transfer-v1-iter12
-It requires rebasing on top of last linus tree and some
-clean up.
+1. Kernel-thread / workqueue context: LSM hooks fire but current is a worker,
+not the actual attacker. Lots of ksmbd, ceph-msgr, and async cleanup races land
+here.
 
-I still hope that I will be able to work on it rather sooner
-than later.
+2. Driver: pci_driver.probe, notifier_call_chain, ib_* RDMA callbacks, ndo_*,
+bus dispatch tables all sit below any LSM hook. Big chunk of mlx5, RDMA, USB,
+i3c, DRM bugs.
 
-> - Patch #6:
->   Adds replace set support for the shadow variable API.
+3. Per-packet softirq RX: security_sock_rcv_skb only fires inside
+sk_filter_trim_cap, which UDP encap_rcv bypasses and L2/bridge protocols never
+reach. Covers Bluetooth softirq, bond, IPv6 softirq, TCP-MD5/AO timing leaks,
+etc.
 
-Best Regards,
-Petr
+4. Netfilter: config path is well-gated via security_netlink_send, but
+per-match callbacks, set GC, and flowtable cleanup have nothing. That's where
+most of the recent netfilter CVEs actually fire.
+
+5. Crypto subsystem + io_uring per-opcode: crypto/ has zero LSM hooks.
+
+-- 
+Thanks,
+Sasha
 
