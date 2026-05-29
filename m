@@ -1,165 +1,166 @@
-Return-Path: <live-patching+bounces-2930-lists+live-patching=lfdr.de@vger.kernel.org>
+Return-Path: <live-patching+bounces-2931-lists+live-patching=lfdr.de@vger.kernel.org>
 Delivered-To: lists+live-patching@lfdr.de
 Received: from mail.lfdr.de
 	by lfdr with LMTP
-	id cJBNFlQhGWqnqggAu9opvQ
-	(envelope-from <live-patching+bounces-2930-lists+live-patching=lfdr.de@vger.kernel.org>)
-	for <lists+live-patching@lfdr.de>; Fri, 29 May 2026 07:17:08 +0200
+	id CAaaIItXGWqCvggAu9opvQ
+	(envelope-from <live-patching+bounces-2931-lists+live-patching=lfdr.de@vger.kernel.org>)
+	for <lists+live-patching@lfdr.de>; Fri, 29 May 2026 11:08:27 +0200
 X-Original-To: lists+live-patching@lfdr.de
-Received: from sin.lore.kernel.org (sin.lore.kernel.org [104.64.211.4])
-	by mail.lfdr.de (Postfix) with ESMTPS id 553635FD485
-	for <lists+live-patching@lfdr.de>; Fri, 29 May 2026 07:17:06 +0200 (CEST)
+Received: from sto.lore.kernel.org (sto.lore.kernel.org [172.232.135.74])
+	by mail.lfdr.de (Postfix) with ESMTPS id 103D35FFB05
+	for <lists+live-patching@lfdr.de>; Fri, 29 May 2026 11:08:26 +0200 (CEST)
 Received: from smtp.subspace.kernel.org (conduit.subspace.kernel.org [100.90.174.1])
-	by sin.lore.kernel.org (Postfix) with ESMTP id 48738300AD94
-	for <lists+live-patching@lfdr.de>; Fri, 29 May 2026 05:17:03 +0000 (UTC)
+	by sto.lore.kernel.org (Postfix) with ESMTP id 3A7DA3028AF1
+	for <lists+live-patching@lfdr.de>; Fri, 29 May 2026 09:08:25 +0000 (UTC)
 Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 682A33254A8;
-	Fri, 29 May 2026 05:17:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 99D073BB13E;
+	Fri, 29 May 2026 09:08:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XX4CZiej"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NwX0anmA"
 X-Original-To: live-patching@vger.kernel.org
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F15221E097
-	for <live-patching@vger.kernel.org>; Fri, 29 May 2026 05:17:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780031821; cv=none; b=j0GLnukZfM5X16z24xpDsGdqo6hWVE8rKilOfcsvp1Js/pWhVPFXvxnScXy26KCkQP/w6NimjgQV9p19VbyXNUFWlkhvUWBY0aYYZYAobDJin3jvzYDBd3MMXIviZl31tk1TzNzmB2/7dAy97rvv/K1cvAjiqZItRVLZ2NGae7U=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780031821; c=relaxed/simple;
-	bh=gYWyYnsHw+slL4itxOegm9AKy1tA2huh9bBu/xlD/+0=;
-	h=From:Subject:To:Cc:In-Reply-To:References:Content-Type:Date:
-	 Message-Id; b=uVAI+kym/S06lYcfx/3cQ6H0GqXJPe4JS/vX21z2rtAGPSMGDvdFE1ArAqEEtCNeySDPjzv0mqd9jqMfNcen9NhLK/ccF7J6oN4Jis5nEP75u5NW6AwiAhJymyNCvNv0q4jdVT6Y8UkDQXsOT7IedYBxl8MoZSCri/ZMOg+7K08=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XX4CZiej; arc=none smtp.client-ip=100.103.45.18
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEA391F00893;
-	Fri, 29 May 2026 05:16:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1780031820;
-	bh=Vb+jnipy2ReA35yJuhRiE2nXBGEC6nePk5SjXKwn3ro=;
-	h=From:Subject:Reply-To:To:Cc:In-Reply-To:References:Date;
-	b=XX4CZiej8vbOuNIiBh8q92ssmabgnbwxu8zK58SqR+B7x1yLGuB0WLZtVip96ToKy
-	 aWah6msFSy9eawvvhOXvXFjfS+GMHdF/OtWUHzVoD8hMuSxBpM4+k6q4PmwtUs1rbk
-	 ePSZ4OcTQQ9h8ceFkweMbiLjv9NocJbVbnz4LcujFy1d2UrV0u+8275/iXasCdDWUH
-	 v1js/z1zZIXeHKl3ZNBOJoKvPqvvouRkt5E4ne5lM4GbB3ke/lqpT1tkTl7cTN9RWm
-	 onQGN4zTNpoIpuU6cdeAJvwZSUQsisAtDbA4LJX2WwpU6ZdhnH1MQn9T9zZ7GPFVL0
-	 CUaGo1bh8u0Rg==
-From: sashiko-bot@kernel.org
-Subject: Re: [PATCH v2 4/4] selftests/livepatch: Update tests for
- replace_set
-Reply-To: sashiko-reviews@lists.linux.dev
-To: jikos@kernel.org, mbenes@suse.cz, song@kernel.org, joe.lawrence@redhat.com, pmladek@suse.com, jpoimboe@kernel.org
-Cc: "Yafang Shao" <laoar.shao@gmail.com>, live-patching@vger.kernel.org
-In-Reply-To: <20260529034542.68766-5-laoar.shao@gmail.com>
-References: <20260529034542.68766-5-laoar.shao@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Date: Fri, 29 May 2026 05:16:59 +0000
-Message-Id: <20260529051659.BEA391F00893@smtp.kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 174FB3BC668
+	for <live-patching@vger.kernel.org>; Fri, 29 May 2026 09:08:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.173
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780045702; cv=pass; b=p9G5q6CHnRSPJ1sKJCvuuWtkIMKFme20JH75POSyELbfQNSiOmZzibUZ7UgFpc3Cy66gvhEzTI73l0RwZSKijAg0O7nv7u6KdjZ5U0nhuS7FVnsvYXFc59+UUYKzcnaP86hlzW6Jp9FWiZcHPMM7qfFWGgNJXb2bOgR9BjRQR4g=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780045702; c=relaxed/simple;
+	bh=Jtyy327MuOiiBAAUFhMnxBn/7M3zF2JyklBo8IFhomQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=exuPbPn3UDgN2sgLwMEYifG/QxwaVZFrHe1V1YsCCdrW2y4AhITUVUGHI9G8zLKTD3k6sJzADSo7pq0Hud+j3HZ9D2pyUrbWMsoOnBlhSuoCBMxafpkaDIBWh4pQSrbjXUsgNFHWU6lidgAk9421TPzspJ0T8GgLu/zMuEtsOpY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NwX0anmA; arc=pass smtp.client-ip=209.85.128.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-7bde9d73678so143917017b3.0
+        for <live-patching@vger.kernel.org>; Fri, 29 May 2026 02:08:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1780045700; cv=none;
+        d=google.com; s=arc-20240605;
+        b=jKVjLOqADFxAjJYJOxt8seXGIBYCVgQb9+d/1CT2u3zUByDmCQRWla7+SAEXRi8qov
+         dWfrzTWw/n+ve+Z93g1tZamIgCiyeDN0MHaqTp3QkrW/UUxIVpmYUJH6uZLsbPD8AYXP
+         KipnPNtA+KDRlg+y78Yg6ehy/TjT7Z6Z8j6wZdSDWx1iHgub5CfgTb8EI6ssWb9zlGdk
+         Q48ojo7XKpdSKiyPcX3l+aETnc2LkQKQzs4knUI59M4RZG780ZE3eFi+PQva3wtuDZJe
+         5xfyItIgzge3jr5hLHg4T5dtVgy2h0ebahdOeKmG1iema5jm019WV1j3lby/Wcl65qxJ
+         mrfA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=Jtyy327MuOiiBAAUFhMnxBn/7M3zF2JyklBo8IFhomQ=;
+        fh=5Rdie+I/J+CwGrXhNdcg9kxpduczK2/ze4SW1cztuvM=;
+        b=QtZgu/xeNA0BtxOzAwCmYmGJeaQ7rUEG8V29zuEWTvf4gFEhddIw5h2XHPDwZUyODr
+         Ix/oowuStyqIn+1nRwO8l0CDowSpN7lTDckbcYCcqTKsxxTYM5lUPFwc2WbWKQHoQ/8K
+         fLe1Rh/pfjKJlQyU5OFrVdWc5hUo4jaL2vMcRFejRyk3Dea18AGsGmrj36RNQlsziBrT
+         /azt+vj4y0COv8m6A4UCxwd9J0tAQVU4SknzcJbBaK5Fu5i/hUy8ntS0TBdZvYrqvr/e
+         j0Yg3X3v6TB2z4K9g9zpEJdPIhSz+hNjrW9+juHCyLZHnaJBYcX355uFQ+vV/qykOUf5
+         PjcA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780045700; x=1780650500; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Jtyy327MuOiiBAAUFhMnxBn/7M3zF2JyklBo8IFhomQ=;
+        b=NwX0anmAGMH/Y/tZOpwQLRbPwMV1oSb+/WI7J+H5m872yrPyQ1Ed0HHsnw9DG56jo+
+         YWWKYPB3om1yNYCe7UvihLW2bedvxOzY0qIJubxdQbLcWfBNbaQMRCWSmgcRKX8acar+
+         woBQBiyOcIKBc2bjSVhQAiXxMfnx5lN7wwc3CzGUKKIaS/kg6UJ6tGjeebC0fiKWb+Lt
+         A7WPW5mnWeuR/ja/tOghOzk6nE5Os44aqiYfS6fxPjmrXlFhJRhG23MvVQtnNQ7MODtI
+         sWLvtgxdgjYz75OO3iMu6FdjF2mgNGn+WILdpR9smjQZLrWAy0fpQ/nIAgF+OTnBy8bT
+         +Mxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780045700; x=1780650500;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=Jtyy327MuOiiBAAUFhMnxBn/7M3zF2JyklBo8IFhomQ=;
+        b=U27Xa4aq3xCv44Yi14YvtkyDDVGPV/HHWiFEEBEIq7ch5z0av2QdRzi9sHQJ/KrLZ4
+         ZYTmAAzing8p8KSDonNK1BpblNSjhTKzIi5rEBlM8NTIlMimqVWn6gHDr47iw0V07xtb
+         7jkov+mjWESHKPkpBO0ReRkVGjMasXYCb8P0PWZlg/jZootOVCLqYP70iRTGkJ4jlgHj
+         yVQeuGL9Xjt+TL3OuMEoxi330OSuHVXwyaiUS42WaovhVVF8H5j6Uhkfh5a1htHYgBn5
+         6JDeQcgzFNhOkQxNt6zguOtCfLB6fJl2z7QPP87oz07/wO7ycmG0MVuRnEp+wYBPc/Kg
+         G+hw==
+X-Forwarded-Encrypted: i=1; AFNElJ9pq8KnN1egiToKUikPtL7B+gQMBuz7V1Qu4lbTtmYjXwQQu0gsqtqfSiUaj8zzknovpeO5sjurXhOhPym7@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzv0bqaMZ2vYBWCxYuDK28UC5rKKRfy3Rs6kJ9xcaP5i8/V811B
+	s1hiYsotNACGMirG66hEz6yrEZfJBoGEZ3g23eIMvG5s7AJa5/dpXPINLVvCHzCLluezAMge7uq
+	W4ILF4JwEj0o/bFHwBpYPmAFQ/a6j/laVKrQb4UMMeA==
+X-Gm-Gg: Acq92OEmwi/HS/oklK4VkPxJsJTS8w3jSrD8j8bTwJ+1ttZ2H5OO+LFTZsEA6DvQP+9
+	ws3EPA9rcB9mU6XrJWZjJIHxKNcxdkU6974ULcF8EInt3vwL3VM0bRvtzd+jYjakCpznhjT3pth
+	7zisnk7XAlvRcu0kbzYoCUH88nFBToaOJDly9sjZMZBMAmjj9fe2l79u/9Up4ZFragw78l7CAQT
+	3WzcITnWXUdnG5AmCS06xFbE8ANWxCEG8zgwWaEh7ZH6zZ1RnXpK96LbFGkRZnj4NDxwlTzTQkM
+	mUT1DevqcTlRfqSVoPPImGkeJxh7OdehVRRl5h4Y4W9cKlDyoj6tPVvqjTIV
+X-Received: by 2002:a05:690c:74ca:b0:7bb:ced:fef9 with SMTP id
+ 00721157ae682-7de30fe4528mr14967637b3.13.1780045700040; Fri, 29 May 2026
+ 02:08:20 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: live-patching@vger.kernel.org
 List-Id: <live-patching.vger.kernel.org>
 List-Subscribe: <mailto:live-patching+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:live-patching+unsubscribe@vger.kernel.org>
-X-Spamd-Result: default: False [1.34 / 15.00];
-	MISSING_MIME_VERSION(2.00)[];
-	SUSPICIOUS_RECIPS(1.50)[];
-	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=1];
-	DMARC_POLICY_ALLOW(-0.50)[kernel.org,quarantine];
-	R_DKIM_ALLOW(-0.20)[kernel.org:s=k20260515];
-	R_SPF_ALLOW(-0.20)[+ip4:104.64.211.4:c];
+MIME-Version: 1.0
+References: <20260529034542.68766-2-laoar.shao@gmail.com> <20260529040130.95A9C1F00893@smtp.kernel.org>
+In-Reply-To: <20260529040130.95A9C1F00893@smtp.kernel.org>
+From: Yafang Shao <laoar.shao@gmail.com>
+Date: Fri, 29 May 2026 17:07:43 +0800
+X-Gm-Features: AVHnY4IO1MQr3CJ2f801kAPxEYuANbMO06IQrG_toAInYYDc0q5hFpleeSy2jgo
+Message-ID: <CALOAHbABz7CCK4spQj4-ApKqJhPXOsWUiuX1fyrDWAyvEZFV2A@mail.gmail.com>
+Subject: Re: [PATCH v2 1/4] livepatch: Make klp_find_func() non-static
+To: sashiko-reviews@lists.linux.dev
+Cc: jikos@kernel.org, joe.lawrence@redhat.com, song@kernel.org, mbenes@suse.cz, 
+	jpoimboe@kernel.org, pmladek@suse.com, live-patching@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spamd-Result: default: False [-2.16 / 15.00];
+	ARC_ALLOW(-1.00)[subspace.kernel.org:s=arc-20240116:i=2];
+	DMARC_POLICY_ALLOW(-0.50)[gmail.com,none];
+	R_SPF_ALLOW(-0.20)[+ip4:172.232.135.74:c];
+	R_DKIM_ALLOW(-0.20)[gmail.com:s=20251104];
 	MAILLIST(-0.15)[generic];
 	MIME_GOOD(-0.10)[text/plain];
 	HAS_LIST_UNSUB(-0.01)[];
-	REPLYTO_DN_EQ_FROM_DN(0.00)[];
-	TAGGED_FROM(0.00)[bounces-2930-lists,live-patching=lfdr.de];
-	RCVD_TLS_LAST(0.00)[];
-	FROM_NEQ_ENVFROM(0.00)[sashiko-bot@kernel.org,live-patching@vger.kernel.org];
-	RCVD_COUNT_THREE(0.00)[4];
-	TO_DN_SOME(0.00)[];
-	FREEMAIL_CC(0.00)[gmail.com,vger.kernel.org];
+	DKIM_TRACE(0.00)[gmail.com:+];
 	MIME_TRACE(0.00)[0:+];
 	FORGED_SENDER_MAILLIST(0.00)[];
-	REPLYTO_DOM_NEQ_FROM_DOM(0.00)[];
+	TAGGED_FROM(0.00)[bounces-2931-lists,live-patching=lfdr.de];
+	RCVD_TLS_LAST(0.00)[];
+	RCVD_COUNT_THREE(0.00)[4];
 	FORGED_RECIPIENTS_MAILLIST(0.00)[];
-	REPLYTO_DOM_NEQ_TO_DOM(0.00)[];
-	MID_RHS_MATCH_FROMTLD(0.00)[];
-	RCPT_COUNT_SEVEN(0.00)[8];
-	NEURAL_HAM(-0.00)[-1.000];
-	PRECEDENCE_BULK(0.00)[];
-	DKIM_TRACE(0.00)[kernel.org:+];
-	TAGGED_RCPT(0.00)[live-patching];
-	ASN(0.00)[asn:63949, ipnet:104.64.192.0/19, country:SG];
-	HAS_REPLYTO(0.00)[sashiko-reviews@lists.linux.dev];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
 	MISSING_XM_UA(0.00)[];
-	FROM_NO_DN(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[sashiko.dev:url,sin.lore.kernel.org:rdns,sin.lore.kernel.org:helo,lists.linux.dev:replyto,smtp.kernel.org:mid]
-X-Rspamd-Queue-Id: 553635FD485
+	FROM_HAS_DN(0.00)[];
+	FREEMAIL_FROM(0.00)[gmail.com];
+	TO_DN_NONE(0.00)[];
+	PRECEDENCE_BULK(0.00)[];
+	FROM_NEQ_ENVFROM(0.00)[laoarshao@gmail.com,live-patching@vger.kernel.org];
+	ASN(0.00)[asn:63949, ipnet:172.232.128.0/19, country:SG];
+	NEURAL_HAM(-0.00)[-1.000];
+	RCPT_COUNT_SEVEN(0.00)[8];
+	MID_RHS_MATCH_FROMTLD(0.00)[];
+	TAGGED_RCPT(0.00)[live-patching];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[sto.lore.kernel.org:rdns,sto.lore.kernel.org:helo,mail.gmail.com:mid]
+X-Rspamd-Queue-Id: 103D35FFB05
 X-Rspamd-Action: no action
 X-Rspamd-Server: lfdr
 
-Thank you for your contribution! Sashiko AI review found 1 potential issue(=
-s) to consider:
-- [Medium] The 'atomic replace livepatch' test case in test-livepatch.sh wa=
-s completely removed instead of being updated, resulting in lost test cover=
-age and leaving behind dead variables.
---
+On Fri, May 29, 2026 at 12:01=E2=80=AFPM <sashiko-bot@kernel.org> wrote:
+>
+> Thank you for your contribution! Sashiko AI review found 2 potential issu=
+e(s) to consider:
+>
+> New issues:
+> - [Low] klp_find_func() is improperly exposed in the global public header=
+, breaking encapsulation and introducing potential build/linkage errors.
 
-commit 99bb60c2ba8319ec21289c482f1ea304e282396c
-Author: Yafang Shao <laoar.shao@gmail.com>
+I will update it.
 
-selftests/livepatch: Update tests for replace_set
+>
+> Pre-existing issues:
+> - [High] klp_find_func() lacks input validation, exacerbating a pre-exist=
+ing NULL pointer dereference vulnerability during livepatch loading.
 
-This commit updates the livepatch selftests to use "replace_set" instead
-of "replace". It configures different livepatches to share or have different
-replace_sets to test atomic and non-atomic replace behaviors.
-
-> diff --git a/tools/testing/selftests/livepatch/test-livepatch.sh b/tools/=
-testing/selftests/livepatch/test-livepatch.sh
-> index c44c5341a2f1e..042999856267f 100755
-> --- a/tools/testing/selftests/livepatch/test-livepatch.sh
-> +++ b/tools/testing/selftests/livepatch/test-livepatch.sh
-[ ... ]
-> @@ -108,96 +108,6 @@ livepatch: '$MOD_LIVEPATCH1': completing unpatching =
-transition
->  livepatch: '$MOD_LIVEPATCH1': unpatching complete
->  % rmmod $MOD_LIVEPATCH1"
-> =20
-> -
-> -# - load a livepatch that modifies the output from /proc/cmdline and
-> -#   verify correct behavior
-> -# - load two additional livepatches and check the number of livepatch mo=
-dules
-> -#   applied
-> -# - load an atomic replace livepatch and check that the other three modu=
-les were
-> -#   disabled
-> -# - remove all livepatches besides the atomic replace one and verify tha=
-t the
-> -#   atomic replace livepatch is still active
-> -# - remove the atomic replace livepatch and verify that none are active
-> -
-> -start_test "atomic replace livepatch"
-> -
-> -load_lp $MOD_LIVEPATCH1
-
-[Severity: Medium]
-Was this test case intentionally removed completely instead of being update=
-d for
-the new replace_set semantics?
-
-The commit message does not mention removing this test. This removal causes=
- a
-loss of test coverage that previously verified an atomic replace successful=
-ly
-disables multiple existing livepatches.
-
-Additionally, removing this test leaves the script variables MOD_LIVEPATCH2
-and MOD_LIVEPATCH3 unused in test-livepatch.sh. Could this test be adapted
-to use replace_set instead?
+Valid. will fix this issue.
 
 --=20
-Sashiko AI review =C2=B7 https://sashiko.dev/#/patchset/20260529034542.6876=
-6-1-laoar.shao@gmail.com?part=3D4
+Regards
+Yafang
 
